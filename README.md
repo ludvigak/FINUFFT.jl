@@ -1,4 +1,4 @@
-# FINUFFT
+# FINUFFT.jl
 
 This is a Julia wrapper for [FINUFFT](https://github.com/ahbarnett/finufft), a lightweight nonuniform FFT (nufft) library written by Alex H. Barnett and Jeremy F. Magland.
 
