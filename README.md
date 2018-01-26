@@ -8,7 +8,7 @@ This is just a secondary wrapper around FINUFFT's Python wrapper, so first you n
 
 Then install this wrapper with the Julia command
 ```julia
-Pkg.add("FINUFFT")
+Pkg.clone("https://github.com/ludvigak/FINUFFT.jl.git")
 ```
 
 ## Usage
