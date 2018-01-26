@@ -21,3 +21,6 @@ using PyCall
 @pyimport finufftpy
 ```
 is that you with this module get function names that end with a `!`, which is the convention for functions that modify their arguments.
+
+### Examples
+See [test/runtests.jl](test/runtests.jl)
