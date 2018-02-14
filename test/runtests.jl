@@ -29,7 +29,7 @@ k1 = modevec(ms)
 k2 = modevec(mt)
 k3 = modevec(mu)
 
-@testset "FINUFFT" begin
+@testset "NUFFT" begin
     ## 1D
     @testset "1D" begin
         # 1D1
@@ -40,7 +40,7 @@ k3 = modevec(mu)
                 ref[ss] += c[j] * exp(1im*k1[ss]*x[j])
             end
         end
-        finufft1d1!(x, c, 1, eps(), ms, out)
+        nufft1d1!(x, c, 1, eps(), ms, out)
         relerr_1d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_1d1 < 1e-13
         
@@ -52,7 +52,7 @@ k3 = modevec(mu)
                 ref[j] += F1D[ss] * exp(1im*k1[ss]*x[j])
             end
         end
-        finufft1d2!(x, out, 1, eps(), F1D)
+        nufft1d2!(x, out, 1, eps(), F1D)
         relerr_1d2 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_1d2 < 1e-13
         
@@ -64,7 +64,7 @@ k3 = modevec(mu)
                 ref[k] += c[j] * exp(1im*s[k]*x[j])
             end
         end
-        finufft1d3!(x,c,1,eps(),s,out)
+        nufft1d3!(x,c,1,eps(),s,out)
         relerr_1d3 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_1d3 < 1e-13    
     end
@@ -81,7 +81,7 @@ k3 = modevec(mu)
                 end
             end
         end
-        finufft2d1!(x, y, c, 1, eps(), ms, mt, out)
+        nufft2d1!(x, y, c, 1, eps(), ms, mt, out)
         relerr_2d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_2d1 < 1e-13
         
@@ -95,7 +95,7 @@ k3 = modevec(mu)
                 end
             end
         end
-        finufft2d2!(x, y, out, 1, eps(), F2D)
+        nufft2d2!(x, y, out, 1, eps(), F2D)
         relerr_2d2 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_2d2 < 1e-13
 
@@ -107,7 +107,7 @@ k3 = modevec(mu)
                 ref[k] += c[j] * exp(1im*(s[k]*x[j]+t[k]*y[j]))
             end
         end
-        finufft2d3!(x,y,c,1,eps(),s,t,out)
+        nufft2d3!(x,y,c,1,eps(),s,t,out)
         relerr_2d3 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_2d3 < 1e-13
         
@@ -127,7 +127,7 @@ k3 = modevec(mu)
                 end
             end
         end
-        finufft3d1!(x, y, z, c, 1, eps(), ms, mt, mu, out)
+        nufft3d1!(x, y, z, c, 1, eps(), ms, mt, mu, out)
         relerr_3d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_3d1 < 1e-13
 
@@ -143,7 +143,7 @@ k3 = modevec(mu)
                 end
             end
         end
-        finufft3d2!(x, y, z, out, 1, eps(), F3D)
+        nufft3d2!(x, y, z, out, 1, eps(), F3D)
         relerr_3d2 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_3d2 < 1e-13
 
@@ -155,7 +155,7 @@ k3 = modevec(mu)
                 ref[k] += c[j] * exp(1im*(s[k]*x[j]+t[k]*y[j]+u[k]*z[j]))
             end
         end
-        finufft3d3!(x,y,z,c,1,eps(),s,t,u,out)
+        nufft3d3!(x,y,z,c,1,eps(),s,t,u,out)
         relerr_3d3 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_3d3 < 1e-13    
     end

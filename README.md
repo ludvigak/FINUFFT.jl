@@ -13,7 +13,7 @@ Pkg.clone("https://github.com/ludvigak/FINUFFT.jl.git")
 
 ## Usage
 
-This module provides functions `finufft_1d1!`, `finufft_1d2!`, ..., `finufft_3d3!` that wrap the interfaces defined in <http://finufft.readthedocs.io/en/latest/pythoninterface.html>
+This module provides functions `nufft1d1!`, `nufft1d2!`, ..., `nufft3d3!` that wrap the interfaces defined in <http://finufft.readthedocs.io/en/latest/pythoninterface.html>
 
 The only difference between using this module and writing
 ```julia
