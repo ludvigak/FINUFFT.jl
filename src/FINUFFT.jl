@@ -1,13 +1,15 @@
 __precompile__()
-
 module FINUFFT
-using PyCall
 
+## Export
+export nufft1d1!, nufft1d2!, nufft1d3!
+export nufft2d1!, nufft2d2!, nufft2d3!
+export nufft3d1!, nufft3d2!,  nufft3d3!
+export finufft_default_opts
+
+## External dependencies
 using Compat
 using Compat.Libdl
-
-
-### DIRECT INTERFACE
 
 const depsfile = joinpath(dirname(@__DIR__), "deps", "deps.jl")
 if isfile(depsfile)
@@ -15,11 +17,11 @@ if isfile(depsfile)
 else
     error("FINUFFT is not properly installed. Please build it first.")
 end
+function __init__()
+    Libdl.dlopen("libfftw3_threads", Libdl.RTLD_GLOBAL)   
+end
 
-
-
-#const libfinufft = "/home/ludvig/local-workspace/finufft/lib/libfinufft.so"
-
+## FINUFFT opts struct from src/finufft_h.c
 mutable struct nufft_c_opts  # see FINUFFT source common/finufft_default_opts() for defaults
     debug::Cint              # 0: silent, 1: text basic timing output
     spread_debug::Cint       # passed to spread_opts, 0 (no text) 1 (some) or 2 (lots)
@@ -45,7 +47,7 @@ end
 
 ## 1D
 
-function finufft1d1_c(xj, cj, iflag, eps, fk,
+function nufft1d1!(xj, cj, iflag, eps, fk,
                       opts=finufft_default_opts())
     nj = length(xj)
     @assert length(cj)==nj        
@@ -66,7 +68,7 @@ function finufft1d1_c(xj, cj, iflag, eps, fk,
            )    
 end
 
-function finufft1d2_c(xj, cj, iflag, eps, fk,
+function nufft1d2!(xj, cj, iflag, eps, fk,
                       opts=finufft_default_opts())
     nj = length(xj)
     @assert length(cj)==nj        
@@ -87,7 +89,7 @@ function finufft1d2_c(xj, cj, iflag, eps, fk,
            )    
 end
 
-function finufft1d3_c(xj, cj, iflag, eps, sk, fk,
+function nufft1d3!(xj, cj, iflag, eps, sk, fk,
                       opts=finufft_default_opts())
     nj = length(xj)
     @assert length(cj)==nj        
@@ -112,7 +114,7 @@ end
 
 ## 2D
 
-function finufft2d1_c(xj, yj, cj, iflag, eps, fk,
+function nufft2d1!(xj, yj, cj, iflag, eps, fk,
                       opts=finufft_default_opts())
     nj = length(xj)
     @assert length(yj)==nj
@@ -136,7 +138,7 @@ function finufft2d1_c(xj, yj, cj, iflag, eps, fk,
            )    
 end
 
-function finufft2d2_c(xj, yj, cj, iflag, eps, fk,
+function nufft2d2!(xj, yj, cj, iflag, eps, fk,
                       opts=finufft_default_opts())
     nj = length(xj)
     @assert length(yj)==nj
@@ -160,7 +162,7 @@ function finufft2d2_c(xj, yj, cj, iflag, eps, fk,
            )    
 end
 
-function finufft2d3_c(xj, yj, cj, iflag, eps, sk, tk, fk,
+function nufft2d3!(xj, yj, cj, iflag, eps, sk, tk, fk,
                       opts=finufft_default_opts())
     nj = length(xj)
     @assert length(yj)==nj
@@ -189,7 +191,7 @@ end
 
 ## 3D
 
-function finufft3d1_c(xj, yj, zj, cj, iflag, eps, fk,
+function nufft3d1!(xj, yj, zj, cj, iflag, eps, fk,
                       opts=finufft_default_opts())
     nj = length(xj)
     @assert length(yj)==nj
@@ -216,7 +218,7 @@ function finufft3d1_c(xj, yj, zj, cj, iflag, eps, fk,
            )    
 end
 
-function finufft3d2_c(xj, yj, zj, cj, iflag, eps, fk,
+function nufft3d2!(xj, yj, zj, cj, iflag, eps, fk,
                       opts=finufft_default_opts())
     nj = length(xj)
     @assert length(yj)==nj
@@ -243,7 +245,7 @@ function finufft3d2_c(xj, yj, zj, cj, iflag, eps, fk,
            )    
 end
 
-function finufft3d3_c(xj, yj, zj, cj, iflag, eps, sk, tk, uk, fk,
+function nufft3d3!(xj, yj, zj, cj, iflag, eps, sk, tk, uk, fk,
                       opts=finufft_default_opts())
     nj = length(xj)
     @assert length(yj)==nj
@@ -273,40 +275,5 @@ function finufft3d3_c(xj, yj, zj, cj, iflag, eps, sk, tk, uk, fk,
            nj, xj, yj, zj, cj, iflag, eps, nk, sk, tk, uk, fk, opts
            )    
 end
-
-### PYTHON WRAPPER
-
-nufft1d1! = PyNULL()
-nufft1d2! = PyNULL()
-nufft1d3! = PyNULL()
-nufft2d1! = PyNULL()
-nufft2d2! = PyNULL()
-nufft2d3! = PyNULL()
-nufft3d1! = PyNULL()
-nufft3d2! = PyNULL()
-nufft3d3! = PyNULL()
-
-function __init__()
-    finufftpy = pyimport("finufftpy")
-
-    copy!(nufft1d1!, finufftpy[:nufft1d1])
-    copy!(nufft1d2!, finufftpy[:nufft1d2])
-    copy!(nufft1d3!, finufftpy[:nufft1d3])    
-    
-    copy!(nufft2d1!, finufftpy[:nufft2d1])
-    copy!(nufft2d2!, finufftpy[:nufft2d2])
-    copy!(nufft2d3!, finufftpy[:nufft2d3])
-
-    copy!(nufft3d1!, finufftpy[:nufft3d1])
-    copy!(nufft3d2!, finufftpy[:nufft3d2])
-    copy!(nufft3d3!, finufftpy[:nufft3d3])
-
-    #Libdl.dlopen("libgomp", Libdl.RTLD_GLOBAL)
-    Libdl.dlopen("libfftw3_threads", Libdl.RTLD_GLOBAL)   
-end
-
-export nufft1d1!, nufft1d2!, nufft1d3!
-export nufft2d1!, nufft2d2!, nufft2d3!
-export nufft3d1!, nufft3d2!,  nufft3d3!
 
 end # module
