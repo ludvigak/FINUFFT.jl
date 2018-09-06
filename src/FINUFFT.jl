@@ -48,6 +48,7 @@ end
 function finufft1d1_c(xj, cj, iflag, eps, fk,
                       opts=finufft_default_opts())
     nj = length(xj)
+    @assert length(cj)==nj        
     ms = length(fk)    
     # Calling interface
     # int finufft1d1_c(int nj,FLT* xj,FLT _Complex* cj,int iflag, FLT eps,int ms, FLT _Complex* fk, nufft_c_opts opts);
@@ -68,6 +69,7 @@ end
 function finufft1d2_c(xj, cj, iflag, eps, fk,
                       opts=finufft_default_opts())
     nj = length(xj)
+    @assert length(cj)==nj        
     ms = length(fk)    
     # Calling interface
     # int finufft1d2_c(int nj,FLT* xj,FLT _Complex* cj,int iflag, FLT eps,int ms, FLT _Complex* fk, nufft_c_opts opts);
@@ -88,7 +90,9 @@ end
 function finufft1d3_c(xj, cj, iflag, eps, sk, fk,
                       opts=finufft_default_opts())
     nj = length(xj)
-    nk = length(fk)    
+    @assert length(cj)==nj        
+    nk = length(sk)
+    @assert length(fk)==nk
     # Calling interface
     # int finufft1d3_c(int j,FLT* x,FLT _Complex* c,int iflag,FLT eps,int nk, FLT* s, FLT _Complex* f, nufft_c_opts opts);
     ccall( (:finufft1d3_c, libfinufft),
@@ -106,6 +110,169 @@ function finufft1d3_c(xj, cj, iflag, eps, sk, fk,
            )    
 end
 
+## 2D
+
+function finufft2d1_c(xj, yj, cj, iflag, eps, fk,
+                      opts=finufft_default_opts())
+    nj = length(xj)
+    @assert length(yj)==nj
+    @assert length(cj)==nj    
+    ms, mt = size(fk)    
+    # Calling interface
+    # int finufft2d1_c(int nj,FLT* xj,FLT *yj,FLT _Complex* cj,int iflag, FLT eps,int ms, int mt,FLT _Complex* fk, nufft_c_opts copts);
+    ccall( (:finufft2d1_c, libfinufft),
+           Cint,
+           (Cint,
+            Ref{Cdouble},
+            Ref{Cdouble},            
+            Ref{ComplexF64},
+            Cint,
+            Cdouble,
+            Cint,
+            Cint,            
+            Ref{ComplexF64},
+            nufft_c_opts),
+           nj, xj, yj, cj, iflag, eps, ms, mt, fk, opts
+           )    
+end
+
+function finufft2d2_c(xj, yj, cj, iflag, eps, fk,
+                      opts=finufft_default_opts())
+    nj = length(xj)
+    @assert length(yj)==nj
+    @assert length(cj)==nj    
+    ms, mt = size(fk)    
+    # Calling interface
+    # int finufft2d2_c(int nj,FLT* xj,FLT *yj,FLT _Complex* cj,int iflag, FLT eps,int ms, int mt, FLT _Complex* fk, nufft_c_opts copts);
+    ccall( (:finufft2d2_c, libfinufft),
+           Cint,
+           (Cint,
+            Ref{Cdouble},
+            Ref{Cdouble},            
+            Ref{ComplexF64},
+            Cint,
+            Cdouble,
+            Cint,
+            Cint,            
+            Ref{ComplexF64},
+            nufft_c_opts),
+           nj, xj, yj, cj, iflag, eps, ms, mt, fk, opts
+           )    
+end
+
+function finufft2d3_c(xj, yj, cj, iflag, eps, sk, tk, fk,
+                      opts=finufft_default_opts())
+    nj = length(xj)
+    @assert length(yj)==nj
+    @assert length(cj)==nj
+    nk = length(sk)
+    @assert length(tk)==nk
+    @assert length(fk)==nk    
+    # Calling interface
+    # iint finufft2d3_c(int nj,FLT* x,FLT *y,FLT _Complex* c,int iflag,FLT eps,int nk, FLT* s, FLT *t,FLT _Complex* f, nufft_c_opts copts);
+    ccall( (:finufft2d3_c, libfinufft),
+           Cint,
+           (Cint,
+            Ref{Cdouble},
+            Ref{Cdouble},            
+            Ref{ComplexF64},
+            Cint,
+            Cdouble,
+            Cint,
+            Ref{Cdouble},
+            Ref{Cdouble},            
+            Ref{ComplexF64},
+            nufft_c_opts),
+           nj, xj, yj, cj, iflag, eps, nk, sk, tk, fk, opts
+           )    
+end
+
+## 3D
+
+function finufft3d1_c(xj, yj, zj, cj, iflag, eps, fk,
+                      opts=finufft_default_opts())
+    nj = length(xj)
+    @assert length(yj)==nj
+    @assert length(zj)==nj    
+    @assert length(cj)==nj    
+    ms, mt, mu = size(fk)    
+    # Calling interface
+    # int finufft3d1_c(int nj,FLT* xj,FLT* yj,FLT *zj,FLT _Complex* cj,int iflag, FLT eps,int ms, int mt, int mu,FLT _Complex* fk, nufft_c_opts copts);
+    ccall( (:finufft3d1_c, libfinufft),
+           Cint,
+           (Cint,
+            Ref{Cdouble},
+            Ref{Cdouble},
+            Ref{Cdouble},                
+            Ref{ComplexF64},
+            Cint,
+            Cdouble,
+            Cint,
+            Cint,
+            Cint,
+            Ref{ComplexF64},
+            nufft_c_opts),
+           nj, xj, yj, zj, cj, iflag, eps, ms, mt, mu, fk, opts
+           )    
+end
+
+function finufft3d2_c(xj, yj, zj, cj, iflag, eps, fk,
+                      opts=finufft_default_opts())
+    nj = length(xj)
+    @assert length(yj)==nj
+    @assert length(zj)==nj    
+    @assert length(cj)==nj    
+    ms, mt, mu = size(fk)    
+    # Calling interface
+    # int finufft3d2_c(int nj,FLT* xj,FLT *yj,FLT *zj,FLT _Complex* cj,int iflag, FLT eps,int ms, int mt, int mu, FLT _Complex* fk, nufft_c_opts copts);
+    ccall( (:finufft3d2_c, libfinufft),
+           Cint,
+           (Cint,
+            Ref{Cdouble},
+            Ref{Cdouble},            
+            Ref{Cdouble},            
+            Ref{ComplexF64},
+            Cint,
+            Cdouble,
+            Cint,
+            Cint,
+            Cint,
+            Ref{ComplexF64},
+            nufft_c_opts),
+           nj, xj, yj, zj, cj, iflag, eps, ms, mt, mu, fk, opts
+           )    
+end
+
+function finufft3d3_c(xj, yj, zj, cj, iflag, eps, sk, tk, uk, fk,
+                      opts=finufft_default_opts())
+    nj = length(xj)
+    @assert length(yj)==nj
+    @assert length(zj)==nj    
+    @assert length(cj)==nj
+    nk = length(sk)
+    @assert length(tk)==nk
+    @assert length(uk)==nk    
+    @assert length(fk)==nk    
+    # Calling interface
+    # int finufft3d3_c(int nj,FLT* x,FLT *y,FLT *z,FLT _Complex* c,int iflag,FLT eps,int nk, FLT* s, FLT *t,FLT *u,FLT _Complex* f, nufft_c_opts copts);
+    ccall( (:finufft3d3_c, libfinufft),
+           Cint,
+           (Cint,
+            Ref{Cdouble},
+            Ref{Cdouble},
+            Ref{Cdouble},                  
+            Ref{ComplexF64},
+            Cint,
+            Cdouble,
+            Cint,
+            Ref{Cdouble},
+            Ref{Cdouble},
+            Ref{Cdouble},                        
+            Ref{ComplexF64},
+            nufft_c_opts),
+           nj, xj, yj, zj, cj, iflag, eps, nk, sk, tk, uk, fk, opts
+           )    
+end
 
 ### PYTHON WRAPPER
 
