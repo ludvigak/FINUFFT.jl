@@ -9,7 +9,16 @@ using Compat.Libdl
 
 ### DIRECT INTERFACE
 
-const LIBFINUFFT = "/home/ludvig/local-workspace/finufft/lib/libfinufft.so"
+const depsfile = joinpath(dirname(@__DIR__), "deps", "deps.jl")
+if isfile(depsfile)
+    include(depsfile)
+else
+    error("FINUFFT is not properly installed. Please build it first.")
+end
+
+
+
+#const libfinufft = "/home/ludvig/local-workspace/finufft/lib/libfinufft.so"
 
 mutable struct nufft_c_opts  # see FINUFFT source common/finufft_default_opts() for defaults
     debug::Cint              # 0: silent, 1: text basic timing output
@@ -26,7 +35,7 @@ end
 
 function finufft_default_opts()
     opts = nufft_c_opts(0,0,0,0,0,0,0,0,1.0)
-    ccall( (:finufft_default_c_opts, LIBFINUFFT),
+    ccall( (:finufft_default_c_opts, libfinufft),
            Nothing,
            (Ref{nufft_c_opts},),
            opts
@@ -42,7 +51,7 @@ function finufft1d1_c(xj, cj, iflag, eps, fk,
     ms = length(fk)    
     # Calling interface
     # int finufft1d1_c(int nj,FLT* xj,FLT _Complex* cj,int iflag, FLT eps,int ms, FLT _Complex* fk, nufft_c_opts opts);
-    ccall( (:finufft1d1_c, LIBFINUFFT),
+    ccall( (:finufft1d1_c, libfinufft),
            Cint,
            (Cint,
             Ref{Cdouble},
@@ -62,7 +71,7 @@ function finufft1d2_c(xj, cj, iflag, eps, fk,
     ms = length(fk)    
     # Calling interface
     # int finufft1d2_c(int nj,FLT* xj,FLT _Complex* cj,int iflag, FLT eps,int ms, FLT _Complex* fk, nufft_c_opts opts);
-    ccall( (:finufft1d2_c, LIBFINUFFT),
+    ccall( (:finufft1d2_c, libfinufft),
            Cint,
            (Cint,
             Ref{Cdouble},
@@ -82,7 +91,7 @@ function finufft1d3_c(xj, cj, iflag, eps, sk, fk,
     nk = length(fk)    
     # Calling interface
     # int finufft1d3_c(int j,FLT* x,FLT _Complex* c,int iflag,FLT eps,int nk, FLT* s, FLT _Complex* f, nufft_c_opts opts);
-    ccall( (:finufft1d3_c, LIBFINUFFT),
+    ccall( (:finufft1d3_c, libfinufft),
            Cint,
            (Cint,
             Ref{Cdouble},
