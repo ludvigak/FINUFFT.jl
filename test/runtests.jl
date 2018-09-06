@@ -50,7 +50,10 @@ k3 = modevec(mu)
                 ref[ss] += c[j] * exp(1im*k1[ss]*x[j])
             end
         end
-        nufft1d1!(x, c, 1, tol, ms, out)
+        
+        #nufft1d1!(x, c, 1, tol, ms, out)
+        FINUFFT.finufft1d1_c(x, c, 1, tol, out)
+        
         relerr_1d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_1d1 < 1e-13
         
@@ -62,7 +65,11 @@ k3 = modevec(mu)
                 ref[j] += F1D[ss] * exp(1im*k1[ss]*x[j])
             end
         end
-        nufft1d2!(x, out, 1, tol, F1D)
+        
+        #nufft1d2!(x, out, 1, tol, F1D)
+        FINUFFT.finufft1d2_c(x, out, 1, tol, F1D)
+
+        
         relerr_1d2 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_1d2 < 1e-13
         
@@ -74,7 +81,10 @@ k3 = modevec(mu)
                 ref[k] += c[j] * exp(1im*s[k]*x[j])
             end
         end
-        nufft1d3!(x,c,1,tol,s,out)
+        
+        #nufft1d3!(x,c,1,tol,s,out)
+        FINUFFT.finufft1d3_c(x,c,1,tol,s,out)
+        
         relerr_1d3 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_1d3 < 1e-13    
     end
