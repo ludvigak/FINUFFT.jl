@@ -1,5 +1,15 @@
 using FINUFFT
-using Base.Test
+
+# Julia 0.6 compability
+using Compat.Test
+using Compat.LinearAlgebra
+using Compat.Random
+
+if VERSION < v"0.7"
+    srand(1)
+else
+    Random.seed!(1)
+end
 
 nj = 10
 nk = 11
@@ -7,12 +17,12 @@ ms = 12
 mt = 13
 mu = 14
 
-srand(1)
+tol = 1e-15
 
 # nonuniform data
-x = 3*pi*(1-2*rand(nj))
-y = 3*pi*(1-2*rand(nj))
-z = 3*pi*(1-2*rand(nj))
+x = 3*pi*(1.0 .- 2*rand(nj))
+y = 3*pi*(1.0 .- 2*rand(nj))
+z = 3*pi*(1.0 .- 2*rand(nj))
 c = rand(nj) + 1im*rand(nj)
 s = rand(nk)
 t = rand(nk)
@@ -40,7 +50,7 @@ k3 = modevec(mu)
                 ref[ss] += c[j] * exp(1im*k1[ss]*x[j])
             end
         end
-        nufft1d1!(x, c, 1, eps(), ms, out)
+        nufft1d1!(x, c, 1, tol, ms, out)
         relerr_1d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_1d1 < 1e-13
         
@@ -52,7 +62,7 @@ k3 = modevec(mu)
                 ref[j] += F1D[ss] * exp(1im*k1[ss]*x[j])
             end
         end
-        nufft1d2!(x, out, 1, eps(), F1D)
+        nufft1d2!(x, out, 1, tol, F1D)
         relerr_1d2 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_1d2 < 1e-13
         
@@ -64,7 +74,7 @@ k3 = modevec(mu)
                 ref[k] += c[j] * exp(1im*s[k]*x[j])
             end
         end
-        nufft1d3!(x,c,1,eps(),s,out)
+        nufft1d3!(x,c,1,tol,s,out)
         relerr_1d3 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_1d3 < 1e-13    
     end
@@ -81,7 +91,7 @@ k3 = modevec(mu)
                 end
             end
         end
-        nufft2d1!(x, y, c, 1, eps(), ms, mt, out)
+        nufft2d1!(x, y, c, 1, tol, ms, mt, out)
         relerr_2d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_2d1 < 1e-13
         
@@ -95,7 +105,7 @@ k3 = modevec(mu)
                 end
             end
         end
-        nufft2d2!(x, y, out, 1, eps(), F2D)
+        nufft2d2!(x, y, out, 1, tol, F2D)
         relerr_2d2 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_2d2 < 1e-13
 
@@ -107,7 +117,7 @@ k3 = modevec(mu)
                 ref[k] += c[j] * exp(1im*(s[k]*x[j]+t[k]*y[j]))
             end
         end
-        nufft2d3!(x,y,c,1,eps(),s,t,out)
+        nufft2d3!(x,y,c,1,tol,s,t,out)
         relerr_2d3 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_2d3 < 1e-13
         
@@ -127,7 +137,7 @@ k3 = modevec(mu)
                 end
             end
         end
-        nufft3d1!(x, y, z, c, 1, eps(), ms, mt, mu, out)
+        nufft3d1!(x, y, z, c, 1, tol, ms, mt, mu, out)
         relerr_3d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_3d1 < 1e-13
 
@@ -143,7 +153,7 @@ k3 = modevec(mu)
                 end
             end
         end
-        nufft3d2!(x, y, z, out, 1, eps(), F3D)
+        nufft3d2!(x, y, z, out, 1, tol, F3D)
         relerr_3d2 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_3d2 < 1e-13
 
@@ -155,7 +165,7 @@ k3 = modevec(mu)
                 ref[k] += c[j] * exp(1im*(s[k]*x[j]+t[k]*y[j]+u[k]*z[j]))
             end
         end
-        nufft3d3!(x,y,z,c,1,eps(),s,t,u,out)
+        nufft3d3!(x,y,z,c,1,tol,s,t,u,out)
         relerr_3d3 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_3d3 < 1e-13    
     end
