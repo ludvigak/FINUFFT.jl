@@ -6,7 +6,20 @@ This is a Julia interface to [FINUFFT](https://github.com/flatironinstitute/finu
 
 ## Installation
 
-Install through your Julia package manager. This should download and build FINUFFT v1.0, as long as you satisfy the dependencies listed in <https://finufft.readthedocs.io/en/latest/install.html#dependencies>
+Julia 1.0 and 0.7: From the Pkg REPL mode (hit `]` in REPL to enter), run
+```julia
+add https://github.com/ludvigak/FINUFFT.jl
+test FINUFFT
+```
+
+Julia 0.6: From the REPL, run
+```julia
+Pkg.clone("https://github.com/ludvigak/FINUFFT.jl")
+Pkg.build("FINUFFT")
+Pkg.test("FINUFFT")
+```
+
+This should download and build FINUFFT v1.0, as long as you satisfy the dependencies listed in <https://finufft.readthedocs.io/en/latest/install.html#dependencies>
 
 Currently only tested on Linux, but should work on Mac OS X.
 
