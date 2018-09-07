@@ -21,7 +21,7 @@ Pkg.test("FINUFFT")
 
 This should download and build FINUFFT v1.0, as long as you satisfy the dependencies listed in <https://finufft.readthedocs.io/en/latest/install.html#dependencies>
 
-Currently only tested on Linux, but should work on Mac OS X.
+Currently only tested on Linux.
 
 ## Usage
 
@@ -62,4 +62,4 @@ See [test/runtests.jl](test/runtests.jl)
 
 ## TODO
 * Implement advanced interface
-* Test on Max OS X (specifically, fix osx building on Travis CI)
+* Test Max OS X, once it is available in FINUFFT 
