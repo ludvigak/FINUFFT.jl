@@ -15,6 +15,24 @@ This module provides functions `nufft1d1!`, `nufft1d2!`, ..., `nufft3d3!` and `f
 
 ```julia
 using FINUFFT
+
+# nonuniform data
+nj = 100
+x = pi*(1.0 .- 2.0*rand(nj))
+c = rand(nj) + 1im*rand(nj)
+
+# Allocate output
+ms = 20
+out = Array{ComplexF64}(undef, ms)
+
+# Call FINUFFT using default opts
+tol = 1e-10
+nufft1d1!(x, c, 1.0, tol, out)
+
+# Call FINUFFT using modified opts 
+opts = finufft_default_opts()
+opts.debug = 1
+nufft1d1!(x, c, 1, tol, out, opts)
 ```
 
 The advanced interfaces `finufft2d1many` and `finufft2d2many` have not been implemented yet.
