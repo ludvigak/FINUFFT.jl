@@ -2,7 +2,6 @@
 language: julia
 os:
   - linux
-  - osx
 julia:
   - 0.6
   - 1.0
@@ -17,7 +16,6 @@ git:
 matrix:
   allow_failures:
   - julia: nightly
-  - julia: osx # Give up on osx building for now
 
 ## uncomment and modify the following lines to manually install system packages
 addons:
@@ -28,10 +26,6 @@ addons:
     - make
     - build-essential
     - libfftw3-dev
-before_script: # homebrew for mac
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update && brew cask uninstall --force oclint && brew install gcc@8 fftw; fi
-  - alias gcc='gcc-8'
-  - alias g++='g++-8'
 
 ## uncomment the following lines to override the default test script
 #script:
