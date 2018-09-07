@@ -50,7 +50,10 @@ k3 = modevec(mu)
                 ref[ss] += c[j] * exp(1im*k1[ss]*x[j])
             end
         end
-        nufft1d1!(x, c, 1, tol, out)
+        # Try this one with explicit opts struct
+        opts = finufft_default_opts()
+        opts.spread_kerpad = 0 # This should also work
+        nufft1d1!(x, c, 1, tol, out, opts)
         relerr_1d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
         @test relerr_1d1 < 1e-13
         
