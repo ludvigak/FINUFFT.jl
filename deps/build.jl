@@ -1,8 +1,24 @@
 using BinDeps
 using Compat.Libdl
+using Conda
 
 @BinDeps.setup
 
+# First install fftw
+fftw = library_dependency("libfftw3")
+fftw_threads = library_dependency("libfftw3_threads")
+
+usr = usrdir(fftw)
+if !isdir(usr)
+    mkdir(usr)
+    Conda.add("fftw", usr)
+end
+
+
+provides(Binaries, "usr", fftw)
+provides(Binaries, "usr", fftw_threads)
+
+# Then download and build finufft
 libfinufft = library_dependency("libfinufft")
 
 provides(Sources,
@@ -31,4 +47,6 @@ provides(BuildProcess,
           end),
          libfinufft)
 
-@BinDeps.install Dict(:libfinufft => :libfinufft)
+@BinDeps.install Dict(:libfinufft => :libfinufft,
+                      :libfftw3 => :fftw,
+                      :libfftw3_threads => :fftw_threads)
