@@ -18,7 +18,7 @@ Pkg.add("FINUFFT")
 Pkg.test("FINUFFT")
 ```
 
-This should download, build and test FINUFFT v1.0, as long as you satisfy the dependencies listed in <https://finufft.readthedocs.io/en/latest/install.html#dependencies>
+This should download, build and test FINUFFT v1.0, as long as you have `gcc` and `curl` installed. The FFTW library is downloaded locally by the build script, using [Conda.jl](https://github.com/JuliaPy/Conda.jl) 
 
 Currently only tested on Linux.
 
