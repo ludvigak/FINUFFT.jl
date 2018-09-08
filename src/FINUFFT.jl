@@ -17,8 +17,10 @@ if isfile(depsfile)
 else
     error("FINUFFT is not properly installed. Please build it first.")
 end
+
 function __init__()
-    Libdl.dlopen("libfftw3_threads", Libdl.RTLD_GLOBAL)   
+    Libdl.dlopen(fftw, Libdl.RTLD_GLOBAL)       
+    Libdl.dlopen(fftw_threads, Libdl.RTLD_GLOBAL)
 end
 
 ## FINUFFT opts struct from src/finufft_h.c
