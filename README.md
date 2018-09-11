@@ -8,18 +8,17 @@ This is a Julia interface to [FINUFFT](https://github.com/flatironinstitute/finu
 
 Julia 1.0 and 0.7: From the Pkg REPL mode (hit `]` in REPL to enter), run
 ```julia
-add https://github.com/ludvigak/FINUFFT.jl
+add FINUFFT
 test FINUFFT
 ```
 
 Julia 0.6: From the REPL, run
 ```julia
-Pkg.clone("https://github.com/ludvigak/FINUFFT.jl")
-Pkg.build("FINUFFT")
+Pkg.add("FINUFFT")
 Pkg.test("FINUFFT")
 ```
 
-This should download and build FINUFFT v1.0, as long as you satisfy the dependencies listed in <https://finufft.readthedocs.io/en/latest/install.html#dependencies>
+This should download, build and test FINUFFT v1.0, as long as you satisfy the dependencies listed in <https://finufft.readthedocs.io/en/latest/install.html#dependencies>
 
 Currently only tested on Linux.
 
@@ -63,3 +62,4 @@ See [test/runtests.jl](test/runtests.jl)
 ## TODO
 * Implement advanced interface
 * Test Max OS X, once it is available in FINUFFT 
+* Add interface functions that allocate and return the output, i.e. `out = nufft1d1(x, c, 1.0, tol, ms)`
