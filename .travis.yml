@@ -25,7 +25,6 @@ addons:
     - gfortran
     - make
     - build-essential
-    - libfftw3-dev
 
 ## uncomment the following lines to override the default test script
 #script:
