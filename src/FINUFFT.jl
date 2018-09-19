@@ -2,10 +2,12 @@ __precompile__()
 module FINUFFT
 
 ## Export
+export nufft1d1, nufft1d2
 export nufft1d1!, nufft1d2!, nufft1d3!
 export nufft2d1!, nufft2d2!, nufft2d3!
 export nufft3d1!, nufft3d2!,  nufft3d3!
 export finufft_default_opts
+export nufft_c_opts
 
 ## External dependencies
 using Compat
@@ -24,21 +26,61 @@ function __init__()
 end
 
 ## FINUFFT opts struct from src/finufft_h.c
-mutable struct nufft_c_opts  # see FINUFFT source common/finufft_default_opts() for defaults
-    debug::Cint              # 0: silent, 1: text basic timing output
-    spread_debug::Cint       # passed to spread_opts, 0 (no text) 1 (some) or 2 (lots)
-    spread_sort::Cint        # passed to spread_opts, 0 (don't sort) 1 (do) or 2 (heuristic)
-    spread_kerevalmeth::Cint # "     spread_opts, 0: exp(sqrt()), 1: Horner ppval (faster)
-    spread_kerpad::Cint      # passed to spread_opts, 0: don't pad to mult of 4, 1: do
-    chkbnds::Cint            # 0: don't check if input NU pts in [-3pi,3pi], 1: do
-    fftw::Cint               # 0:FFTW_ESTIMATE, or 1:FFTW_MEASURE (slow plan but faster)
-    modeord::Cint            # 0: CMCL-style increasing mode ordering (neg to pos), or
-                             # 1: FFT-style mode ordering (affects type-1,2 only)
-    upsampfac::Cdouble       # upsampling ratio sigma, either 2.0 (standard) or 1.25 (small FFT)
+"""
+    mutable struct nufft_c_opts
+
+Options struct passed to the FINUFFT library.
+
+# Fields
+
+    debug :: Cint
+0: silent, 1: text basic timing output
+
+    spread_debug :: Cint
+passed to spread_opts, 0 (no text) 1 (some) or 2 (lots)
+
+    spread_sort :: Cint
+passed to spread_opts, 0 (don't sort) 1 (do) or 2 (heuristic)
+
+    spread_kerevalmeth :: Cint
+passed to spread_opts, 0: exp(sqrt()), 1: Horner ppval (faster)
+
+    spread_kerpad :: Cint
+passed to spread_opts, 0: don't pad to mult of 4, 1: do
+
+    chkbnds :: Cint
+0: don't check if input NU pts in [-3pi,3pi], 1: do
+
+    fftw :: Cint
+0:`FFTW_ESTIMATE`, or 1:`FFTW_MEASURE` (slow plan but faster)
+
+    modeord :: Cint
+0: CMCL-style increasing mode ordering (neg to pos), or\\
+1: FFT-style mode ordering (affects type-1,2 only)
+
+    upsampfac::Cdouble
+upsampling ratio sigma, either 2.0 (standard) or 1.25 (small FFT)
+"""
+mutable struct nufft_c_opts    
+    debug::Cint                
+    spread_debug::Cint         
+    spread_sort::Cint          
+    spread_kerevalmeth::Cint   
+    spread_kerpad::Cint        
+    chkbnds::Cint              
+    fftw::Cint                 
+    modeord::Cint                                             
+    upsampfac::Cdouble         
 end
 
+"""
+    finufft_default_opts()
+
+Return a [`nufft_c_opts`](@ref) struct with the default FINUFFT settings.\\
+See: https://finufft.readthedocs.io/en/latest/usage.html#options
+"""
 function finufft_default_opts()
-    opts = nufft_c_opts(0,0,0,0,0,0,0,0,1.0)
+    opts = nufft_c_opts(0,0,0,0,0,0,0,0,0)
     ccall( (:finufft_default_c_opts, libfinufft),
            Nothing,
            (Ref{nufft_c_opts},),
@@ -77,9 +119,23 @@ end
 
 ## 1D
 
-function nufft1d1!(xj, cj, iflag, eps, fk,
-                   opts=finufft_default_opts())
-    nj = length(xj)
+"""
+    nufft1d1!(xj      :: Array{Float64}, 
+              cj      :: Array{ComplexF64}, 
+              iflag   :: Integer, 
+              eps     :: Float64,
+              fk      :: Array{ComplexF64} 
+              [, opts :: nufft_c_opts]
+
+Compute type-1 1D complex nonuniform FFT. Output stored in fk.
+"""
+function nufft1d1!(xj      :: Array{Float64}, 
+                   cj      :: Array{ComplexF64}, 
+                   iflag   :: Integer, 
+                   eps     :: Float64,
+                   fk      :: Array{ComplexF64},
+                   opts    :: nufft_c_opts = finufft_default_opts())
+    nj = length(xj) 
     @assert length(cj)==nj        
     ms = length(fk)    
     # Calling interface
@@ -99,8 +155,30 @@ function nufft1d1!(xj, cj, iflag, eps, fk,
     check_ret(ret)
 end
 
-function nufft1d2!(xj, cj, iflag, eps, fk,
-                   opts=finufft_default_opts())
+"""
+    nufft1d1!(xj      :: Array{Float64}, 
+              cj      :: Array{ComplexF64}, 
+              iflag   :: Integer, 
+              eps     :: Float64,
+              ms      :: Integer
+              [, opts :: nufft_c_opts]
+
+Compute type-1 1D complex nonuniform FFT.
+"""
+function nufft1d1(xj::Array{Float64}, cj::Array{ComplexF64}, iflag::Integer, eps::Float64,
+                   ms::Integer, opts::nufft_c_opts=finufft_default_opts())
+    fk = Array{ComplexF64}(undef, ms)
+    nufft1d1!(xj, cj, iflag, eps, fk, opts)
+    return fk
+end
+
+
+function nufft1d2!(xj      :: Array{Float64}, 
+                   cj      :: Array{ComplexF64}, 
+                   iflag   :: Integer, 
+                   eps     :: Float64,
+                   fk      :: Array{ComplexF64},
+                   opts    :: nufft_c_opts = finufft_default_opts())
     nj = length(xj)
     @assert length(cj)==nj        
     ms = length(fk)    
@@ -119,6 +197,17 @@ function nufft1d2!(xj, cj, iflag, eps, fk,
                  nj, xj, cj, iflag, eps, ms, fk, opts
                  )
     check_ret(ret)    
+end
+
+function nufft1d2(xj      :: Array{Float64},                    
+                  iflag   :: Integer, 
+                  eps     :: Float64,
+                  fk      :: Array{ComplexF64},
+                  opts    :: nufft_c_opts = finufft_default_opts())
+    nj = length(xj)
+    cj = Array{ComplexF64}(undef, nj)
+    nufft1d2!(xj, cj, iflag, eps, fk, opts)
+    return cj
 end
 
 function nufft1d3!(xj, cj, iflag, eps, sk, fk,
