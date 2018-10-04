@@ -62,4 +62,4 @@ See [test/runtests.jl](test/runtests.jl)
 ## TODO
 * Implement advanced interface
 * Test Max OS X, once it is available in FINUFFT 
-* Add interface functions that allocate and return the output, i.e. `out = nufft1d1(x, c, 1.0, tol, ms)`
+
