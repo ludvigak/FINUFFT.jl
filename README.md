@@ -24,10 +24,11 @@ Currently only tested on Linux.
 
 ## Usage
 
-This module provides functions `nufft1d1!`, `nufft1d2!`, ..., `nufft3d3!` and `finufft_default_opts` that call the interface defined in <https://finufft.readthedocs.io/en/latest/usage.html>
+This module provides functions `nufft1d1`, `nufft1d2`, ..., `nufft3d3`, `nufft1d1!`, `nufft1d2!`, ..., `nufft3d3!`, and `finufft_default_opts` that call the interface defined in <https://finufft.readthedocs.io/en/latest/usage.html>
 
-* Function calls mimic the C/C++ interface, with the exception that you don't need to pass any array sizes (they are inferred from the sizes of the arguments).
-* Output arrays need to be preallocated and passed as arguments.
+* Function calls mimic the C/C++ interface, with the exception that you don't need to pass the dimensions of any arrays in the argument (they are inferred using `size()`).
+* The functions named `nufftDdN` return the output array.
+* The functions named `nufftDdN!` take the output array as an argument. This needs to be preallocated.
 * The last argument of the nufft routines is the options struct, which is optional. Default values are used if it is omitted.
 * `finufft_default_opts()` returns an options struct with default values.
 
@@ -40,18 +41,21 @@ nj = 100
 x = pi*(1.0 .- 2.0*rand(nj))
 c = rand(nj) + 1im*rand(nj)
 
-# Allocate output
-ms = 20
+# Parameters
+ms = 20 # Output size
+tol = 1e-10 # Tolerance
+
+# Output as return value
+fk = nufft1d1(x, c, 1, tol, ms)
+
+# Preallocate output and pass as argument
 out = Array{ComplexF64}(undef, ms)
+nufft1d1!(x, c, 1, tol, out)
 
-# Call FINUFFT using default opts
-tol = 1e-10
-nufft1d1!(x, c, 1.0, tol, out)
-
-# Call FINUFFT using modified opts 
+# Call using modified opts 
 opts = finufft_default_opts()
 opts.debug = 1
-nufft1d1!(x, c, 1, tol, out, opts)
+fk2 = nufft1d1(x, c, 1, tol, ms, opts)
 ```
 
 The advanced interfaces `finufft2d1many` and `finufft2d2many` have not been implemented yet.
@@ -61,5 +65,4 @@ See [test/runtests.jl](test/runtests.jl)
 
 ## TODO
 * Implement advanced interface
-* Test Max OS X, once it is available in FINUFFT 
-
+* Test on Max OS X
