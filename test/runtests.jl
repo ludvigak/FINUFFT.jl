@@ -60,7 +60,7 @@ k3 = modevec(mu)
             # Different caller
             out2 = nufft1d1(x, c, 1, tol, ms)
             reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-            @test reldiff < 1e-15
+            @test reldiff < 1e-14
         end
         
         # 1D2
@@ -77,7 +77,7 @@ k3 = modevec(mu)
             @test relerr_1d2 < 1e-13
             out2 = nufft1d2(x, 1, tol, F1D)
             reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-            @test reldiff < 1e-15
+            @test reldiff < 1e-14
         end
         
         # 1D3
@@ -94,7 +94,7 @@ k3 = modevec(mu)
             @test relerr_1d3 < 1e-13
             out2 = nufft1d3(x,c,1,tol,s)
             reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-            @test reldiff < 1e-15            
+            @test reldiff < 1e-14            
         end
     end
 
@@ -116,7 +116,7 @@ k3 = modevec(mu)
             @test relerr_2d1 < 1e-13
             out2 = nufft2d1(x, y, c, 1, tol, ms, mt)
             reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-            @test reldiff < 1e-15            
+            @test reldiff < 1e-14            
         end
 
         @testset "2D2" begin
@@ -135,7 +135,7 @@ k3 = modevec(mu)
             @test relerr_2d2 < 1e-13
             out2 = nufft2d2(x, y, 1, tol, F2D)
             reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-            @test reldiff < 1e-15            
+            @test reldiff < 1e-14            
         end
 
         @testset "3D3" begin
@@ -152,7 +152,7 @@ k3 = modevec(mu)
             @test relerr_2d3 < 1e-13
             out2 = nufft2d3(x,y,c,1,tol,s,t)
             reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-            @test reldiff < 1e-15            
+            @test reldiff < 1e-14            
         end        
     end
 
@@ -176,7 +176,7 @@ k3 = modevec(mu)
             @test relerr_3d1 < 1e-13
             out2 = nufft3d1(x, y, z, c, 1, tol, ms, mt, mu)
             reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-            @test reldiff < 1e-15            
+            @test reldiff < 1e-14            
         end
 
         @testset "3D2" begin
@@ -197,7 +197,7 @@ k3 = modevec(mu)
             @test relerr_3d2 < 1e-13
             out2 = nufft3d2(x, y, z, 1, tol, F3D)
             reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-            @test reldiff < 1e-15            
+            @test reldiff < 1e-14            
         end
 
         @testset "3D3" begin
@@ -214,7 +214,7 @@ k3 = modevec(mu)
             @test relerr_3d3 < 1e-13
             out2 = nufft3d3(x,y,z,c,1,tol,s,t,u)
             reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-            @test reldiff < 1e-15            
+            @test reldiff < 1e-14            
         end        
     end
 end
