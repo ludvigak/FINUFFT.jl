@@ -12,6 +12,11 @@ notifications:
 git:
   depth: 99999999
 
+- before_install: |
+  if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+     brew cask uninstall oclint; brew update && brew install gcc && CC=gcc-8 && CXX=g++-8
+  fi
+
 ## uncomment the following lines to allow failures on nightly julia
 ## (tests will run but not make your overall status red)
 matrix:
