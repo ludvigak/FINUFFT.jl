@@ -20,6 +20,7 @@ matrix:
   
 before_install: |
   if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+    brew cask uninstall oclint
     brew update
     brew install gcc
   fi
