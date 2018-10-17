@@ -17,6 +17,12 @@ git:
 matrix:
   allow_failures:
   - julia: nightly
+  
+before_install: |
+  if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+    brew update
+    brew install gcc-8
+  fi
 
 ## uncomment and modify the following lines to manually install system packages
 addons:
