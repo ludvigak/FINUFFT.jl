@@ -3,6 +3,7 @@ language: julia
 os:
   - linux
   - osx
+     osx_image: xcode10
 julia:
   - 0.6
   - 1.0
@@ -20,7 +21,7 @@ matrix:
   
 before_install: |
   if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-    sudo softwareupdate -i "Command Line Tools (macOS High Sierra version 10.13) for Xcode-9.3"
+    #sudo softwareupdate -i "Command Line Tools (macOS High Sierra version 10.13) for Xcode-9.3"
     rm '/usr/local/include/c++'
     brew update
     brew install gcc
