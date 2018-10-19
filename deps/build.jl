@@ -44,11 +44,11 @@ buildfile = joinpath(rootdir, "lib", libname)
 @show lib = BinDeps.libdir(fftw)
 @show inc = BinDeps.includedir(fftw)
 
-# if Sys.KERNEL == :Darwin
-#     buildcmd = `make lib LIBRARY_PATH=$lib CPATH=$inc CXX=g++-8 CC=gcc-8`
-# else
+if Sys.KERNEL == :Darwin
+    buildcmd = `make lib LIBRARY_PATH=$lib CPATH=$inc CXX=/usr/bin/g++`
+else
     buildcmd = `make lib LIBRARY_PATH=$lib CPATH=$inc`
-#end
+end
 
 provides(BuildProcess,
          (@build_steps begin
