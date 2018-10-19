@@ -29,8 +29,7 @@ provides(BuildProcess,
 #provides(Binaries, "usr", fftw_threads)
 
 # Then download and build finufft
-libfinufft = library_dependency("libfinufft",
-                                aliases=["libfinufft", "finufft", "libfinufft.so", "libfinufft.dylib"])
+libfinufft = library_dependency("libfinufft")
 
 provides(Sources,
          URI("https://github.com/flatironinstitute/finufft/archive/v1.0.zip"),
@@ -65,11 +64,11 @@ run(finufftbuild)
 
 display(readdir(lib))
 
-# More dummy
-provides(BuildProcess,
-         (@build_steps begin
-          end),
-         libfinufft)
+# # More dummy
+# provides(BuildProcess,
+#          (@build_steps begin
+#           end),
+#          libfinufft)
 
 @BinDeps.install Dict(
     :libfftw3 => :fftw,
