@@ -21,9 +21,8 @@ matrix:
   
 before_install: |
   if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-    rm '/usr/local/include/c++'
     brew update
-    brew install gcc
+    brew install gcc@8
   fi
 
 after_success:
