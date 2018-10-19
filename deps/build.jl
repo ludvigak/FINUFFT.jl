@@ -38,7 +38,11 @@ provides(Sources,
          unpacked_dir = "finufft-1.0")
 
 rootdir = joinpath(BinDeps.srcdir(libfinufft), "finufft-1.0")
-libname = "libfinufft." * Libdl.dlext
+if Sys.KERNEL == :Darwin
+    libname = "libfinufft.1." * Libdl.dlext    
+else
+    libname = "libfinufft." * Libdl.dlext
+end
 libfile = joinpath(BinDeps.libdir(libfinufft),libname)
 buildfile = joinpath(rootdir, "lib", "libfinufft.so")
 
@@ -47,7 +51,6 @@ buildfile = joinpath(rootdir, "lib", "libfinufft.so")
 
 if Sys.KERNEL == :Darwin
     buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc CXX=g++-8 CC=gcc-8`
-    libname = "libfinufft.1." * Libdl.dlext
 else
     buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc`
 end
