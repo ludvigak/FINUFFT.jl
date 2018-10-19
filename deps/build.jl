@@ -46,7 +46,8 @@ buildfile = joinpath(rootdir, "lib", "libfinufft.so")
 @show inc = BinDeps.includedir(fftw)
 
 if Sys.KERNEL == :Darwin
-     buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc CXX=g++-8 CC=gcc-8`
+    buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc CXX=g++-8 CC=gcc-8`
+    libname = "libfinufft.1." * Libdl.dlext
 else
     buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc`
 end
