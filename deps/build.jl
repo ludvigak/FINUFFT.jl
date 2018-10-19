@@ -67,8 +67,6 @@ finufftbuild =
     end
 run(finufftbuild)
 
-display(readdir(lib))
-
 # Just add to deps.jl to bypass BinDeps checking
 depsfile_location = joinpath(splitdir(Base.source_path())[1],"deps.jl")
 fh = open(depsfile_location, "a")
