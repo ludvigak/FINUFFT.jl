@@ -50,6 +50,8 @@ else
     buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc`
 end
 
+list() = display(readdir(lib))
+
 provides(BuildProcess,
          (@build_steps begin
           GetSources(libfinufft)
@@ -59,6 +61,7 @@ provides(BuildProcess,
                    buildcmd
                    CreateDirectory(libdir(libfinufft))
                    `cp $buildfile $libfile`
+                   list
                    end)
           end
           end),
