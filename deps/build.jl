@@ -55,20 +55,24 @@ else
     buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc`
 end
 
-list() = display(readdir(lib))
+finufftbuild = 
+    @build_steps begin
+        GetSources(libfinufft)
+        @build_steps begin
+            ChangeDirectory(rootdir)
+            `make clean`
+            buildcmd
+            CreateDirectory(libdir(libfinufft))
+            `cp $buildfile $libfile`
+        end
+    end
+run(finufftbuild)
 
+display(readdir(lib))
+
+# More dummy
 provides(BuildProcess,
          (@build_steps begin
-          GetSources(libfinufft)
-          @build_steps begin
-          ChangeDirectory(rootdir)
-          FileRule(libfile, @build_steps begin
-                   buildcmd
-                   CreateDirectory(libdir(libfinufft))
-                   `cp $buildfile $libfile`
-                   list
-                   end)
-          end
           end),
          libfinufft)
 
