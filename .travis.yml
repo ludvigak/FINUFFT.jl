@@ -19,7 +19,7 @@ matrix:
     julia: 1.0
     osx_image: xcode9.2
   
-before_install: |
+before_install:
   if [ "$TRAVIS_OS_NAME" == "osx" ]; then
     brew update
     brew install gcc@8
