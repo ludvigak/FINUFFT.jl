@@ -20,7 +20,7 @@ Pkg.test("FINUFFT")
 
 This should download, build and test FINUFFT v1.0, as long as you have `gcc` and `curl` installed. The FFTW library is downloaded locally by the build script, using [Conda.jl](https://github.com/JuliaPy/Conda.jl) 
 
-Currently only tested on Linux.
+Developed and tested on Linux. Also works on Max OS X, but build script is hardwired to use GCC 8 (`g++-8` and `gcc-8`).
 
 ## Usage
 
@@ -65,4 +65,3 @@ See [test/runtests.jl](test/runtests.jl)
 
 ## TODO
 * Implement advanced interface
-* Test on Max OS X
