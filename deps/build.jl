@@ -38,11 +38,7 @@ provides(Sources,
          unpacked_dir = "finufft-1.0")
 
 rootdir = joinpath(BinDeps.srcdir(libfinufft), "finufft-1.0")
-if Sys.KERNEL == :Darwin
-    libname = "libfinufft.1." * Libdl.dlext    
-else
-    libname = "libfinufft." * Libdl.dlext
-end
+libname = "libfinufft." * Libdl.dlext
 libfile = joinpath(BinDeps.libdir(libfinufft),libname)
 buildfile = joinpath(rootdir, "lib", "libfinufft.so")
 
@@ -60,7 +56,6 @@ finufftbuild =
         GetSources(libfinufft)
         @build_steps begin
             ChangeDirectory(rootdir)
-            `make clean`
             buildcmd
             CreateDirectory(libdir(libfinufft))
             `cp $buildfile $libfile`
@@ -77,7 +72,12 @@ provides(BuildProcess,
          libfinufft)
 
 @BinDeps.install Dict(
-    :libfinufft => :libfinufft,
     :libfftw3 => :fftw,
     :libfftw3_threads => :fftw_threads
 )
+
+depsfile_location = joinpath(splitdir(Base.source_path())[1],"deps.jl")
+fh = open(depsfile_location, "a")
+write(fh, "\n@checked_lib libfinufft \"$libfile\"\n")
+close(fh)
+
