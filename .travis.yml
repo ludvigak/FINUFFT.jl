@@ -12,10 +12,10 @@ matrix:
     julia: 0.6
   - os: linux
     julia: 1.0
-  - os: linux
+  - os: osx
     julia: 0.6
     osx_image: xcode9.2
-  - os: linux
+  - os: osx
     julia: 1.0
     osx_image: xcode9.2
   
