@@ -4,7 +4,7 @@ using Conda
 
 @BinDeps.setup
 
-# First install fftw
+## First install fftw
 fftw = library_dependency("libfftw3")
 fftw_threads = library_dependency("libfftw3_threads")
 
@@ -28,7 +28,12 @@ provides(BuildProcess,
 #provides(Binaries, "usr", fftw)
 #provides(Binaries, "usr", fftw_threads)
 
-# Then download and build finufft
+@BinDeps.install Dict(
+    :libfftw3 => :fftw,
+    :libfftw3_threads => :fftw_threads
+)
+
+## Now fftw is in place, download and build finufft
 libfinufft = library_dependency("libfinufft")
 
 provides(Sources,
@@ -64,17 +69,7 @@ run(finufftbuild)
 
 display(readdir(lib))
 
-# # More dummy
-# provides(BuildProcess,
-#          (@build_steps begin
-#           end),
-#          libfinufft)
-
-@BinDeps.install Dict(
-    :libfftw3 => :fftw,
-    :libfftw3_threads => :fftw_threads
-)
-
+# Just add to deps.jl to bypass BinDeps checking
 depsfile_location = joinpath(splitdir(Base.source_path())[1],"deps.jl")
 fh = open(depsfile_location, "a")
 write(fh, "\n@checked_lib libfinufft \"$libfile\"\n")
