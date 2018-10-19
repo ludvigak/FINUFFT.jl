@@ -1,19 +1,23 @@
 ## Documentation: http://docs.travis-ci.com/user/languages/julia/
 language: julia
-os:
-  - linux
-  - osx
-julia:
-  - 0.6
-  - 1.0
+
 notifications:
   email: false
 git:
   depth: 99999999
 
-if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-  osx_image: xcode9.2  
-fi
+matrix:
+  include:  
+  - os: linux
+    julia: 0.6
+  - os: linux
+    julia: 1.0
+  - os: linux
+    julia: 0.6
+    osx_image: xcode9.2
+  - os: linux
+    julia: 1.0
+    osx_image: xcode9.2
   
 before_install: |
   if [ "$TRAVIS_OS_NAME" == "osx" ]; then
@@ -21,7 +25,6 @@ before_install: |
     brew update
     brew install gcc
   fi
-
 
 after_success:
   # push coverage results to Coveralls
