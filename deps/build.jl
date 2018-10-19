@@ -29,7 +29,8 @@ provides(BuildProcess,
 #provides(Binaries, "usr", fftw_threads)
 
 # Then download and build finufft
-libfinufft = library_dependency("libfinufft")
+libfinufft = library_dependency("libfinufft",
+                                aliases=["libfinufft", "finufft", "libfinufft.so", "libfinufft.dylib"])
 
 provides(Sources,
          URI("https://github.com/flatironinstitute/finufft/archive/v1.0.zip"),
