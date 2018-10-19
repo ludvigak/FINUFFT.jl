@@ -19,11 +19,8 @@ matrix:
     julia: 1.0
     osx_image: xcode9.2
   
-before_install:
-  if [ "$TRAVIS_OS_NAME" == "osx" ]; then
-    brew update
-    brew install gcc@8
-  fi
+before_script: # homebrew for mac
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update && brew install gcc@8; fi
 
 after_success:
   # push coverage results to Coveralls
