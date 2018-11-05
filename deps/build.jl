@@ -37,11 +37,11 @@ provides(BuildProcess,
 libfinufft = library_dependency("libfinufft")
 
 provides(Sources,
-         URI("https://github.com/flatironinstitute/finufft/archive/v1.0.zip"),
+         URI("https://github.com/flatironinstitute/finufft/archive/1.1.1.zip"),
          libfinufft,
-         unpacked_dir = "finufft-1.0")
+         unpacked_dir = "finufft-1.1.1")
 
-rootdir = joinpath(BinDeps.srcdir(libfinufft), "finufft-1.0")
+rootdir = joinpath(BinDeps.srcdir(libfinufft), "finufft-1.1.1")
 libname = "libfinufft." * Libdl.dlext
 libfile = joinpath(BinDeps.libdir(libfinufft),libname)
 buildfile = joinpath(rootdir, "lib", "libfinufft.so")
