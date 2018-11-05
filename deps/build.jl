@@ -49,10 +49,11 @@ buildfile = joinpath(rootdir, "lib", "libfinufft.so")
 @show lib = BinDeps.libdir(fftw)
 @show inc = BinDeps.includedir(fftw)
 
+# "FFTWOMPSUFFIX=threads" because Conda doesn't supply libfftw3_omp 
 if Sys.KERNEL == :Darwin
-    buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc CXX=g++-8 CC=gcc-8`
+    buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc FFTWOMPSUFFIX=threads CXX=g++-8 CC=gcc-8`
 else
-    buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc`
+    buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc FFTWOMPSUFFIX=threads`
 end
 
 finufftbuild = 
