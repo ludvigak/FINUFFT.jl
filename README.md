@@ -1,6 +1,7 @@
 # FINUFFT.jl
 
 [![Build Status](https://travis-ci.org/ludvigak/FINUFFT.jl.svg?branch=master)](https://travis-ci.org/ludvigak/FINUFFT.jl)
+[![Coverage Status](https://coveralls.io/repos/github/ludvigak/FINUFFT.jl/badge.svg?branch=master)](https://coveralls.io/github/ludvigak/FINUFFT.jl?branch=master)
 
 This is a Julia interface to [FINUFFT](https://github.com/flatironinstitute/finufft), a lightweight and fast nonuniform FFT (nufft) library released by the Flatiron Institute.
 
