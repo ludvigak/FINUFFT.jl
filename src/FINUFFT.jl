@@ -34,7 +34,17 @@ const BIGINT = Int64 # defined in src/finufft.h
 
 ## FINUFFT opts struct from src/finufft.h
 """
-    mutable struct nufft_opts
+    mutable struct nufft_opts    
+        debug              :: Cint                
+        spread_debug       :: Cint         
+        spread_sort        :: Cint          
+        spread_kerevalmeth :: Cint   
+        spread_kerpad      :: Cint        
+        chkbnds            :: Cint              
+        fftw               :: Cint                 
+        modeord            :: Cint
+        upsampfac          :: Cdouble         
+    end
 
 Options struct passed to the FINUFFT library.
 
@@ -69,15 +79,15 @@ passed to spread_opts, 0: don't pad to mult of 4, 1: do
 upsampling ratio sigma, either 2.0 (standard) or 1.25 (small FFT)
 """
 mutable struct nufft_opts    
-    debug::Cint                
-    spread_debug::Cint         
-    spread_sort::Cint          
-    spread_kerevalmeth::Cint   
-    spread_kerpad::Cint        
-    chkbnds::Cint              
-    fftw::Cint                 
-    modeord::Cint                                             
-    upsampfac::Cdouble         
+    debug              :: Cint                
+    spread_debug       :: Cint         
+    spread_sort        :: Cint          
+    spread_kerevalmeth :: Cint   
+    spread_kerpad      :: Cint        
+    chkbnds            :: Cint              
+    fftw               :: Cint                 
+    modeord            :: Cint
+    upsampfac          :: Cdouble         
 end
 
 const nufft_c_opts = nufft_opts # backward compability
@@ -86,7 +96,7 @@ const nufft_c_opts = nufft_opts # backward compability
     finufft_default_opts()
 
 Return a [`nufft_opts`](@ref) struct with the default FINUFFT settings.\\
-See: https://finufft.readthedocs.io/en/latest/usage.html#options
+See: <https://finufft.readthedocs.io/en/latest/usage.html#options>
 """
 function finufft_default_opts()
     opts = nufft_opts(0,0,0,0,0,0,0,0,0)
