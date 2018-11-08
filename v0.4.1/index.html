@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>FINUFFT.jl Reference · FINUFFT.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>FINUFFT.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>FINUFFT.jl Reference</a><ul class="internal"><li><a class="toctext" href="#Index-1">Index</a></li><li class="toplevel"><a class="toctext" href="#Types-1">Types</a></li><li class="toplevel"><a class="toctext" href="#Functions-1">Functions</a></li></ul></li></ul></nav><article id="docs"><header><nav><ul><li><a href>FINUFFT.jl Reference</a></li></ul><a class="edit-page" href="https://github.com/ludvigak/FINUFFT.jl/blob/master/docs/src/index.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>FINUFFT.jl Reference</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="FINUFFT.jl-Reference-1" href="#FINUFFT.jl-Reference-1">FINUFFT.jl Reference</a></h1><p>For installation and basic usage, see the README at <a href="https://github.com/ludvigak/FINUFFT.jl">https://github.com/ludvigak/FINUFFT.jl</a></p><p>For documentation of the library functions that are being called, see the FINUFFT documentation at <a href="https://finufft.readthedocs.io/en/latest/usage.html">https://finufft.readthedocs.io/en/latest/usage.html</a></p><h2><a class="nav-anchor" id="Index-1" href="#Index-1">Index</a></h2><ul><li><a href="#FINUFFT.nufft_opts"><code>FINUFFT.nufft_opts</code></a></li><li><a href="#FINUFFT.finufft_default_opts-Tuple{}"><code>FINUFFT.finufft_default_opts</code></a></li><li><a href="#FINUFFT.nufft1d1"><code>FINUFFT.nufft1d1</code></a></li><li><a href="#FINUFFT.nufft1d1!"><code>FINUFFT.nufft1d1!</code></a></li><li><a href="#FINUFFT.nufft1d2"><code>FINUFFT.nufft1d2</code></a></li><li><a href="#FINUFFT.nufft1d2!"><code>FINUFFT.nufft1d2!</code></a></li><li><a href="#FINUFFT.nufft1d3"><code>FINUFFT.nufft1d3</code></a></li><li><a href="#FINUFFT.nufft1d3!"><code>FINUFFT.nufft1d3!</code></a></li><li><a href="#FINUFFT.nufft2d1"><code>FINUFFT.nufft2d1</code></a></li><li><a href="#FINUFFT.nufft2d1!"><code>FINUFFT.nufft2d1!</code></a></li><li><a href="#FINUFFT.nufft2d2"><code>FINUFFT.nufft2d2</code></a></li><li><a href="#FINUFFT.nufft2d2!"><code>FINUFFT.nufft2d2!</code></a></li><li><a href="#FINUFFT.nufft2d3"><code>FINUFFT.nufft2d3</code></a></li><li><a href="#FINUFFT.nufft2d3!"><code>FINUFFT.nufft2d3!</code></a></li><li><a href="#FINUFFT.nufft3d1"><code>FINUFFT.nufft3d1</code></a></li><li><a href="#FINUFFT.nufft3d1!"><code>FINUFFT.nufft3d1!</code></a></li><li><a href="#FINUFFT.nufft3d2"><code>FINUFFT.nufft3d2</code></a></li><li><a href="#FINUFFT.nufft3d2!"><code>FINUFFT.nufft3d2!</code></a></li><li><a href="#FINUFFT.nufft3d3"><code>FINUFFT.nufft3d3</code></a></li><li><a href="#FINUFFT.nufft3d3!"><code>FINUFFT.nufft3d3!</code></a></li></ul><h1><a class="nav-anchor" id="Types-1" href="#Types-1">Types</a></h1><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.nufft_opts" href="#FINUFFT.nufft_opts"><code>FINUFFT.nufft_opts</code></a> — <span class="docstring-category">Type</span>.</div><div><div><pre><code class="language-none">mutable struct nufft_opts    
+    debug              :: Cint                
+    spread_debug       :: Cint         
+    spread_sort        :: Cint          
+    spread_kerevalmeth :: Cint   
+    spread_kerpad      :: Cint        
+    chkbnds            :: Cint              
+    fftw               :: Cint                 
+    modeord            :: Cint
+    upsampfac          :: Cdouble         
+end</code></pre><p>Options struct passed to the FINUFFT library.</p><p><strong>Fields</strong></p><pre><code class="language-none">debug :: Cint</code></pre><p>0: silent, 1: text basic timing output</p><pre><code class="language-none">spread_debug :: Cint</code></pre><p>passed to spread_opts, 0 (no text) 1 (some) or 2 (lots)</p><pre><code class="language-none">spread_sort :: Cint</code></pre><p>passed to spread_opts, 0 (don&#39;t sort) 1 (do) or 2 (heuristic)</p><pre><code class="language-none">spread_kerevalmeth :: Cint</code></pre><p>passed to spread_opts, 0: exp(sqrt()), 1: Horner ppval (faster)</p><pre><code class="language-none">spread_kerpad :: Cint</code></pre><p>passed to spread_opts, 0: don&#39;t pad to mult of 4, 1: do</p><pre><code class="language-none">chkbnds :: Cint</code></pre><p>0: don&#39;t check if input NU pts in [-3pi,3pi], 1: do</p><pre><code class="language-none">fftw :: Cint</code></pre><p>0:<code>FFTW_ESTIMATE</code>, or 1:<code>FFTW_MEASURE</code> (slow plan but faster)</p><pre><code class="language-none">modeord :: Cint</code></pre><p>0: CMCL-style increasing mode ordering (neg to pos), or<br/>1: FFT-style mode ordering (affects type-1,2 only)</p><pre><code class="language-none">upsampfac::Cdouble</code></pre><p>upsampling ratio sigma, either 2.0 (standard) or 1.25 (small FFT)</p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L36-L80">source</a></section><h1><a class="nav-anchor" id="Functions-1" href="#Functions-1">Functions</a></h1><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.finufft_default_opts-Tuple{}" href="#FINUFFT.finufft_default_opts-Tuple{}"><code>FINUFFT.finufft_default_opts</code></a> — <span class="docstring-category">Method</span>.</div><div><div><pre><code class="language-none">finufft_default_opts()</code></pre><p>Return a <a href="#FINUFFT.nufft_opts"><code>nufft_opts</code></a> struct with the default FINUFFT settings.<br/>See: <a href="https://finufft.readthedocs.io/en/latest/usage.html#options">https://finufft.readthedocs.io/en/latest/usage.html#options</a></p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L95-L100">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.nufft1d1" href="#FINUFFT.nufft1d1"><code>FINUFFT.nufft1d1</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">nufft1d1(xj      :: Array{Float64}, 
+         cj      :: Array{ComplexF64}, 
+         iflag   :: Integer, 
+         eps     :: Float64,
+         ms      :: Integer
+         [, opts :: nufft_opts]
+        ) -&gt; Array{ComplexF64}</code></pre><p>Compute type-1 1D complex nonuniform FFT. </p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L143-L153">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.nufft1d1!" href="#FINUFFT.nufft1d1!"><code>FINUFFT.nufft1d1!</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">nufft1d1!(xj      :: Array{Float64}, 
+          cj      :: Array{ComplexF64}, 
+          iflag   :: Integer, 
+          eps     :: Float64,
+          fk      :: Array{ComplexF64} 
+          [, opts :: nufft_opts]
+        )</code></pre><p>Compute type-1 1D complex nonuniform FFT. Output stored in fk.</p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L388-L398">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.nufft1d2" href="#FINUFFT.nufft1d2"><code>FINUFFT.nufft1d2</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">nufft1d2(xj      :: Array{Float64}, 
+         iflag   :: Integer, 
+         eps     :: Float64,
+         fk      :: Array{ComplexF64} 
+         [, opts :: nufft_opts]
+        ) -&gt; Array{ComplexF64}</code></pre><p>Compute type-2 1D complex nonuniform FFT. </p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L224-L233">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.nufft1d2!" href="#FINUFFT.nufft1d2!"><code>FINUFFT.nufft1d2!</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">nufft1d2!(xj      :: Array{Float64}, 
+          cj      :: Array{ComplexF64}, 
+          iflag   :: Integer, 
+          eps     :: Float64,
+          fk      :: Array{ComplexF64} 
+          [, opts :: nufft_opts]
+        )</code></pre><p>Compute type-2 1D complex nonuniform FFT. Output stored in cj.</p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L427-L437">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.nufft1d3" href="#FINUFFT.nufft1d3"><code>FINUFFT.nufft1d3</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">nufft1d3(xj      :: Array{Float64}, 
+         cj      :: Array{ComplexF64}, 
+         iflag   :: Integer, 
+         eps     :: Float64,
+         sk      :: Array{Float64},
+         [, opts :: nufft_opts]
+        ) -&gt; Array{ComplexF64}</code></pre><p>Compute type-3 1D complex nonuniform FFT.</p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L296-L306">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.nufft1d3!" href="#FINUFFT.nufft1d3!"><code>FINUFFT.nufft1d3!</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">nufft1d3!(xj      :: Array{Float64}, 
+          cj      :: Array{ComplexF64}, 
+          iflag   :: Integer, 
+          eps     :: Float64,
+          sk      :: Array{Float64},
+          fk      :: Array{ComplexF64},
+          [, opts :: nufft_opts]
+         )</code></pre><p>Compute type-3 1D complex nonuniform FFT. Output stored in fk.</p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L466-L477">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.nufft2d1" href="#FINUFFT.nufft2d1"><code>FINUFFT.nufft2d1</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">nufft2d1(xj      :: Array{Float64}, 
+         yj      :: Array{Float64}, 
+         cj      :: Array{ComplexF64}, 
+         iflag   :: Integer, 
+         eps     :: Float64,
+         ms      :: Integer,
+         mt      :: Integer,
+         [, opts :: nufft_opts]
+        ) -&gt; Array{ComplexF64}</code></pre><p>Compute type-1 2D complex nonuniform FFT.</p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L165-L177">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.nufft2d1!" href="#FINUFFT.nufft2d1!"><code>FINUFFT.nufft2d1!</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">nufft2d1!(xj      :: Array{Float64}, 
+          yj      :: Array{Float64}, 
+          cj      :: Array{ComplexF64}, 
+          iflag   :: Integer, 
+          eps     :: Float64,
+          fk      :: Array{ComplexF64} 
+          [, opts :: nufft_opts]
+        )</code></pre><p>Compute type-1 2D complex nonuniform FFT. Output stored in fk.</p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L510-L521">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.nufft2d2" href="#FINUFFT.nufft2d2"><code>FINUFFT.nufft2d2</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">nufft2d2(xj      :: Array{Float64}, 
+         yj      :: Array{Float64}, 
+         iflag   :: Integer, 
+         eps     :: Float64,
+         fk      :: Array{ComplexF64} 
+         [, opts :: nufft_opts]
+        ) -&gt; Array{ComplexF64}</code></pre><p>Compute type-2 2D complex nonuniform FFT. </p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L245-L255">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.nufft2d2!" href="#FINUFFT.nufft2d2!"><code>FINUFFT.nufft2d2!</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">nufft2d2!(xj      :: Array{Float64}, 
+          yj      :: Array{Float64}, 
+          cj      :: Array{ComplexF64}, 
+          iflag   :: Integer, 
+          eps     :: Float64,
+          fk      :: Array{ComplexF64} 
+          [, opts :: nufft_opts]
+        )</code></pre><p>Compute type-2 2D complex nonuniform FFT. Output stored in cj.</p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L554-L565">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.nufft2d3" href="#FINUFFT.nufft2d3"><code>FINUFFT.nufft2d3</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">nufft2d3(xj      :: Array{Float64}, 
+         yj      :: Array{Float64},
+         cj      :: Array{ComplexF64}, 
+         iflag   :: Integer, 
+         eps     :: Float64,
+         sk      :: Array{Float64},
+         tk      :: Array{Float64}
+         [, opts :: nufft_opts]
+        ) -&gt; Array{ComplexF64}</code></pre><p>Compute type-3 2D complex nonuniform FFT.</p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L321-L333">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.nufft2d3!" href="#FINUFFT.nufft2d3!"><code>FINUFFT.nufft2d3!</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">nufft2d3!(xj      :: Array{Float64}, 
+          yj      :: Array{Float64},
+          cj      :: Array{ComplexF64}, 
+          iflag   :: Integer, 
+          eps     :: Float64,
+          sk      :: Array{Float64},
+          tk      :: Array{Float64},
+          fk      :: Array{ComplexF64}
+          [, opts :: nufft_opts]
+         )</code></pre><p>Compute type-3 2D complex nonuniform FFT. Output stored in fk.</p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L597-L610">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.nufft3d1" href="#FINUFFT.nufft3d1"><code>FINUFFT.nufft3d1</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">nufft3d1(xj      :: Array{Float64}, 
+         yj      :: Array{Float64}, 
+         zj      :: Array{Float64}, 
+         cj      :: Array{ComplexF64}, 
+         iflag   :: Integer, 
+         eps     :: Float64,
+         ms      :: Integer,
+         mt      :: Integer,
+         mu      :: Integer,
+         [, opts :: nufft_opts]
+        ) -&gt; Array{ComplexF64}</code></pre><p>Compute type-1 3D complex nonuniform FFT.</p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L191-L205">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.nufft3d1!" href="#FINUFFT.nufft3d1!"><code>FINUFFT.nufft3d1!</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">nufft3d1!(xj      :: Array{Float64}, 
+          yj      :: Array{Float64}, 
+          zj      :: Array{Float64}, 
+          cj      :: Array{ComplexF64}, 
+          iflag   :: Integer, 
+          eps     :: Float64,
+          fk      :: Array{ComplexF64} 
+          [, opts :: nufft_opts]
+        )</code></pre><p>Compute type-1 3D complex nonuniform FFT. Output stored in fk.</p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L648-L660">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.nufft3d2" href="#FINUFFT.nufft3d2"><code>FINUFFT.nufft3d2</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">nufft3d2(xj      :: Array{Float64}, 
+         yj      :: Array{Float64}, 
+         zj      :: Array{Float64}, 
+         iflag   :: Integer, 
+         eps     :: Float64,
+         fk      :: Array{ComplexF64} 
+         [, opts :: nufft_opts]
+        ) -&gt; Array{ComplexF64}</code></pre><p>Compute type-2 3D complex nonuniform FFT. </p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L268-L279">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.nufft3d2!" href="#FINUFFT.nufft3d2!"><code>FINUFFT.nufft3d2!</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">nufft3d2!(xj      :: Array{Float64}, 
+          yj      :: Array{Float64}, 
+          zj      :: Array{Float64}, 
+          cj      :: Array{ComplexF64}, 
+          iflag   :: Integer, 
+          eps     :: Float64,
+          fk      :: Array{ComplexF64} 
+          [, opts :: nufft_opts]
+        )</code></pre><p>Compute type-2 3D complex nonuniform FFT. Output stored in cj.</p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L696-L708">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.nufft3d3" href="#FINUFFT.nufft3d3"><code>FINUFFT.nufft3d3</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">nufft3d3(xj      :: Array{Float64}, 
+         yj      :: Array{Float64},
+         zj      :: Array{Float64},
+         cj      :: Array{ComplexF64}, 
+         iflag   :: Integer, 
+         eps     :: Float64,
+         sk      :: Array{Float64},
+         tk      :: Array{Float64}
+         uk      :: Array{Float64}
+         [, opts :: nufft_opts]
+        ) -&gt; Array{ComplexF64}</code></pre><p>Compute type-3 3D complex nonuniform FFT.</p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L350-L364">source</a></section><section class="docstring"><div class="docstring-header"><a class="docstring-binding" id="FINUFFT.nufft3d3!" href="#FINUFFT.nufft3d3!"><code>FINUFFT.nufft3d3!</code></a> — <span class="docstring-category">Function</span>.</div><div><div><pre><code class="language-none">nufft3d3!(xj      :: Array{Float64}, 
+          yj      :: Array{Float64},
+          zj      :: Array{Float64},
+          cj      :: Array{ComplexF64}, 
+          iflag   :: Integer, 
+          eps     :: Float64,
+          sk      :: Array{Float64},
+          tk      :: Array{Float64},
+          uk      :: Array{Float64},
+          fk      :: Array{ComplexF64}
+          [, opts :: nufft_opts]
+         )</code></pre><p>Compute type-3 3D complex nonuniform FFT. Output stored in fk.</p></div></div><a class="source-link" target="_blank" href="https://github.com/ludvigak/FINUFFT.jl/blob/5fa9e701a9fdcfa133587e126977d204f410032f/src/FINUFFT.jl#L744-L759">source</a></section><footer><hr/></footer></article></body></html>
