@@ -32,6 +32,7 @@ end
 
 const BIGINT = Int64 # defined in src/finufft.h
 
+
 ## FINUFFT opts struct from src/finufft.h
 """
     mutable struct nufft_opts    
@@ -108,32 +109,49 @@ function finufft_default_opts()
     return opts
 end
 
+### Error handling
+const ERR_EPS_TOO_SMALL        = 1
+const ERR_MAXNALLOC            = 2
+const ERR_SPREAD_BOX_SMALL     = 3
+const ERR_SPREAD_PTS_OUT_RANGE = 4
+const ERR_SPREAD_ALLOC         = 5
+const ERR_SPREAD_DIR           = 6
+const ERR_UPSAMPFAC_TOO_SMALL  = 7
+const HORNER_WRONG_BETA        = 8
+const ERR_NDATA_NOTVALID       = 9
+
+struct FINUFFTError <: Exception
+    errno::Cint
+    msg::String
+end
+Base.showerror(io::IO, e::FINUFFTError) = print(io, "FINUFFT Error ($(e.errno)): ", e.msg)
+
 function check_ret(ret)
     # Check return value and output error messages
     if ret==0
         return
-    elseif ret==1
+    elseif ret==ERR_EPS_TOO_SMALL
         msg = "requested tolerance epsilon too small"
-    elseif ret==2
+    elseif ret==ERR_MAXNALLOC
         msg = "attemped to allocate internal arrays larger than MAX_NF (defined in common.h)"
-    elseif ret==3
+    elseif ret==ERR_SPREAD_BOX_SMALL
         msg = "spreader: fine grid too small"
-    elseif ret==4
+    elseif ret==ERR_SPREAD_PTS_OUT_RANGE
         msg = "spreader: if chkbnds=1, a nonuniform point out of input range [-3pi,3pi]^d"
-    elseif ret==5
+    elseif ret==ERR_SPREAD_ALLOC
         msg = "spreader: array allocation error"
-    elseif ret==6
+    elseif ret==ERR_SPREAD_DIR
         msg = "spreader: illegal direction (should be 1 or 2)"
-    elseif ret==7
+    elseif ret==ERR_UPSAMPFAC_TOO_SMALL
         msg = "upsampfac too small (should be >1)"
-    elseif ret==8
+    elseif ret==HORNER_WRONG_BETA
         msg = "upsampfac not a value with known Horner eval: currently 2.0 or 1.25 only"
-    elseif ret==9
+    elseif ret==ERR_NDATA_NOTVALID
         msg = "ndata not valid (should be >= 1)"
     else
         msg = "unknown error"
     end
-    error("FINUFFT error: $msg")
+    throw(FINUFFTError(ret, msg))
 end
 
 ### Simple Interfaces (allocate output)

@@ -64,7 +64,7 @@ fk2 = nufft1d1(x, c, 1, tol, ms, opts)
 ```
 
 ### More examples
-See [test/runtests.jl](test/runtests.jl)
+See [test/test_nufft.jl](test/test_nufft.jl)
 
 ## TODO
 * Implement advanced interface
