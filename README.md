@@ -8,16 +8,10 @@ This is a Julia interface to [FINUFFT](https://github.com/flatironinstitute/finu
 
 ## Installation
 
-Julia 1.0 and 0.7: From the Pkg REPL mode (hit `]` in REPL to enter), run
+Julia 1.0 and up: From the Pkg REPL mode (hit `]` in REPL to enter), run
 ```julia
 add FINUFFT
 test FINUFFT
-```
-
-Julia 0.6: From the REPL, run
-```julia
-Pkg.add("FINUFFT")
-Pkg.test("FINUFFT")
 ```
 
 This should download, build and test FINUFFT v1.1.1, as long as you have `gcc` and `curl` installed. The FFTW library is downloaded locally by the build script, using [Conda.jl](https://github.com/JuliaPy/Conda.jl) 
