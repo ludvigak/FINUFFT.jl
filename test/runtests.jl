@@ -1,4 +1,4 @@
-using Compat.Test
+using Test
 
 @testset "FINUFFT" begin
     include("test_error_handler.jl")

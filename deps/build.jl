@@ -1,5 +1,5 @@
 using BinDeps
-using Compat.Libdl
+using Libdl
 using Conda
 
 @BinDeps.setup

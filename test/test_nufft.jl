@@ -1,15 +1,10 @@
 using FINUFFT
 
-# Julia 0.6 compability
-using Compat.Test
-using Compat.LinearAlgebra
-using Compat.Random
+using Test
+using LinearAlgebra
+using Random
 
-if VERSION < v"0.7"
-    srand(1)
-else
-    Random.seed!(1)
-end
+Random.seed!(1)
 
 nj = 10
 nk = 11
