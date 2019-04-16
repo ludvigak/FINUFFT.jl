@@ -1,6 +1,5 @@
 using FINUFFT
-using Compat.Test
-import Compat.@info
+using Test
 
 @testset "Error handling" begin
 

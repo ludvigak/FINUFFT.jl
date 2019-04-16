@@ -15,8 +15,7 @@ export nufft_opts
 export nufft_c_opts # backward-compability
 
 ## External dependencies
-using Compat
-using Compat.Libdl
+using Libdl
 
 const depsfile = joinpath(dirname(@__DIR__), "deps", "deps.jl")
 if isfile(depsfile)
