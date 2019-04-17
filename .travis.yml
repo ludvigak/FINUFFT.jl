@@ -27,6 +27,6 @@ matrix:
     after_success: skip
 
 before_script: # homebrew for mac
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; brew install gcc@8; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install gcc@8; fi
 
 coveralls: true
