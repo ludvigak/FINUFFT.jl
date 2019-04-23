@@ -1,7 +1,7 @@
 name = "FINUFFT"
 uuid = "d8beea63-0952-562e-9c6a-8e8ef7364055"
 author = "Ludvig af Klinteberg <ludvigak@kth.se>"
-version = "0.4.1"
+version = "0.4.2"
 
 [deps]
 BinDeps = "9e28174c-4ba2-5203-b857-d8d62c4213ee"
