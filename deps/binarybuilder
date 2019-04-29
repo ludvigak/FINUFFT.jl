@@ -1,0 +1,28 @@
+https://github.com/flatironinstitute/finufft/archive/1.1.1.zip
+
+https://raw.githubusercontent.com/JuliaMath/FFTW.jl/v0.2.4/deps/build_fftw.jl
+
+Your build script was:
+
+cd $WORKSPACE/srcdir	
+cd finufft-1.1.1/
+sed -i s/_\$\(FFTWOMPSUFFIX\)// makefile
+if [[ $target == aarch64-* ]] || [[ $target == arm-* ]] || [[ $target == powerpc* ]]; then 
+   sed -i s/-march=native// makefile
+fi
+make lib/libfinufft.so LIBRARY_PATH=$prefix/lib/ CPATH=$prefix/include/
+cp lib/libfinufft.so $prefix/lib/
+
+
+** WITH ARCH:
+
+cd $WORKSPACE/srcdir
+cd finufft-1.1.1/
+sed -i s/_\$\(FFTWOMPSUFFIX\)// makefile
+if [[ $target == aarch64-* ]]; then                                    
+  cflags="-fPIC -O3 -funroll-loops -fcx-limited-range"                 
+else                                                                   
+   cflags="-fPIC -O3 -funroll-loops -march=native -fcx-limited-range"  
+fi                                                                     
+make lib/libfinufft.so LIBRARY_PATH=$prefix/lib/ CPATH=$prefix/include/ CFLAGS="$config"
+cp lib/libfinufft.so $prefix/lib/
