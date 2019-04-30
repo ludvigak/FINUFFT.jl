@@ -48,6 +48,7 @@ if unsatisfied || !isinstalled(dl_info...; prefix=prefix)
     install(dl_info...; prefix=prefix, force=true, verbose=verbose)
 end
 
+@show readdir(joinpath("usr","lib"))
 using Libdl
 if Sys.KERNEL == :Darwin
     dlopen("usr/lib/libfinufft.dylib")
