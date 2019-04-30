@@ -1,5 +1,9 @@
 using BinaryProvider # requires BinaryProvider 0.3.0 or later
 
+# First of all, install FFWT
+fftwbuilder = joinpath(@__DIR__, "build_fftw.jl")
+run(`$(Base.julia_cmd()) $(fftwbuilder)`)
+
 # Parse some basic command-line arguments
 const verbose = "--verbose" in ARGS
 const prefix = Prefix(get([a for a in ARGS if a != "--verbose"], 1, joinpath(@__DIR__, "usr")))
@@ -44,7 +48,6 @@ if unsatisfied || !isinstalled(dl_info...; prefix=prefix)
     install(dl_info...; prefix=prefix, force=true, verbose=verbose)
 end
 
-using FFTW
 using Libdl
 if Sys.KERNEL == :Darwin
     dlopen("usr/lib/libfinufft.dylib")
