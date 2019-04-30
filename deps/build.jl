@@ -44,5 +44,10 @@ if unsatisfied || !isinstalled(dl_info...; prefix=prefix)
     install(dl_info...; prefix=prefix, force=true, verbose=verbose)
 end
 
+using Libdl
+if Sys.KERNEL == :Darwin
+    dlopen("usr/lib/libfinufft.dylib")
+end
+
 # Write out a deps.jl file that will contain mappings for our products
 write_deps_file(joinpath(@__DIR__, "deps.jl"), products, verbose=verbose)
