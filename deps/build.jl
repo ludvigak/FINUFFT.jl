@@ -51,7 +51,7 @@ end
 @show readdir(joinpath("usr","lib"))
 using Libdl
 if Sys.KERNEL == :Darwin
-    dlopen("usr/lib/libfinufft.dylib")
+    dlopen("usr/lib/libfinufft.1.1.1.dylib")
 end
 
 # Write out a deps.jl file that will contain mappings for our products
