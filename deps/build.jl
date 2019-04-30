@@ -7,6 +7,8 @@ products = [
     LibraryProduct(prefix, ["libfinufft"], :libfinufft),
 ]
 
+verbose = true
+
 # Download binaries from hosted location
 bin_prefix = "https://github.com/ludvigak/FINUFFTBuilder/releases/download/0.1.2"
 
@@ -41,6 +43,10 @@ if unsatisfied || !isinstalled(dl_info...; prefix=prefix)
     # Download and install binaries
     install(dl_info...; prefix=prefix, force=true, verbose=verbose)
 end
+
+@show readdir(joinpath(@__DIR__, "usr", "lib"))
+@show platform_key_abi()
+@show satisfied(products[1]; verbose=verbose)
 
 # Write out a deps.jl file that will contain mappings for our products
 write_deps_file(joinpath(@__DIR__, "deps.jl"), products, verbose=verbose)
