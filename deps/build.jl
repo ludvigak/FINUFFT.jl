@@ -44,9 +44,13 @@ if unsatisfied || !isinstalled(dl_info...; prefix=prefix)
     install(dl_info...; prefix=prefix, force=true, verbose=verbose)
 end
 
+using Libdl
 @show readdir(joinpath(@__DIR__, "usr", "lib"))
 @show platform_key_abi()
 @show satisfied(products[1]; verbose=verbose)
+@show lib = locate(products[1], verbose=true)
+Libdl.dlopen(lib)
+
 
 # Write out a deps.jl file that will contain mappings for our products
 write_deps_file(joinpath(@__DIR__, "deps.jl"), products, verbose=verbose)
