@@ -18,7 +18,8 @@ This should download, build and test FINUFFT v1.1.1, as long as you have `gcc` a
 
 Developed and tested on Linux. Also works on Max OS X, but build script is hardwired to use GCC 8 (`g++-8` and `gcc-8`).
 
-Might work on Windows as well. Has been tested successfully on two Windows 10 setups with TDM-GCC 9.2.0 and Julia 1.4.1. (Important: make sure that openmp for gcc is installed.). 
+#### New:
+Might now work on Windows as well. Has been tested successfully on two Windows 10 setups with TDM-GCC 9.2.0 and Julia 1.4.1. (Important: make sure that openmp for gcc is installed.). 
 
 ## Usage
 
