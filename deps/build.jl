@@ -51,7 +51,7 @@ buildfile = joinpath(rootdir, "lib", "libfinufft.so")
 
 # "FFTWOMPSUFFIX=threads" because Conda doesn't supply libfftw3_omp 
 if Sys.KERNEL == :Darwin
-    buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc FFTWOMPSUFFIX=threads CXX=g++-8 CC=gcc-8`
+    buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc FFTWOMPSUFFIX=threads CXX=g++-9 CC=gcc-9`
 else
     buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc FFTWOMPSUFFIX=threads`
 end
