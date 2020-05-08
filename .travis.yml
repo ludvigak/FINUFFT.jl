@@ -12,6 +12,7 @@ matrix:
   # MacOS
   - os: osx
     julia: 1.4
+    osx_image: xcode11
   # Documentation
   - stage: "Documentation"
     julia: 1.0
@@ -23,8 +24,8 @@ matrix:
       - julia --project=docs/ docs/make.jl
     after_success: skip
 
-# Build script is hardwired to gcc8 on MacOS
+# Build script is hardwired to gcc9 on MacOS
 before_script: # homebrew for mac
-  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install gcc@8; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew unlink gcc && brew link gcc@9; fi
 
 coveralls: true
