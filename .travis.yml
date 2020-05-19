@@ -13,6 +13,9 @@ matrix:
   - os: osx
     julia: 1.4
     osx_image: xcode11
+  # Windows
+  - os: windows
+    julia: 1.4    
   # Documentation
   - stage: "Documentation"
     julia: 1.0
