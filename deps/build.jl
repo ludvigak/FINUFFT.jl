@@ -61,7 +61,7 @@ provides(Sources,
          unpacked_dir = "finufft-master")
 
 rootdir = joinpath(BinDeps.srcdir(libfinufft), "finufft-master")
-libname = "libfinufft." * Libdl.dlext
+libname = "libfinufft.so"
 libfile = joinpath(BinDeps.libdir(libfinufft),libname)
 buildfile = joinpath(rootdir, "lib", libname)
 
@@ -77,7 +77,7 @@ end
 if Sys.KERNEL == :Darwin
     buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc FFTWOMPSUFFIX=threads CXX=g++-9 CC=gcc-9`
 elseif Sys.iswindows()
-    buildcmd = `make lib OMP=OFF LIBRARY_PATH=$lib CPATH=$inc DYNAMICLIB=lib/$libname`
+    buildcmd = `make lib OMP=OFF LIBRARY_PATH=$lib CPATH=$inc`
 else
     buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc FFTWOMPSUFFIX=threads`
 end
@@ -98,6 +98,9 @@ cp(buildfile, libfile, force=true)
 # Just add to deps.jl to bypass BinDeps checking
 depsfile_location = joinpath(splitdir(Base.source_path())[1],"deps.jl")
 fh = open(depsfile_location, "a")
-Sys.iswindows() ? write(fh, "\n@checked_lib libfinufft \"$(replace(libfile, "\\" => "\\\\"))\"\n") : write(fh, "\n@checked_lib libfinufft \"$libfile\"\n")
+if Sys.iswindows()
+    libfile = replace(libfile, "\\" => "\\\\")
+end
+write(fh, "\n@checked_lib libfinufft \"$libfile\"\n")
 close(fh)
 
