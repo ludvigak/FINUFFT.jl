@@ -115,7 +115,7 @@ if Sys.KERNEL == :Darwin
 elseif Sys.iswindows()
     buildcmd = `make lib OMP=OFF LIBRARY_PATH=$lib CPATH=$inc FFTWNAME=$(fftw.name)`
 else
-    buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc FFTWOMPSUFFIX=threads`
+    buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc FFTWNAME=$(fftw.name) FFTWOMPSUFFIX=threads $(provider == "MKL" ? "OMP=OFF" : "")`
 end
 
 finufftbuild = 
