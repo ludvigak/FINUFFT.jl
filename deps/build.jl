@@ -2,10 +2,29 @@ using BinDeps
 using Libdl
 using Conda
 
+
 @BinDeps.setup
 
+if haskey(ENV, "JULIA_FFTW_PROVIDER")
+    const provider = ENV["JULIA_FFTW_PROVIDER"]
+else
+    const provider = "FFTW"
+end
+
 ## First install fftw
-fftw = library_dependency("libfftw3", aliases = ["fftw3"])
+if provider == "FFTW"
+    if Sys.iswindows()
+        fftw = library_dependency("fftw3")
+    else
+        fftw = library_dependency("libfftw3")
+    end
+elseif provider == "MKL"
+    if Sys.iswindows()
+        fftw = library_dependency("mkl_rt")
+    else
+        fftw = library_dependency("libmkl_rt")
+    end
+end
 
 if !Sys.iswindows()
     fftw_threads = library_dependency("libfftw3_threads")
@@ -16,40 +35,52 @@ usr = usrdir(fftw)
 if !isdir(usr)
     mkdir(usr)
 end
-Conda.add("fftw", usr)
 
-# Dummy build processes
-provides(BuildProcess,
-         (@build_steps begin
-          end),
-         fftw)
-if !Sys.iswindows()
-    provides(BuildProcess,
-         (@build_steps begin
-          end),
-         fftw_threads)
+# but this place depends on the OS
+if Sys.iswindows()
+    dependency_path = joinpath(usr,"Library")
+else
+    dependency_path = usr
 end
-# ...because this does not work:
-#provides(Binaries, "usr", fftw)
-#provides(Binaries, "usr", fftw_threads)
+
+
+if provider == "FFTW"
+    Conda.add("fftw", usr)
+else
+    Conda.add("mkl_fft", usr)
+    Conda.add("mkl-include", usr)
+end
+
 
 if Sys.iswindows()
-    try
+    provides(Binaries, joinpath(dependency_path, "bin"), fftw)
+else
+    provides(Binaries, joinpath(dependency_path, "lib"), fftw)
+    provides(Binaries, joinpath(dependency_path, "lib"), fftw_threads)
+end
+
+
+if provider == "FFTW"
+    if Sys.iswindows()
         @BinDeps.install Dict(
-            :libfftw3 => :fftw
+            :fftw3 => :fftw
         )
-    catch
-        # fftw3 has not been found
-        provides(Binaries, joinpath(pwd(),"usr","Library","bin"), fftw)
+    else
         @BinDeps.install Dict(
-            :libfftw3 => :fftw
+            :libfftw3 => :fftw,
+            :libfftw3_threads => :fftw_threads
         )
     end
-else
-    @BinDeps.install Dict(
-        :libfftw3 => :fftw,
-        :libfftw3_threads => :fftw_threads
-    )
+elseif provider == "MKL"
+    if Sys.iswindows()
+        @BinDeps.install Dict(
+                :mkl_rt => :fftw
+            )
+    else
+        @BinDeps.install Dict(
+                :libmkl_rt => :fftw
+            )
+    end
 end
 
 ## Now fftw is in place, download and build finufft
@@ -66,8 +97,13 @@ libfile = joinpath(BinDeps.libdir(libfinufft),libname)
 buildfile = joinpath(rootdir, "lib", libname)
 
 if Sys.iswindows()
-    @show lib = joinpath(usr, "Library", "lib")
-    @show inc = joinpath(usr, "Library", "include")
+    if provider == "FFTW"
+        @show lib = joinpath(usr, "Library", "lib")
+        @show inc = joinpath(usr, "Library", "include")
+    else
+        @show lib = joinpath(usr, "Library", "bin")
+        @show inc = joinpath(usr, "Library", "include", "fftw")
+    end
 else
     @show lib = BinDeps.libdir(fftw)
     @show inc = BinDeps.includedir(fftw)
@@ -77,7 +113,7 @@ end
 if Sys.KERNEL == :Darwin
     buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc FFTWOMPSUFFIX=threads CXX=g++-9 CC=gcc-9`
 elseif Sys.iswindows()
-    buildcmd = `make lib OMP=OFF LIBRARY_PATH=$lib CPATH=$inc`
+    buildcmd = `make lib OMP=OFF LIBRARY_PATH=$lib CPATH=$inc FFTWNAME=$(fftw.name)`
 else
     buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc FFTWOMPSUFFIX=threads`
 end
@@ -89,7 +125,6 @@ finufftbuild =
             ChangeDirectory(rootdir)
             buildcmd
             CreateDirectory(libdir(libfinufft))
-            # `cp $buildfile $libfile`
         end
     end
 run(finufftbuild)
