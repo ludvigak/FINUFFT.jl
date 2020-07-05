@@ -116,7 +116,11 @@ elseif Sys.iswindows()
     buildcmd = `make lib OMP=OFF LIBRARY_PATH=$lib CPATH=$inc FFTWNAME=$(fftw.name)`
 else
     fftw_name = replace(fftw.name, "lib" => "")
-    buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc FFTWNAME=$fftw_name FFTWOMPSUFFIX=threads $(provider == "MKL" ? "OMP=OFF" : "")`
+    if provider == "MKL"
+        buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc FFTWNAME=$fftw_name OMP=OFF`
+    elseif provider == "FFTW"
+        buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc FFTWNAME=$fftw_name FFTWOMPSUFFIX=threads`
+    end
 end
 
 finufftbuild = 
