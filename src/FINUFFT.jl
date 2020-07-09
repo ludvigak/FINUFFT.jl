@@ -27,12 +27,13 @@ end
 function __init__()
     Libdl.dlopen(fftw, Libdl.RTLD_GLOBAL)       
     
-    if haskey(ENV, "JULIA_FFTW_PROVIDER")
-	    provider = ENV["JULIA_FFTW_PROVIDER"]
-	else
-		provider = "FFTW"
-	end
-    if !Sys.iswindows() && provider == "FFTW"
+    # if haskey(ENV, "JULIA_FFTW_PROVIDER")
+	#     provider = ENV["JULIA_FFTW_PROVIDER"]
+	# else
+	# 	provider = "FFTW"
+	# end
+    # if !Sys.iswindows() && provider == "FFTW"
+    if !Sys.iswindows()
         Libdl.dlopen(fftw_threads, Libdl.RTLD_GLOBAL)
     end
 end

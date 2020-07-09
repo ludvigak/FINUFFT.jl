@@ -5,26 +5,26 @@ using Conda
 
 @BinDeps.setup
 
-if haskey(ENV, "JULIA_FFTW_PROVIDER")
-    const provider = ENV["JULIA_FFTW_PROVIDER"]
-else
-    const provider = "FFTW"
-end
+# if haskey(ENV, "JULIA_FFTW_PROVIDER")
+#     const provider = ENV["JULIA_FFTW_PROVIDER"]
+# else
+#     const provider = "FFTW"
+# end
 
 ## First install fftw
-if provider == "FFTW"
+# if provider == "FFTW"
     if Sys.iswindows()
         fftw = library_dependency("fftw3")
     else
         fftw = library_dependency("libfftw3")
     end
-elseif provider == "MKL"
-    if Sys.iswindows()
-        fftw = library_dependency("mkl_rt")
-    else
-        fftw = library_dependency("libmkl_rt")
-    end
-end
+# elseif provider == "MKL"
+#     if Sys.iswindows()
+#         fftw = library_dependency("mkl_rt")
+#     else
+#         fftw = library_dependency("libmkl_rt")
+#     end
+# end
 
 if !Sys.iswindows()
     fftw_threads = library_dependency("libfftw3_threads")
@@ -44,12 +44,12 @@ else
 end
 
 
-if provider == "FFTW"
+# if provider == "FFTW"
     Conda.add("fftw", usr)
-else
-    Conda.add("mkl_fft", usr)
-    Conda.add("mkl-include", usr)
-end
+# else
+#     Conda.add("mkl_fft", usr)
+#     Conda.add("mkl-include", usr)
+# end
 
 
 if Sys.iswindows()
@@ -60,7 +60,7 @@ else
 end
 
 
-if provider == "FFTW"
+# if provider == "FFTW"
     if Sys.iswindows()
         @BinDeps.install Dict(
             :fftw3 => :fftw
@@ -71,17 +71,17 @@ if provider == "FFTW"
             :libfftw3_threads => :fftw_threads
         )
     end
-elseif provider == "MKL"
-    if Sys.iswindows()
-        @BinDeps.install Dict(
-                :mkl_rt => :fftw
-            )
-    else
-        @BinDeps.install Dict(
-                :libmkl_rt => :fftw
-            )
-    end
-end
+# elseif provider == "MKL"
+#     if Sys.iswindows()
+#         @BinDeps.install Dict(
+#                 :mkl_rt => :fftw
+#             )
+#     else
+#         @BinDeps.install Dict(
+#                 :libmkl_rt => :fftw
+#             )
+#     end
+# end
 
 ## Now fftw is in place, download and build finufft
 libfinufft = library_dependency("libfinufft")
@@ -97,13 +97,13 @@ libfile = joinpath(BinDeps.libdir(libfinufft),libname)
 buildfile = joinpath(rootdir, "lib", libname)
 
 if Sys.iswindows()
-    if provider == "FFTW"
+    # if provider == "FFTW"
         @show lib = joinpath(usr, "Library", "lib")
         @show inc = joinpath(usr, "Library", "include")
-    else
-        @show lib = joinpath(usr, "Library", "bin")
-        @show inc = joinpath(usr, "Library", "include", "fftw")
-    end
+    # else
+    #     @show lib = joinpath(usr, "Library", "bin")
+    #     @show inc = joinpath(usr, "Library", "include", "fftw")
+    # end
 else
     @show lib = BinDeps.libdir(fftw)
     @show inc = BinDeps.includedir(fftw)
@@ -116,11 +116,11 @@ elseif Sys.iswindows()
     buildcmd = `make lib OMP=OFF LIBRARY_PATH=$lib CPATH=$inc FFTWNAME=$(fftw.name)`
 else
     fftw_name = replace(fftw.name, "lib" => "")
-    if provider == "MKL"
-        buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc FFTWNAME=$fftw_name OMP=OFF`
-    elseif provider == "FFTW"
-        buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc FFTWNAME=$fftw_name FFTWOMPSUFFIX=threads`
-    end
+    # if provider == "MKL"
+    #     buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc FFTWNAME=$fftw_name OMP=OFF`
+    # elseif provider == "FFTW"
+        buildcmd = `make lib/libfinufft.so LIBRARY_PATH=$lib CPATH=$inc FFTWNAME=$fftw_name FFTWOMPSUFFIX=threads OMP=OFF`
+    # end
 end
 
 finufftbuild = 
