@@ -8,18 +8,13 @@ This is a Julia interface to [FINUFFT](https://github.com/flatironinstitute/finu
 
 ## Installation
 
-Julia 1.0 and up: From the Pkg REPL mode (hit `]` in REPL to enter), run
+The latest version of FINUFFT.jl requires Julia v1.3 or later. From the Pkg REPL mode (hit `]` in REPL to enter), run
+
 ```julia
 add FINUFFT
-test FINUFFT
 ```
 
-This should download, build and test FINUFFT v1.1.2, as long as you have `gcc` and `curl` installed. The FFTW library is downloaded locally by the build script, using [Conda.jl](https://github.com/JuliaPy/Conda.jl) 
-
-Developed and tested on Linux. Also works on Max OS X, but build script is hardwired to use GCC 9 (`g++-9` and `gcc-9`).
-
-#### New:
-Might now work on Windows as well. Has been tested successfully on two Windows 10 setups with TDM-GCC 9.2.0 and Julia 1.4.1. (Important: make sure that openmp for gcc is installed.). 
+Older versions of the package are available also for Julia v1.0-v1.2, but the user need to have a recent version of GCC installed.
 
 ## Usage
 
