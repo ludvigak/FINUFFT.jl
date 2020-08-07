@@ -15,21 +15,9 @@ export nufft_opts
 export nufft_c_opts # backward-compability
 
 ## External dependencies
-using Libdl
+using finufft_jll
 
-const depsfile = joinpath(dirname(@__DIR__), "deps", "deps.jl")
-if isfile(depsfile)
-    include(depsfile)
-else
-    error("FINUFFT is not properly installed. Please build it first.")
-end
-
-function __init__()
-    Libdl.dlopen(fftw, Libdl.RTLD_GLOBAL)       
-    if !Sys.iswindows()
-        Libdl.dlopen(fftw_threads, Libdl.RTLD_GLOBAL)
-    end
-end
+const libfinufft = finufft_jll.libfinufft
 
 const BIGINT = Int64 # defined in src/finufft.h
 
@@ -37,26 +25,48 @@ const BIGINT = Int64 # defined in src/finufft.h
 ## FINUFFT opts struct from src/finufft.h
 """
     mutable struct nufft_opts    
+        modeord            :: Cint
+        chkbnds            :: Cint
+        #              
         debug              :: Cint                
         spread_debug       :: Cint         
+        showwarn           :: Cint
+        #
+        nthreads           :: Cint
+        fftw               :: Cint                 
         spread_sort        :: Cint          
         spread_kerevalmeth :: Cint   
         spread_kerpad      :: Cint        
-        chkbnds            :: Cint              
-        fftw               :: Cint                 
-        modeord            :: Cint
         upsampfac          :: Cdouble         
+        spread_thread      :: Cint
+        maxbatchsize       :: Cint
     end
 
 Options struct passed to the FINUFFT library.
 
 # Fields
 
+    modeord :: Cint
+0: CMCL-style increasing mode ordering (neg to pos), or\\
+1: FFT-style mode ordering (affects type-1,2 only)
+
+    chkbnds :: Cint
+0: don't check if input NU pts in [-3pi,3pi], 1: do
+
     debug :: Cint
 0: silent, 1: text basic timing output
 
     spread_debug :: Cint
 passed to spread_opts, 0 (no text) 1 (some) or 2 (lots)
+    
+    showwarn           :: Cint
+0 don't print warnings to stderr, 1 do
+    
+    nthreads           :: Cint
+number of threads to use, or 0 uses all available
+
+    fftw :: Cint
+0:`FFTW_ESTIMATE`, or 1:`FFTW_MEASURE` (slow plan but faster)
 
     spread_sort :: Cint
 passed to spread_opts, 0 (don't sort) 1 (do) or 2 (heuristic)
@@ -67,29 +77,32 @@ passed to spread_opts, 0: exp(sqrt()), 1: Horner ppval (faster)
     spread_kerpad :: Cint
 passed to spread_opts, 0: don't pad to mult of 4, 1: do
 
-    chkbnds :: Cint
-0: don't check if input NU pts in [-3pi,3pi], 1: do
-
-    fftw :: Cint
-0:`FFTW_ESTIMATE`, or 1:`FFTW_MEASURE` (slow plan but faster)
-
-    modeord :: Cint
-0: CMCL-style increasing mode ordering (neg to pos), or\\
-1: FFT-style mode ordering (affects type-1,2 only)
-
     upsampfac::Cdouble
 upsampling ratio sigma, either 2.0 (standard) or 1.25 (small FFT)
+
+    spread_thread      :: Cint
+(vectorized ntr>1 only): 0 auto, 1 sequential multithreaded, 2 parallel single-threaded, 3 nested multithreaded
+
+    maxbatchsize       :: Cint
+(vectorized ntr>1 only): max transform batch, 0 auto
+
 """
 mutable struct nufft_opts    
+    modeord            :: Cint
+    chkbnds            :: Cint              
+    # 
     debug              :: Cint                
     spread_debug       :: Cint         
+    showwarn           :: Cint
+    # 
+    nthreads           :: Cint
+    fftw               :: Cint                 
     spread_sort        :: Cint          
     spread_kerevalmeth :: Cint   
     spread_kerpad      :: Cint        
-    chkbnds            :: Cint              
-    fftw               :: Cint                 
-    modeord            :: Cint
     upsampfac          :: Cdouble         
+    spread_thread      :: Cint
+    maxbatchsize       :: Cint
 end
 
 const nufft_c_opts = nufft_opts # backward compability
@@ -101,25 +114,32 @@ Return a [`nufft_opts`](@ref) struct with the default FINUFFT settings.\\
 See: <https://finufft.readthedocs.io/en/latest/usage.html#options>
 """
 function finufft_default_opts()
-    opts = nufft_opts(0,0,0,0,0,0,0,0,0)
+    opts = nufft_opts(0,0,0,0,0,0,0,0,0,0,0,0,0)
     ccall( (:finufft_default_opts, libfinufft),
            Nothing,
            (Ref{nufft_opts},),
            opts
            )
+    # default to number of julia threads
+    opts.nthreads = Threads.nthreads()
     return opts
 end
 
 ### Error handling
-const ERR_EPS_TOO_SMALL        = 1
-const ERR_MAXNALLOC            = 2
-const ERR_SPREAD_BOX_SMALL     = 3
-const ERR_SPREAD_PTS_OUT_RANGE = 4
-const ERR_SPREAD_ALLOC         = 5
-const ERR_SPREAD_DIR           = 6
-const ERR_UPSAMPFAC_TOO_SMALL  = 7
-const HORNER_WRONG_BETA        = 8
-const ERR_NDATA_NOTVALID       = 9
+const WARN_EPS_TOO_SMALL            = 1
+const ERR_MAXNALLOC                 = 2
+const ERR_SPREAD_BOX_SMALL          = 3
+const ERR_SPREAD_PTS_OUT_RANGE      = 4
+const ERR_SPREAD_ALLOC              = 5
+const ERR_SPREAD_DIR                = 6
+const ERR_UPSAMPFAC_TOO_SMALL       = 7
+const HORNER_WRONG_BETA             = 8
+const ERR_NDATA_NOTVALID            = 9
+const ERR_TYPE_NOTVALID             = 10
+# some generic internal allocation failure...
+const ERR_ALLOC                     = 11
+const ERR_DIM_NOTVALID              = 12
+const ERR_SPREAD_THREAD_NOTVALID    = 13
 
 struct FINUFFTError <: Exception
     errno::Cint
@@ -131,24 +151,33 @@ function check_ret(ret)
     # Check return value and output error messages
     if ret==0
         return
-    elseif ret==ERR_EPS_TOO_SMALL
-        msg = "requested tolerance epsilon too small"
+    elseif ret==WARN_EPS_TOO_SMALL
+        @warn "requested tolerance epsilon too small to achieve"
+        return
     elseif ret==ERR_MAXNALLOC
-        msg = "attemped to allocate internal arrays larger than MAX_NF (defined in common.h)"
+        msg = "attemped to allocate internal array larger than MAX_NF (defined in defs.h)"
     elseif ret==ERR_SPREAD_BOX_SMALL
-        msg = "spreader: fine grid too small"
+        msg = "spreader: fine grid too small compared to spread (kernel) width"
     elseif ret==ERR_SPREAD_PTS_OUT_RANGE
-        msg = "spreader: if chkbnds=1, a nonuniform point out of input range [-3pi,3pi]^d"
+        msg = "spreader: if chkbnds=1, a nonuniform point coordinate is out of input range [-3pi,3pi]^d"
     elseif ret==ERR_SPREAD_ALLOC
         msg = "spreader: array allocation error"
     elseif ret==ERR_SPREAD_DIR
         msg = "spreader: illegal direction (should be 1 or 2)"
     elseif ret==ERR_UPSAMPFAC_TOO_SMALL
-        msg = "upsampfac too small (should be >1)"
+        msg = "upsampfac too small (should be >1.0)"
     elseif ret==HORNER_WRONG_BETA
-        msg = "upsampfac not a value with known Horner eval: currently 2.0 or 1.25 only"
+        msg = "upsampfac not a value with known Horner poly eval rule (currently 2.0 or 1.25 only)"
     elseif ret==ERR_NDATA_NOTVALID
-        msg = "ndata not valid (should be >= 1)"
+        msg = "ntrans not valid in many (vectorized) or guru interface (should be >= 1)"
+    elseif ret==ERR_TYPE_NOTVALID
+        msg = "transform type invalid"
+    elseif ret==ERR_ALLOC
+        msg = "general allocation failure"
+    elseif ret==ERR_DIM_NOTVALID
+        msg = "dimension invalid"
+    elseif ret==ERR_SPREAD_THREAD_NOTVALID
+        msg = "spread_thread option invalid"
     else
         msg = "unknown error"
     end
@@ -436,7 +465,7 @@ function nufft1d1!(xj      :: Array{Float64},
                   Cdouble,
                   BIGINT,
                   Ref{ComplexF64},
-                  nufft_opts),
+                  Ref{nufft_opts}),
                  nj, xj, cj, iflag, eps, ms, fk, opts
                  )
     check_ret(ret)
@@ -475,7 +504,7 @@ function nufft1d2!(xj      :: Array{Float64},
                   Cdouble,
                   BIGINT,
                   Ref{ComplexF64},
-                  nufft_opts),
+                  Ref{nufft_opts}),
                  nj, xj, cj, iflag, eps, ms, fk, opts
                  )
     check_ret(ret)    
@@ -517,7 +546,7 @@ function nufft1d3!(xj      :: Array{Float64},
                   BIGINT,
                   Ref{Cdouble},            
                   Ref{ComplexF64},
-                  nufft_opts),
+                  Ref{nufft_opts}),
                  nj, xj, cj, iflag, eps, nk, sk, fk, opts
                  )
     check_ret(ret)
@@ -563,7 +592,7 @@ function nufft2d1!(xj      :: Array{Float64},
                   BIGINT,
                   BIGINT,            
                   Ref{ComplexF64},
-                  nufft_opts),
+                  Ref{nufft_opts}),
                  nj, xj, yj, cj, iflag, eps, ms, mt, fk, opts
                  )
     check_ret(ret)
@@ -607,7 +636,7 @@ function nufft2d2!(xj      :: Array{Float64},
                   BIGINT,
                   BIGINT,            
                   Ref{ComplexF64},
-                  nufft_opts),
+                  Ref{nufft_opts}),
                  nj, xj, yj, cj, iflag, eps, ms, mt, fk, opts
                  )
     check_ret(ret)
@@ -656,7 +685,7 @@ function nufft2d3!(xj      :: Array{Float64},
                   Ref{Cdouble},
                   Ref{Cdouble},            
                   Ref{ComplexF64},
-                  nufft_opts),
+                  Ref{nufft_opts}),
                  nj, xj, yj, cj, iflag, eps, nk, sk, tk, fk, opts
                  )
     check_ret(ret)
@@ -706,7 +735,7 @@ function nufft3d1!(xj      :: Array{Float64},
                   BIGINT,
                   BIGINT,
                   Ref{ComplexF64},
-                  nufft_opts),
+                  Ref{nufft_opts}),
                  nj, xj, yj, zj, cj, iflag, eps, ms, mt, mu, fk, opts
                  )
     check_ret(ret)
@@ -754,7 +783,7 @@ function nufft3d2!(xj      :: Array{Float64},
                   BIGINT,
                   BIGINT,
                   Ref{ComplexF64},
-                  nufft_opts),
+                  Ref{nufft_opts}),
                  nj, xj, yj, zj, cj, iflag, eps, ms, mt, mu, fk, opts
                  )
     check_ret(ret)
@@ -813,7 +842,7 @@ function nufft3d3!(xj      :: Array{Float64},
                   Ref{Cdouble},
                   Ref{Cdouble},                        
                   Ref{ComplexF64},
-                  nufft_opts),
+                  Ref{nufft_opts}),
                  nj, xj, yj, zj, cj, iflag, eps, nk, sk, tk, uk, fk, opts
                  )
     check_ret(ret)

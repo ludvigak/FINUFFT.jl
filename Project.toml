@@ -1,17 +1,13 @@
 name = "FINUFFT"
 uuid = "d8beea63-0952-562e-9c6a-8e8ef7364055"
 author = "Ludvig af Klinteberg <ludvigak@kth.se>"
-version = "1.0.0"
+version = "1.2.0"
 
 [deps]
-BinDeps = "9e28174c-4ba2-5203-b857-d8d62c4213ee"
-Conda = "8f4d0f93-b110-5947-807f-2305c1781a2d"
-Libdl = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
+finufft_jll = "c41cd5a2-72a3-5203-9076-a500b088fc82"
 
 [compat]
-BinDeps = "1.0"
-Conda = "1.4"
-julia = "1.0"
+julia = "1.3"
 
 [extras]
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
