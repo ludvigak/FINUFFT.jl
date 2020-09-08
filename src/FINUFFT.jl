@@ -15,21 +15,7 @@ export nufft_opts
 export nufft_c_opts # backward-compability
 
 ## External dependencies
-using Libdl
-
-const depsfile = joinpath(dirname(@__DIR__), "deps", "deps.jl")
-if isfile(depsfile)
-    include(depsfile)
-else
-    error("FINUFFT is not properly installed. Please build it first.")
-end
-
-function __init__()
-    Libdl.dlopen(fftw, Libdl.RTLD_GLOBAL)       
-    if !Sys.iswindows()
-        Libdl.dlopen(fftw_threads, Libdl.RTLD_GLOBAL)
-    end
-end
+using finufft_jll
 
 const BIGINT = Int64 # defined in src/finufft.h
 
