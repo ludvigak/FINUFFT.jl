@@ -25,84 +25,97 @@ const BIGINT = Int64 # defined in src/finufft.h
 ## FINUFFT opts struct from src/finufft.h
 """
     mutable struct nufft_opts    
-        modeord            :: Cint
-        chkbnds            :: Cint
-        #              
-        debug              :: Cint                
-        spread_debug       :: Cint         
-        showwarn           :: Cint
-        #
-        nthreads           :: Cint
-        fftw               :: Cint                 
-        spread_sort        :: Cint          
-        spread_kerevalmeth :: Cint   
-        spread_kerpad      :: Cint        
-        upsampfac          :: Cdouble         
-        spread_thread      :: Cint
-        maxbatchsize       :: Cint
+        modeord             :: Cint
+        chkbnds             :: Cint              
+        # 
+        debug               :: Cint                
+        spread_debug        :: Cint         
+        showwarn            :: Cint
+        # 
+        nthreads            :: Cint
+        fftw                :: Cint                 
+        spread_sort         :: Cint          
+        spread_kerevalmeth  :: Cint   
+        spread_kerpad       :: Cint        
+        upsampfac           :: Cdouble         
+        spread_thread       :: Cint
+        maxbatchsize        :: Cint
+        spread_nthr_atomic  :: Cint
+        spread_max_sp_size  :: Cint
     end
 
 Options struct passed to the FINUFFT library.
 
 # Fields
 
-    modeord :: Cint
-0: CMCL-style increasing mode ordering (neg to pos), or\\
-1: FFT-style mode ordering (affects type-1,2 only)
+modeord :: Cint 
+    (type 1,2 only):    0: CMCL-style increasing mode order
+                        1: FFT-style mode order
+chkbnds :: Cint
+    0: don't check NU pts in [-3pi,3pi)
+    1: do (<few % slower)
 
-    chkbnds :: Cint
-0: don't check if input NU pts in [-3pi,3pi], 1: do
+# diagnostic opts...
+debug :: Cint
+    0: silent
+    1: some timing/debug
+    2: more
+spread_debug :: Cint
+    0: silent
+    1: some timing/debug
+    2: tonnes
+showwarn :: Cint
+    0: don't print warnings to stderr
+    1: do
 
-    debug :: Cint
-0: silent, 1: text basic timing output
-
-    spread_debug :: Cint
-passed to spread_opts, 0 (no text) 1 (some) or 2 (lots)
-    
-    showwarn           :: Cint
-0 don't print warnings to stderr, 1 do
-    
-    nthreads           :: Cint
-number of threads to use, or 0 uses all available
-
-    fftw :: Cint
-0:`FFTW_ESTIMATE`, or 1:`FFTW_MEASURE` (slow plan but faster)
-
-    spread_sort :: Cint
-passed to spread_opts, 0 (don't sort) 1 (do) or 2 (heuristic)
-
-    spread_kerevalmeth :: Cint
-passed to spread_opts, 0: exp(sqrt()), 1: Horner ppval (faster)
-
-    spread_kerpad :: Cint
-passed to spread_opts, 0: don't pad to mult of 4, 1: do
-
-    upsampfac::Cdouble
-upsampling ratio sigma, either 2.0 (standard) or 1.25 (small FFT)
-
-    spread_thread      :: Cint
-(vectorized ntr>1 only): 0 auto, 1 sequential multithreaded, 2 parallel single-threaded, 3 nested multithreaded
-
-    maxbatchsize       :: Cint
-(vectorized ntr>1 only): max transform batch, 0 auto
+# algorithm performance opts...
+nthreads :: Cint
+    number of threads to use, or 0 uses all available
+fftw :: Cint
+    plan flags to FFTW (FFTW_ESTIMATE=64, FFTW_MEASURE=0,...)
+spread_sort :: Cint
+    0: don't sort
+    1: do
+    2: heuristic choice
+spread_kerevalmeth :: Cint
+    0: exp(sqrt()) spreading kernel
+    1: Horner piecewise poly (faster)
+spread_kerpad :: Cint
+    option only for exp(sqrt())
+    0: don't pad kernel to 4n
+    1: do
+upsampfac :: Cdouble
+    upsampling ratio sigma: 2.0 std, 1.25 small FFT, 0.0 auto
+spread_thread :: Cint
+    (vectorized ntr>1 only):    0: auto, 1: seq multithreaded,
+                                2: parallel single-thread spread
+maxbatchsize :: Cint
+    option for vectorized ntr>1 only
+    max transform batch, 0 auto
+spread_nthr_atomic :: Cint
+    if >=0, threads above which spreader OMP critical goes atomic
+spread_max_sp_size :: Cint
+    if >0, overrides spreader (dir=1) max subproblem size
 
 """
 mutable struct nufft_opts    
-    modeord            :: Cint
-    chkbnds            :: Cint              
+    modeord             :: Cint
+    chkbnds             :: Cint              
     # 
-    debug              :: Cint                
-    spread_debug       :: Cint         
-    showwarn           :: Cint
+    debug               :: Cint                
+    spread_debug        :: Cint         
+    showwarn            :: Cint
     # 
-    nthreads           :: Cint
-    fftw               :: Cint                 
-    spread_sort        :: Cint          
-    spread_kerevalmeth :: Cint   
-    spread_kerpad      :: Cint        
-    upsampfac          :: Cdouble         
-    spread_thread      :: Cint
-    maxbatchsize       :: Cint
+    nthreads            :: Cint
+    fftw                :: Cint                 
+    spread_sort         :: Cint          
+    spread_kerevalmeth  :: Cint   
+    spread_kerpad       :: Cint        
+    upsampfac           :: Cdouble         
+    spread_thread       :: Cint
+    maxbatchsize        :: Cint
+    spread_nthr_atomic  :: Cint
+    spread_max_sp_size  :: Cint
 end
 
 const nufft_c_opts = nufft_opts # backward compability
@@ -114,7 +127,7 @@ Return a [`nufft_opts`](@ref) struct with the default FINUFFT settings.\\
 See: <https://finufft.readthedocs.io/en/latest/usage.html#options>
 """
 function finufft_default_opts()
-    opts = nufft_opts(0,0,0,0,0,0,0,0,0,0,0,0,0)
+    opts = nufft_opts(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
     ccall( (:finufft_default_opts, libfinufft),
            Nothing,
            (Ref{nufft_opts},),
