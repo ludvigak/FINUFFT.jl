@@ -112,3 +112,155 @@ function nufftf1d3!(xj      :: Array{Float32},
                  )
     check_ret(ret)
 end
+
+## 2D
+
+# ...
+
+## 3D
+
+"""
+    nufftf3d1!(xj      :: Array{Float32}, 
+               yj      :: Array{Float32}, 
+               zj      :: Array{Float32}, 
+               cj      :: Array{ComplexF32}, 
+               iflag   :: Integer, 
+               eps     :: Float32,
+               fk      :: Array{ComplexF32} 
+               [, opts :: nufft_opts]
+             )
+
+Single precision type-1 3D complex nonuniform FFT. Output stored in fk.
+"""
+function nufftf3d1!(xj      :: Array{Float32}, 
+                    yj      :: Array{Float32}, 
+                    zj      :: Array{Float32}, 
+                    cj      :: Array{ComplexF32}, 
+                    iflag   :: Integer, 
+                    eps     :: Float32,
+                    fk      :: Array{ComplexF32},
+                    opts    :: nufft_opts = finufft_default_opts())
+    nj = length(xj)
+    @assert length(yj)==nj
+    @assert length(zj)==nj    
+    @assert length(cj)==nj    
+    ms, mt, mu = size(fk)    
+    ret = ccall( (:finufftf3d1, libfinufft),
+                 Cint,
+                 (BIGINT,
+                  Ref{Float32},
+                  Ref{Float32},
+                  Ref{Float32},                
+                  Ref{ComplexF32},
+                  Cint,
+                  Float32,
+                  BIGINT,
+                  BIGINT,
+                  BIGINT,
+                  Ref{ComplexF32},
+                  Ref{nufft_opts}),
+                 nj, xj, yj, zj, cj, iflag, eps, ms, mt, mu, fk, opts
+                 )
+    check_ret(ret)
+end
+
+"""
+    nufftf3d2!(xj      :: Array{Float32}, 
+               yj      :: Array{Float32}, 
+               zj      :: Array{Float32}, 
+               cj      :: Array{ComplexF32}, 
+               iflag   :: Integer, 
+               eps     :: Float32,
+               fk      :: Array{ComplexF32} 
+               [, opts :: nufft_opts]
+             )
+
+Single precision type-2 3D complex nonuniform FFT. Output stored in cj.
+"""
+function nufftf3d2!(xj      :: Array{Float32}, 
+                    yj      :: Array{Float32},
+                    zj      :: Array{Float32},                    
+                    cj      :: Array{ComplexF32}, 
+                    iflag   :: Integer, 
+                    eps     :: Float32,
+                    fk      :: Array{ComplexF32},
+                    opts    :: nufft_opts = finufft_default_opts())
+    nj = length(xj)
+    @assert length(yj)==nj
+    @assert length(zj)==nj    
+    @assert length(cj)==nj    
+    ms, mt, mu = size(fk)    
+    ret = ccall( (:finufftf3d2, libfinufft),
+                 Cint,
+                 (BIGINT,
+                  Ref{Float32},
+                  Ref{Float32},            
+                  Ref{Float32},            
+                  Ref{ComplexF32},
+                  Cint,
+                  Float32,
+                  BIGINT,
+                  BIGINT,
+                  BIGINT,
+                  Ref{ComplexF32},
+                  Ref{nufft_opts}),
+                 nj, xj, yj, zj, cj, iflag, eps, ms, mt, mu, fk, opts
+                 )
+    check_ret(ret)
+end
+
+"""
+    nufftf3d3!(xj      :: Array{Float32}, 
+               yj      :: Array{Float32},
+               zj      :: Array{Float32},
+               cj      :: Array{ComplexF32}, 
+               iflag   :: Integer, 
+               eps     :: Float32,
+               sk      :: Array{Float32},
+               tk      :: Array{Float32},
+               uk      :: Array{Float32},
+               fk      :: Array{ComplexF32}
+               [, opts :: nufft_opts]
+              )
+
+Single precision type-3 3D complex nonuniform FFT. Output stored in fk.
+"""
+function nufftf3d3!(xj      :: Array{Float32}, 
+                    yj      :: Array{Float32},
+                    zj      :: Array{Float32},                   
+                    cj      :: Array{ComplexF32}, 
+                    iflag   :: Integer, 
+                    eps     :: Float32,
+                    sk      :: Array{Float32},
+                    tk      :: Array{Float32},
+                    uk      :: Array{Float32},
+                    fk      :: Array{ComplexF32},
+                    opts    :: nufft_opts = finufft_default_opts())
+    nj = length(xj)
+    @assert length(yj)==nj
+    @assert length(zj)==nj    
+    @assert length(cj)==nj
+    nk = length(sk)
+    @assert length(tk)==nk
+    @assert length(uk)==nk    
+    @assert length(fk)==nk    
+    ret = ccall( (:finufftf3d3, libfinufft),
+                 Cint,
+                 (BIGINT,
+                  Ref{Float32},
+                  Ref{Float32},
+                  Ref{Float32},                  
+                  Ref{ComplexF32},
+                  Cint,
+                  Float32,
+                  BIGINT,
+                  Ref{Float32},
+                  Ref{Float32},
+                  Ref{Float32},                        
+                  Ref{ComplexF32},
+                  Ref{nufft_opts}),
+                 nj, xj, yj, zj, cj, iflag, eps, nk, sk, tk, uk, fk, opts
+                 )
+    check_ret(ret)
+end
+

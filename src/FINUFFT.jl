@@ -11,6 +11,8 @@ export nufft2d1!, nufft2d2!, nufft2d3!
 export nufft3d1!, nufft3d2!, nufft3d3!
 
 export nufftf1d1!, nufftf1d2!, nufftf1d3!
+#export nufftf2d1!, nufftf2d2!, nufftf2d3!
+export nufftf3d1! , nufftf3d2!, nufftf3d3!
 
 export finufft_default_opts
 export nufft_opts

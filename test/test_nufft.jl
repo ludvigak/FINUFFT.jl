@@ -202,12 +202,26 @@ k3 = modevec(mu)
                     end
                 end
             end
-            nufft3d1!(x, y, z, c, 1, tol, out)
-            relerr_3d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-            @test relerr_3d1 < 1e-13
-            out2 = nufft3d1(x, y, z, c, 1, tol, ms, mt, mu)
-            reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-            @test reldiff < 1e-14            
+            @testset "64-bit" begin
+                nufft3d1!(x, y, z, c, 1, tol, out)
+                relerr_3d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
+                @test relerr_3d1 < 1e-13
+                out2 = nufft3d1(x, y, z, c, 1, tol, ms, mt, mu)
+                reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
+                @test reldiff < 1e-14
+            end
+            out_C32 = convert(Array{ComplexF32}, out)
+            @testset "32-bit" begin
+                nufftf3d1!(convert(Array{Float32}, x),
+                           convert(Array{Float32}, y),
+                           convert(Array{Float32}, z),
+                           convert(Array{ComplexF32}, c),
+                           1,
+                           tol_F32,
+                           out_C32)
+                relerr_3d1 = norm(vec(out_C32)-vec(ref), Inf) / norm(vec(ref), Inf)
+                @test relerr_3d1 < 1e-5
+            end            
         end
 
         @testset "3D2" begin
@@ -223,12 +237,27 @@ k3 = modevec(mu)
                     end
                 end
             end
-            nufft3d2!(x, y, z, out, 1, tol, F3D)
-            relerr_3d2 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-            @test relerr_3d2 < 1e-13
-            out2 = nufft3d2(x, y, z, 1, tol, F3D)
-            reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-            @test reldiff < 1e-14            
+            @testset "64-bit" begin            
+                nufft3d2!(x, y, z, out, 1, tol, F3D)
+                relerr_3d2 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
+                @test relerr_3d2 < 1e-13
+                out2 = nufft3d2(x, y, z, 1, tol, F3D)
+                reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
+                @test reldiff < 1e-14
+            end
+            @testset "32-bit" begin
+                out_C32 = convert(Array{ComplexF32}, out)                
+                nufftf3d2!(convert(Array{Float32}, x),
+                           convert(Array{Float32}, y),
+                           convert(Array{Float32}, z),
+                           out_C32,
+                           1,
+                           tol_F32,
+                           convert(Array{ComplexF32}, F3D)
+                           )
+                relerr_3d2 = norm(vec(out_C32)-vec(ref), Inf) / norm(vec(ref), Inf)
+                @test relerr_3d2 < 1e-5
+            end
         end
 
         @testset "3D3" begin
@@ -239,13 +268,31 @@ k3 = modevec(mu)
                 for j=1:nj
                     ref[k] += c[j] * exp(1im*(s[k]*x[j]+t[k]*y[j]+u[k]*z[j]))
                 end
-            end        
-            nufft3d3!(x,y,z,c,1,tol,s,t,u,out)
-            relerr_3d3 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-            @test relerr_3d3 < 1e-13
-            out2 = nufft3d3(x,y,z,c,1,tol,s,t,u)
-            reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-            @test reldiff < 1e-14            
+            end
+            @testset "64-bit" begin
+                nufft3d3!(x,y,z,c,1,tol,s,t,u,out)
+                relerr_3d3 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
+                @test relerr_3d3 < 1e-13
+                out2 = nufft3d3(x,y,z,c,1,tol,s,t,u)
+                reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
+                @test reldiff < 1e-14
+            end
+            @testset "32-bit" begin
+                out_C32 = convert(Array{ComplexF32}, out)
+                nufftf3d3!(convert(Array{Float32}, x),
+                           convert(Array{Float32}, y),
+                           convert(Array{Float32}, z),
+                           convert(Array{ComplexF32}, c),
+                           1,
+                           tol_F32,
+                           convert(Array{Float32}, s),
+                           convert(Array{Float32}, t),
+                           convert(Array{Float32}, u),
+                           out_C32
+                           )
+                relerr_3d3 = norm(vec(out_C32)-vec(ref), Inf) / norm(vec(ref), Inf)
+                @test relerr_3d3 < 1e-3
+            end                
         end        
     end
 end
