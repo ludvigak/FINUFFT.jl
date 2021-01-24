@@ -27,11 +27,9 @@ const BIGINT = Int64 # defined in src/finufft.h
     mutable struct nufft_opts    
         modeord             :: Cint
         chkbnds             :: Cint              
-        # 
         debug               :: Cint                
         spread_debug        :: Cint         
         showwarn            :: Cint
-        # 
         nthreads            :: Cint
         fftw                :: Cint                 
         spread_sort         :: Cint          
@@ -48,54 +46,86 @@ Options struct passed to the FINUFFT library.
 
 # Fields
 
-modeord :: Cint 
-    (type 1,2 only):    0: CMCL-style increasing mode order
-                        1: FFT-style mode order
-chkbnds :: Cint
-    0: don't check NU pts in [-3pi,3pi)
-    1: do (<few % slower)
+## Data handling opts
 
-# diagnostic opts...
-debug :: Cint
-    0: silent
-    1: some timing/debug
-    2: more
-spread_debug :: Cint
-    0: silent
-    1: some timing/debug
-    2: tonnes
-showwarn :: Cint
-    0: don't print warnings to stderr
-    1: do
+    modeord :: Cint 
 
-# algorithm performance opts...
-nthreads :: Cint
-    number of threads to use, or 0 uses all available
-fftw :: Cint
-    plan flags to FFTW (FFTW_ESTIMATE=64, FFTW_MEASURE=0,...)
-spread_sort :: Cint
-    0: don't sort
-    1: do
-    2: heuristic choice
-spread_kerevalmeth :: Cint
-    0: exp(sqrt()) spreading kernel
-    1: Horner piecewise poly (faster)
-spread_kerpad :: Cint
-    option only for exp(sqrt())
-    0: don't pad kernel to 4n
-    1: do
-upsampfac :: Cdouble
-    upsampling ratio sigma: 2.0 std, 1.25 small FFT, 0.0 auto
-spread_thread :: Cint
-    (vectorized ntr>1 only):    0: auto, 1: seq multithreaded,
-                                2: parallel single-thread spread
-maxbatchsize :: Cint
-    option for vectorized ntr>1 only
-    max transform batch, 0 auto
-spread_nthr_atomic :: Cint
-    if >=0, threads above which spreader OMP critical goes atomic
-spread_max_sp_size :: Cint
-    if >0, overrides spreader (dir=1) max subproblem size
+(type 1,2 only):    0: CMCL-style increasing mode order,
+                    1: FFT-style mode order
+
+    chkbnds :: Cint
+    
+0: don't check NU pts in [-3pi,3pi),
+1: do (<few % slower)
+
+## Diagnostic opts
+
+    debug :: Cint
+
+0: silent,
+1: some timing/debug,
+2: more
+
+    spread_debug :: Cint
+
+0: silent,
+1: some timing/debug,
+2: tonnes
+
+    showwarn :: Cint
+
+0: don't print warnings to stderr,
+1: do
+
+
+## Algorithm performance opts
+
+    nthreads :: Cint
+
+number of threads to use, or 0 uses all available
+
+    fftw :: Cint
+
+plan flags to FFTW (`FFTW_ESTIMATE`=64, `FFTW_MEASURE`=0,...)
+
+    spread_sort :: Cint
+
+0: don't sort,
+1: do,
+2: heuristic choice
+
+    spread_kerevalmeth :: Cint
+
+0: exp(sqrt()) spreading kernel,
+1: Horner piecewise poly (faster)
+
+    spread_kerpad :: Cint
+
+option only for exp(sqrt()).
+0: don't pad kernel to 4n,
+1: do
+
+    upsampfac :: Cdouble
+
+upsampling ratio sigma: 2.0 std, 1.25 small FFT, 0.0 auto
+
+    spread_thread :: Cint
+
+(vectorized ntr>1 only):    0: auto, 1: seq multithreaded,
+                            2: parallel single-thread spread
+
+    maxbatchsize :: Cint
+
+option for vectorized ntr>1 only:
+max transform batch, 0 auto
+
+    spread_nthr_atomic :: Cint
+
+if >=0, threads above which spreader OMP critical goes atomic
+
+    spread_max_sp_size :: Cint
+
+if >0, overrides spreader (dir=1) max subproblem size
 
 """
 mutable struct nufft_opts    
