@@ -5,6 +5,8 @@
 [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://ludvigak.github.io/FINUFFT.jl/latest/)
 
 This is a Julia interface to [FINUFFT](https://github.com/flatironinstitute/finufft), a lightweight and fast nonuniform FFT (nufft) library released by the Flatiron Institute.
+Both 64-bit and 32-bit precisions calls are supported.
+
 
 ## Installation
 
@@ -18,13 +20,14 @@ Older versions of the package are available also for Julia v1.0-v1.2, but the us
 
 ## Usage
 
-This module provides functions `nufft1d1`, `nufft1d2`, ..., `nufft3d3`, `nufft1d1!`, `nufft1d2!`, ..., `nufft3d3!`, and `finufft_default_opts` that call the interface defined in <https://finufft.readthedocs.io/en/latest/usage.html>
+This module provides functions `nufft1d1`, `nufft1d2`, ..., `nufft3d3`, `nufft1d1!`, `nufft1d2!`, ..., `nufft3d3!`, `nufftf1d1!`, ..., `nufftf3d3!`, and `finufft_default_opts` that call the interface defined in <https://finufft.readthedocs.io/en/latest/usage.html>
 
 A reference of the provided functions is available at <https://ludvigak.github.io/FINUFFT.jl/latest/>
 
 * Function calls mimic the C/C++ interface, with the exception that you don't need to pass the dimensions of any arrays in the argument (they are inferred using `size()`).
 * The functions named `nufftDdN` return the output array.
 * The functions named `nufftDdN!` take the output array as an argument. This needs to be preallocated.
+* The functions named `nufftfDdN!` are them same as above, but operate on 32-bit arguments.
 * The last argument of the nufft routines is the options struct, which is optional. Default values are used if it is omitted.
 * `finufft_default_opts()` returns an options struct with default values.
 * The advanced interfaces `finufft2d1many` and `finufft2d2many` have not been implemented yet.

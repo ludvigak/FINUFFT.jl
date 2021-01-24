@@ -115,7 +115,133 @@ end
 
 ## 2D
 
-# ...
+"""
+    nufftf2d1!(xj      :: Array{Float32}, 
+               yj      :: Array{Float32}, 
+               cj      :: Array{ComplexF32}, 
+               iflag   :: Integer, 
+               eps     :: Float32,
+               fk      :: Array{ComplexF32} 
+               [, opts :: nufft_opts]
+             )
+
+Single precision type-1 2D complex nonuniform FFT. Output stored in fk.
+"""
+function nufftf2d1!(xj      :: Array{Float32}, 
+                    yj      :: Array{Float32}, 
+                    cj      :: Array{ComplexF32}, 
+                    iflag   :: Integer, 
+                    eps     :: Float32,
+                    fk      :: Array{ComplexF32},
+                    opts    :: nufft_opts = finufft_default_opts())
+    nj = length(xj)
+    @assert length(yj)==nj
+    @assert length(cj)==nj    
+    ms, mt = size(fk)    
+    ret = ccall( (:finufftf2d1, libfinufft),
+                 Cint,
+                 (BIGINT,
+                  Ref{Float32},
+                  Ref{Float32},            
+                  Ref{ComplexF32},
+                  Cint,
+                  Float32,
+                  BIGINT,
+                  BIGINT,            
+                  Ref{ComplexF32},
+                  Ref{nufft_opts}),
+                 nj, xj, yj, cj, iflag, eps, ms, mt, fk, opts
+                 )
+    check_ret(ret)
+end
+
+
+"""
+    nufftf2d2!(xj      :: Array{Float32}, 
+               yj      :: Array{Float32}, 
+               cj      :: Array{ComplexF32}, 
+               iflag   :: Integer, 
+               eps     :: Float32,
+               fk      :: Array{ComplexF32} 
+               [, opts :: nufft_opts]
+             )
+
+Single precision type-2 2D complex nonuniform FFT. Output stored in cj.
+"""
+function nufftf2d2!(xj      :: Array{Float32}, 
+                    yj      :: Array{Float32}, 
+                    cj      :: Array{ComplexF32}, 
+                    iflag   :: Integer, 
+                    eps     :: Float32,
+                    fk      :: Array{ComplexF32},
+                    opts    :: nufft_opts = finufft_default_opts())
+    nj = length(xj)
+    @assert length(yj)==nj
+    @assert length(cj)==nj    
+    ms, mt = size(fk)    
+    ret = ccall( (:finufftf2d2, libfinufft),
+                 Cint,
+                 (BIGINT,
+                  Ref{Float32},
+                  Ref{Float32},            
+                  Ref{ComplexF32},
+                  Cint,
+                  Float32,
+                  BIGINT,
+                  BIGINT,            
+                  Ref{ComplexF32},
+                  Ref{nufft_opts}),
+                 nj, xj, yj, cj, iflag, eps, ms, mt, fk, opts
+                 )
+    check_ret(ret)
+end
+
+"""
+    nufftf2d3!(xj      :: Array{Float32}, 
+               yj      :: Array{Float32},
+               cj      :: Array{ComplexF32}, 
+               iflag   :: Integer, 
+               eps     :: Float32,
+               sk      :: Array{Float32},
+               tk      :: Array{Float32},
+               fk      :: Array{ComplexF32}
+               [, opts :: nufft_opts]
+              )
+
+Single precision type-3 2D complex nonuniform FFT. Output stored in fk.
+    """
+function nufftf2d3!(xj      :: Array{Float32}, 
+                    yj      :: Array{Float32},
+                    cj      :: Array{ComplexF32}, 
+                    iflag   :: Integer, 
+                    eps     :: Float32,
+                    sk      :: Array{Float32},
+                    tk      :: Array{Float32},
+                    fk      :: Array{ComplexF32},
+                    opts    :: nufft_opts = finufft_default_opts())
+    nj = length(xj)
+    @assert length(yj)==nj
+    @assert length(cj)==nj
+    nk = length(sk)
+    @assert length(tk)==nk
+    @assert length(fk)==nk    
+    ret = ccall( (:finufftf2d3, libfinufft),
+                 Cint,
+                 (BIGINT,
+                  Ref{Float32},
+                  Ref{Float32},            
+                  Ref{ComplexF32},
+                  Cint,
+                  Float32,
+                  BIGINT,
+                  Ref{Float32},
+                  Ref{Float32},            
+                  Ref{ComplexF32},
+                  Ref{nufft_opts}),
+                 nj, xj, yj, cj, iflag, eps, nk, sk, tk, fk, opts
+                 )
+    check_ret(ret)
+end
 
 ## 3D
 
