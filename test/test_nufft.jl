@@ -13,6 +13,7 @@ mt = 13
 mu = 14
 
 tol = 1e-15
+tol_F32 = convert(Float32, 6e-8)
 
 # nonuniform data
 x = 3*pi*(1.0 .- 2*rand(nj))
@@ -46,16 +47,28 @@ k3 = modevec(mu)
                     ref[ss] += c[j] * exp(1im*k1[ss]*x[j])
                 end
             end
-            # Try this one with explicit opts struct
-            opts = finufft_default_opts()
-            opts.spread_kerpad = 0 # This should also work
-            nufft1d1!(x, c, 1, tol, out, opts)
-            relerr_1d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-            @test relerr_1d1 < 1e-13
-            # Different caller
-            out2 = nufft1d1(x, c, 1, tol, ms)
-            reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-            @test reldiff < 1e-14
+            @testset "64-bit" begin
+                # Try this one with explicit opts struct
+                opts = finufft_default_opts()
+                opts.spread_kerpad = 0 # This should also work
+                nufft1d1!(x, c, 1, tol, out, opts)
+                relerr_1d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
+                @test relerr_1d1 < 1e-13
+                # Different caller
+                out2 = nufft1d1(x, c, 1, tol, ms)
+                reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
+                @test reldiff < 1e-14
+            end            
+            @testset "32-bit" begin
+                out_C32 = convert(Array{ComplexF32}, out)
+                nufftf1d1!(convert(Array{Float32}, x),
+                           convert(Array{ComplexF32},c),
+                           1,
+                           tol_F32,
+                           out_C32)
+                relerr_f1d1 = norm(vec(out_C32)-vec(ref), Inf) / norm(vec(ref), Inf)
+                @test relerr_f1d1 < 1e-5            
+            end
         end
         
         # 1D2
@@ -67,12 +80,22 @@ k3 = modevec(mu)
                     ref[j] += F1D[ss] * exp(1im*k1[ss]*x[j])
                 end
             end
-            nufft1d2!(x, out, 1, tol, F1D)
-            relerr_1d2 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-            @test relerr_1d2 < 1e-13
-            out2 = nufft1d2(x, 1, tol, F1D)
-            reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-            @test reldiff < 1e-14
+            @testset "64-bit" begin            
+                nufft1d2!(x, out, 1, tol, F1D)
+                relerr_1d2 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
+                @test relerr_1d2 < 1e-13
+                out2 = nufft1d2(x, 1, tol, F1D)
+                reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
+                @test reldiff < 1e-14
+            end
+            @testset "32-bit" begin
+                out_C32 = convert(Array{ComplexF32}, out)
+                nufftf1d2!(convert(Array{Float32}, x),
+                           out_C32, 1, tol_F32,
+                           convert(Array{ComplexF32}, F1D))
+                reldiff = norm(vec(out)-vec(out_C32), Inf) / norm(vec(out), Inf)
+                @test reldiff < 1e-5              
+            end
         end
         
         # 1D3
@@ -84,12 +107,25 @@ k3 = modevec(mu)
                     ref[k] += c[j] * exp(1im*s[k]*x[j])
                 end
             end
-            nufft1d3!(x,c,1,tol,s,out)
-            relerr_1d3 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-            @test relerr_1d3 < 1e-13
-            out2 = nufft1d3(x,c,1,tol,s)
-            reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-            @test reldiff < 1e-14            
+            @testset "64-bit" begin
+                nufft1d3!(x,c,1,tol,s,out)
+                relerr_1d3 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
+                @test relerr_1d3 < 1e-13
+                out2 = nufft1d3(x,c,1,tol,s)
+                reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
+                @test reldiff < 1e-14
+            end
+            @testset "32-bit" begin
+                out_C32 = convert(Array{ComplexF32}, out)
+                nufftf1d3!(convert(Array{Float32}, x),
+                           convert(Array{ComplexF32}, c),
+                           1,
+                           tol_F32,
+                           convert(Array{Float32}, s),
+                           out_C32)
+                relerr_1d3 = norm(vec(out_C32)-vec(ref), Inf) / norm(vec(ref), Inf)
+                @test relerr_1d3 < 5e-5           
+            end
         end
     end
 

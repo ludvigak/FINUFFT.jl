@@ -10,6 +10,8 @@ export nufft1d1!, nufft1d2!, nufft1d3!
 export nufft2d1!, nufft2d2!, nufft2d3!
 export nufft3d1!, nufft3d2!, nufft3d3!
 
+export nufftf1d1!, nufftf1d2!, nufftf1d3!
+
 export finufft_default_opts
 export nufft_opts
 export nufft_c_opts # backward-compability
@@ -890,5 +892,8 @@ function nufft3d3!(xj      :: Array{Float64},
                  )
     check_ret(ret)
 end
+
+# Load single precision interfaces
+include("single.jl")
 
 end # module
