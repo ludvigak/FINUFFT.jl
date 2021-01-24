@@ -48,5 +48,6 @@ using Test
     catch e
         @test e.errno == FINUFFT.HORNER_WRONG_BETA
     end
-    
+
+    @info("Error handling tests finished")
 end
