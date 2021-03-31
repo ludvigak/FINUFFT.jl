@@ -1043,7 +1043,6 @@ function nufft3d1!(xj      :: StridedArray{T},
                     nj, xj, yj, zj, cj, iflag, eps, ms, mt, mu, fk, opts
                     )
     end
-    end
 
     check_ret(ret)
 end
@@ -1111,7 +1110,6 @@ function nufft3d2!(xj      :: StridedArray{T},
                     Ref{nufft_opts}),
                     nj, xj, yj, zj, cj, iflag, eps, ms, mt, mu, fk, opts
                     )
-    end
     end
     check_ret(ret)
 end
