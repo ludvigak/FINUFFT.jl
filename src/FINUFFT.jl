@@ -636,7 +636,7 @@ Compute type-1 1D complex nonuniform FFT. Output stored in fk.
 function nufft1d1!(xj      :: StridedArray{T}, 
                    cj      :: StridedArray{Complex{T}}, 
                    iflag   :: Integer, 
-                   eps     :: Float64,
+                   eps     :: T,
                    fk      :: StridedArray{Complex{T}},
                    opts    :: nufft_opts = finufft_default_opts()) where T <: fftwReal
     nj = length(xj) 
@@ -1193,4 +1193,8 @@ function nufft3d3!(xj      :: StridedArray{T},
     check_ret(ret)
 end
 
+
+# generate plan once per precision to ensure thread-safety
+finufft_makeplan(1,1,[100;1;1],1,1,1f-4)
+finufft_makeplan(1,1,[100;1;1],1,1,1e-4)
 end # module
