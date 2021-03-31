@@ -61,7 +61,7 @@ k3 = modevec(mu)
             end            
             @testset "32-bit" begin
                 out_C32 = convert(Array{ComplexF32}, out)
-                nufftf1d1!(convert(Array{Float32}, x),
+                nufft1d1!(convert(Array{Float32}, x),
                            convert(Array{ComplexF32},c),
                            1,
                            tol_F32,
@@ -90,7 +90,7 @@ k3 = modevec(mu)
             end
             @testset "32-bit" begin
                 out_C32 = convert(Array{ComplexF32}, out)
-                nufftf1d2!(convert(Array{Float32}, x),
+                nufft1d2!(convert(Array{Float32}, x),
                            out_C32, 1, tol_F32,
                            convert(Array{ComplexF32}, F1D))
                 reldiff = norm(vec(out)-vec(out_C32), Inf) / norm(vec(out), Inf)
@@ -117,7 +117,7 @@ k3 = modevec(mu)
             end
             @testset "32-bit" begin
                 out_C32 = convert(Array{ComplexF32}, out)
-                nufftf1d3!(convert(Array{Float32}, x),
+                nufft1d3!(convert(Array{Float32}, x),
                            convert(Array{ComplexF32}, c),
                            1,
                            tol_F32,
@@ -152,7 +152,7 @@ k3 = modevec(mu)
             end
             @testset "32-bit" begin
                 out_C32 = convert(Array{ComplexF32}, out)
-                nufftf2d1!(convert(Array{Float32}, x),
+                nufft2d1!(convert(Array{Float32}, x),
                            convert(Array{Float32}, y),
                            convert(Array{ComplexF32}, c),
                            1,
@@ -185,7 +185,7 @@ k3 = modevec(mu)
             end
             @testset "32-bit" begin
                 out_C32 = convert(Array{ComplexF32}, out)
-                nufftf2d2!(
+                nufft2d2!(
                     convert(Array{Float32}, x),
                     convert(Array{Float32}, y),
                     out_C32,
@@ -217,7 +217,7 @@ k3 = modevec(mu)
             end
             @testset "32-bit" begin
                 out_C32 = convert(Array{ComplexF32}, out)
-                nufftf2d3!(convert(Array{Float32}, x),
+                nufft2d3!(convert(Array{Float32}, x),
                            convert(Array{Float32}, y),
                            convert(Array{ComplexF32}, c),
                            1,
@@ -256,7 +256,7 @@ k3 = modevec(mu)
             end
             out_C32 = convert(Array{ComplexF32}, out)
             @testset "32-bit" begin
-                nufftf3d1!(convert(Array{Float32}, x),
+                nufft3d1!(convert(Array{Float32}, x),
                            convert(Array{Float32}, y),
                            convert(Array{Float32}, z),
                            convert(Array{ComplexF32}, c),
@@ -291,7 +291,7 @@ k3 = modevec(mu)
             end
             @testset "32-bit" begin
                 out_C32 = convert(Array{ComplexF32}, out)                
-                nufftf3d2!(convert(Array{Float32}, x),
+                nufft3d2!(convert(Array{Float32}, x),
                            convert(Array{Float32}, y),
                            convert(Array{Float32}, z),
                            out_C32,
@@ -323,7 +323,7 @@ k3 = modevec(mu)
             end
             @testset "32-bit" begin
                 out_C32 = convert(Array{ComplexF32}, out)
-                nufftf3d3!(convert(Array{Float32}, x),
+                nufft3d3!(convert(Array{Float32}, x),
                            convert(Array{Float32}, y),
                            convert(Array{Float32}, z),
                            convert(Array{ComplexF32}, c),
