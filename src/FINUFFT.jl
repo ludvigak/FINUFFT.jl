@@ -1088,7 +1088,4 @@ function nufft3d3!(xj      :: StridedArray{Float64},
     check_ret(ret)
 end
 
-# Load single precision interfaces
-include("single.jl")
-
 end # module
