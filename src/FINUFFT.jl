@@ -633,45 +633,33 @@ end
 
 Compute type-1 1D complex nonuniform FFT. Output stored in fk.
 """
-function nufft1d1!(xj      :: StridedArray{Float64}, 
-                   cj      :: StridedArray{ComplexF64}, 
+function nufft1d1!(xj      :: StridedArray{T}, 
+                   cj      :: StridedArray{Complex{T}}, 
                    iflag   :: Integer, 
                    eps     :: Float64,
-                   fk      :: StridedArray{ComplexF64},
-                   opts    :: nufft_opts = finufft_default_opts())
+                   fk      :: StridedArray{Complex{T}},
+                   opts    :: nufft_opts = finufft_default_opts()) where T <: fftwReal
     nj = length(xj) 
     @assert length(cj)==nj        
     ms = length(fk)    
     # Calling interface
     # int finufft1d1(BIGINT nj,FLT* xj,CPX* cj,int iflag,FLT eps,BIGINT ms,
     # 	       CPX* fk, nufft_opts opts);
-    ret = ccall( (:finufft1d1, libfinufft),
-                 Cint,
-                 (BIGINT,
-                  Ref{Cdouble},
-                  Ref{ComplexF64},
-                  Cint,
-                  Cdouble,
-                  BIGINT,
-                  Ref{ComplexF64},
-                  Ref{nufft_opts}),
-                 nj, xj, cj, iflag, eps, ms, fk, opts
-                 )
-    check_ret(ret)
-end
-function nufft1d1!(xj      :: StridedArray{Float32}, 
-                   cj      :: StridedArray{ComplexF32}, 
-                   iflag   :: Integer, 
-                   eps     :: Float32,
-                   fk      :: StridedArray{ComplexF32},
-                   opts    :: nufft_opts = finufft_default_opts())
-    nj = length(xj) 
-    @assert length(cj)==nj        
-    ms = length(fk)    
-    # Calling interface
-    # int finufft1d1(BIGINT nj,FLT* xj,CPX* cj,int iflag,FLT eps,BIGINT ms,
-    # 	       CPX* fk, nufft_opts opts);
-    ret = ccall( (:finufftf1d1, libfinufft),
+    if T <: fftwDouble
+        ret = ccall( (:finufft1d1, libfinufft),
+                    Cint,
+                    (BIGINT,
+                    Ref{Cdouble},
+                    Ref{ComplexF64},
+                    Cint,
+                    Cdouble,
+                    BIGINT,
+                    Ref{ComplexF64},
+                    Ref{nufft_opts}),
+                    nj, xj, cj, iflag, eps, ms, fk, opts
+                    )
+    else
+        ret = ccall( (:finufftf1d1, libfinufft),
                  Cint,
                  (BIGINT,
                   Ref{Cfloat},
@@ -683,6 +671,7 @@ function nufft1d1!(xj      :: StridedArray{Float32},
                   Ref{nufft_opts}),
                  nj, xj, cj, iflag, eps, ms, fk, opts
                  )
+    end
     check_ret(ret)
 end
 
@@ -710,44 +699,33 @@ function nufft1d2!(xj      :: StridedArray{Float64},
     # Calling interface
     # int finufft1d2(BIGINT nj,FLT* xj,CPX* cj,int iflag,FLT eps,BIGINT ms,
     #                CPX* fk, nufft_opts opts);
-    ret = ccall( (:finufft1d2, libfinufft),
-                 Cint,
-                 (BIGINT,
-                  Ref{Cdouble},
-                  Ref{ComplexF64},
-                  Cint,
-                  Cdouble,
-                  BIGINT,
-                  Ref{ComplexF64},
-                  Ref{nufft_opts}),
-                 nj, xj, cj, iflag, eps, ms, fk, opts
-                 )
-    check_ret(ret)    
-end
-function nufft1d2!(xj      :: StridedArray{Float32}, 
-                  cj      :: StridedArray{ComplexF32}, 
-                  iflag   :: Integer, 
-                  eps     :: Float32,
-                  fk      :: StridedArray{ComplexF32},
-                  opts    :: nufft_opts = finufft_default_opts())
-    nj = length(xj)
-    @assert length(cj)==nj        
-    ms = length(fk)    
-    # Calling interface
-    # int finufft1d2(BIGINT nj,FLT* xj,CPX* cj,int iflag,FLT eps,BIGINT ms,
-    #                CPX* fk, nufft_opts opts);
-    ret = ccall( (:finufftf1d2, libfinufft),
-                 Cint,
-                 (BIGINT,
-                  Ref{Cfloat},
-                  Ref{ComplexF32},
-                  Cint,
-                  Cfloat,
-                  BIGINT,
-                  Ref{ComplexF32},
-                  Ref{nufft_opts}),
-                  nj, xj, cj, iflag, eps, ms, fk, opts
-                )
+    if T <: fftwDouble
+        ret = ccall( (:finufft1d2, libfinufft),
+                    Cint,
+                    (BIGINT,
+                    Ref{Cdouble},
+                    Ref{ComplexF64},
+                    Cint,
+                    Cdouble,
+                    BIGINT,
+                    Ref{ComplexF64},
+                    Ref{nufft_opts}),
+                    nj, xj, cj, iflag, eps, ms, fk, opts
+                    )
+    else
+        ret = ccall( (:finufftf1d2, libfinufft),
+                    Cint,
+                    (BIGINT,
+                    Ref{Cfloat},
+                    Ref{ComplexF32},
+                    Cint,
+                    Cfloat,
+                    BIGINT,
+                    Ref{ComplexF32},
+                    Ref{nufft_opts}),
+                    nj, xj, cj, iflag, eps, ms, fk, opts
+                    )
+    end
     check_ret(ret)    
 end
 
@@ -776,19 +754,35 @@ function nufft1d3!(xj      :: StridedArray{Float64},
     @assert length(fk)==nk
     # Calling interface
     # int finufft1d3(BIGINT nj,FLT* x,CPX* c,int iflag,FLT eps,BIGINT nk, FLT* s, CPX* f, nufft_opts opts);
-    ret = ccall( (:finufft1d3, libfinufft),
-                 Cint,
-                 (BIGINT,
-                  Ref{Cdouble},
-                  Ref{ComplexF64},
-                  Cint,
-                  Cdouble,
-                  BIGINT,
-                  Ref{Cdouble},            
-                  Ref{ComplexF64},
-                  Ref{nufft_opts}),
-                 nj, xj, cj, iflag, eps, nk, sk, fk, opts
-                 )
+    if T <: fftwDouble
+        ret = ccall( (:finufft1d3, libfinufft),
+                    Cint,
+                    (BIGINT,
+                    Ref{Cdouble},
+                    Ref{ComplexF64},
+                    Cint,
+                    Cdouble,
+                    BIGINT,
+                    Ref{Cdouble},            
+                    Ref{ComplexF64},
+                    Ref{nufft_opts}),
+                    nj, xj, cj, iflag, eps, nk, sk, fk, opts
+                    )
+    else
+        ret = ccall( (:finufftf1d3, libfinufft),
+                    Cint,
+                    (BIGINT,
+                    Ref{Cfloat},
+                    Ref{ComplexF32},
+                    Cint,
+                    Cfloat,
+                    BIGINT,
+                    Ref{Cfloat},            
+                    Ref{ComplexF32},
+                    Ref{nufft_opts}),
+                    nj, xj, cj, iflag, eps, nk, sk, fk, opts
+                    )
+    end
     check_ret(ret)
 end
 
@@ -821,20 +815,37 @@ function nufft2d1!(xj      :: StridedArray{Float64},
     # Calling interface
     # int finufft2d1(BIGINT nj,FLT* xj,FLT *yj,CPX* cj,int iflag,FLT eps,
     #                BIGINT ms, BIGINT mt, CPX* fk, nufft_opts opts);
-    ret = ccall( (:finufft2d1, libfinufft),
-                 Cint,
-                 (BIGINT,
-                  Ref{Cdouble},
-                  Ref{Cdouble},            
-                  Ref{ComplexF64},
-                  Cint,
-                  Cdouble,
-                  BIGINT,
-                  BIGINT,            
-                  Ref{ComplexF64},
-                  Ref{nufft_opts}),
-                 nj, xj, yj, cj, iflag, eps, ms, mt, fk, opts
-                 )
+    if T <: fftwDouble
+        ret = ccall( (:finufft2d1, libfinufft),
+                    Cint,
+                    (BIGINT,
+                    Ref{Cdouble},
+                    Ref{Cdouble},            
+                    Ref{ComplexF64},
+                    Cint,
+                    Cdouble,
+                    BIGINT,
+                    BIGINT,            
+                    Ref{ComplexF64},
+                    Ref{nufft_opts}),
+                    nj, xj, yj, cj, iflag, eps, ms, mt, fk, opts
+                    )
+    else
+        ret = ccall( (:finufftf2d1, libfinufft),
+                    Cint,
+                    (BIGINT,
+                    Ref{Cfloat},
+                    Ref{Cfloat},            
+                    Ref{ComplexF32},
+                    Cint,
+                    Cfloat,
+                    BIGINT,
+                    BIGINT,            
+                    Ref{ComplexF32},
+                    Ref{nufft_opts}),
+                    nj, xj, yj, cj, iflag, eps, ms, mt, fk, opts
+                    )
+    end
     check_ret(ret)
 end
 
@@ -865,20 +876,38 @@ function nufft2d2!(xj      :: StridedArray{Float64},
     # Calling interface
     # int finufft2d2(BIGINT nj,FLT* xj,FLT *yj,CPX* cj,int iflag,FLT eps,
     #                BIGINT ms, BIGINT mt, CPX* fk, nufft_opts opts);
-    ret = ccall( (:finufft2d2, libfinufft),
-                 Cint,
-                 (BIGINT,
-                  Ref{Cdouble},
-                  Ref{Cdouble},            
-                  Ref{ComplexF64},
-                  Cint,
-                  Cdouble,
-                  BIGINT,
-                  BIGINT,            
-                  Ref{ComplexF64},
-                  Ref{nufft_opts}),
-                 nj, xj, yj, cj, iflag, eps, ms, mt, fk, opts
-                 )
+    if T <: fftwDouble
+        ret = ccall( (:finufft2d2, libfinufft),
+                    Cint,
+                    (BIGINT,
+                    Ref{Cdouble},
+                    Ref{Cdouble},            
+                    Ref{ComplexF64},
+                    Cint,
+                    Cdouble,
+                    BIGINT,
+                    BIGINT,            
+                    Ref{ComplexF64},
+                    Ref{nufft_opts}),
+                    nj, xj, yj, cj, iflag, eps, ms, mt, fk, opts
+                    )
+    else
+        ret = ccall( (:finufftf2d2, libfinufft),
+                    Cint,
+                    (BIGINT,
+                    Ref{Cfloat},
+                    Ref{Cfloat},            
+                    Ref{ComplexF32},
+                    Cint,
+                    Cfloat,
+                    BIGINT,
+                    BIGINT,            
+                    Ref{ComplexF32},
+                    Ref{nufft_opts}),
+                    nj, xj, yj, cj, iflag, eps, ms, mt, fk, opts
+                    )
+    end
+    end
     check_ret(ret)
 end
 
@@ -913,21 +942,39 @@ function nufft2d3!(xj      :: StridedArray{Float64},
     @assert length(fk)==nk    
     # Calling interface
     # int finufft2d3(BIGINT nj,FLT* x,FLT *y,CPX* cj,int iflag,FLT eps,BIGINT nk, FLT* s, FLT* t, CPX* fk, nufft_opts opts);    
-    ret = ccall( (:finufft2d3, libfinufft),
-                 Cint,
-                 (BIGINT,
-                  Ref{Cdouble},
-                  Ref{Cdouble},            
-                  Ref{ComplexF64},
-                  Cint,
-                  Cdouble,
-                  BIGINT,
-                  Ref{Cdouble},
-                  Ref{Cdouble},            
-                  Ref{ComplexF64},
-                  Ref{nufft_opts}),
-                 nj, xj, yj, cj, iflag, eps, nk, sk, tk, fk, opts
-                 )
+    if T <: fftwDouble
+        ret = ccall( (:finufft2d3, libfinufft),
+                    Cint,
+                    (BIGINT,
+                    Ref{Cdouble},
+                    Ref{Cdouble},            
+                    Ref{ComplexF64},
+                    Cint,
+                    Cdouble,
+                    BIGINT,
+                    Ref{Cdouble},
+                    Ref{Cdouble},            
+                    Ref{ComplexF64},
+                    Ref{nufft_opts}),
+                    nj, xj, yj, cj, iflag, eps, nk, sk, tk, fk, opts
+                    )
+    else
+        ret = ccall( (:finufftf2d3, libfinufft),
+                    Cint,
+                    (BIGINT,
+                    Ref{Cfloat},
+                    Ref{Cfloat},            
+                    Ref{ComplexF32},
+                    Cint,
+                    Cfloat,
+                    BIGINT,
+                    Ref{Cfloat},
+                    Ref{Cfloat},            
+                    Ref{ComplexF32},
+                    Ref{nufft_opts}),
+                    nj, xj, yj, cj, iflag, eps, nk, sk, tk, fk, opts
+                    )
+    end
     check_ret(ret)
 end
 
@@ -962,22 +1009,43 @@ function nufft3d1!(xj      :: StridedArray{Float64},
     # Calling interface
     # int finufft3d1(BIGINT nj,FLT* xj,FLT *yj,FLT *zj,CPX* cj,int iflag,FLT eps,
     # 	       BIGINT ms, BIGINT mt, BIGINT mu, CPX* fk, nufft_opts opts);
-    ret = ccall( (:finufft3d1, libfinufft),
-                 Cint,
-                 (BIGINT,
-                  Ref{Cdouble},
-                  Ref{Cdouble},
-                  Ref{Cdouble},                
-                  Ref{ComplexF64},
-                  Cint,
-                  Cdouble,
-                  BIGINT,
-                  BIGINT,
-                  BIGINT,
-                  Ref{ComplexF64},
-                  Ref{nufft_opts}),
-                 nj, xj, yj, zj, cj, iflag, eps, ms, mt, mu, fk, opts
-                 )
+    if T <: fftwDouble
+        ret = ccall( (:finufft3d1, libfinufft),
+                    Cint,
+                    (BIGINT,
+                    Ref{Cdouble},
+                    Ref{Cdouble},
+                    Ref{Cdouble},                
+                    Ref{ComplexF64},
+                    Cint,
+                    Cdouble,
+                    BIGINT,
+                    BIGINT,
+                    BIGINT,
+                    Ref{ComplexF64},
+                    Ref{nufft_opts}),
+                    nj, xj, yj, zj, cj, iflag, eps, ms, mt, mu, fk, opts
+                    )
+    else
+        ret = ccall( (:finufftf3d1, libfinufft),
+                    Cint,
+                    (BIGINT,
+                    Ref{Cfloat},
+                    Ref{Cfloat},
+                    Ref{Cfloat},                
+                    Ref{ComplexF32},
+                    Cint,
+                    Cfloat,
+                    BIGINT,
+                    BIGINT,
+                    BIGINT,
+                    Ref{ComplexF32},
+                    Ref{nufft_opts}),
+                    nj, xj, yj, zj, cj, iflag, eps, ms, mt, mu, fk, opts
+                    )
+    end
+    end
+
     check_ret(ret)
 end
 
@@ -1010,22 +1078,42 @@ function nufft3d2!(xj      :: StridedArray{Float64},
     # Calling interface
     # int finufft3d2(BIGINT nj,FLT* xj,FLT *yj,FLT *zj,CPX* cj,int iflag,FLT eps,
     #                BIGINT ms, BIGINT mt, BIGINT mu, CPX* fk, nufft_opts opts);
-    ret = ccall( (:finufft3d2, libfinufft),
-                 Cint,
-                 (BIGINT,
-                  Ref{Cdouble},
-                  Ref{Cdouble},            
-                  Ref{Cdouble},            
-                  Ref{ComplexF64},
-                  Cint,
-                  Cdouble,
-                  BIGINT,
-                  BIGINT,
-                  BIGINT,
-                  Ref{ComplexF64},
-                  Ref{nufft_opts}),
-                 nj, xj, yj, zj, cj, iflag, eps, ms, mt, mu, fk, opts
-                 )
+    if T <: fftwDouble
+        ret = ccall( (:finufft3d2, libfinufft),
+                    Cint,
+                    (BIGINT,
+                    Ref{Cdouble},
+                    Ref{Cdouble},            
+                    Ref{Cdouble},            
+                    Ref{ComplexF64},
+                    Cint,
+                    Cdouble,
+                    BIGINT,
+                    BIGINT,
+                    BIGINT,
+                    Ref{ComplexF64},
+                    Ref{nufft_opts}),
+                    nj, xj, yj, zj, cj, iflag, eps, ms, mt, mu, fk, opts
+                    )
+    else
+        ret = ccall( (:finufftf3d2, libfinufft),
+                    Cint,
+                    (BIGINT,
+                    Ref{Cfloat},
+                    Ref{Cfloat},            
+                    Ref{Cfloat},            
+                    Ref{ComplexF32},
+                    Cint,
+                    Cfloat,
+                    BIGINT,
+                    BIGINT,
+                    BIGINT,
+                    Ref{ComplexF32},
+                    Ref{nufft_opts}),
+                    nj, xj, yj, zj, cj, iflag, eps, ms, mt, mu, fk, opts
+                    )
+    end
+    end
     check_ret(ret)
 end
 
@@ -1068,23 +1156,43 @@ function nufft3d3!(xj      :: StridedArray{Float64},
     # int finufft3d3(BIGINT nj,FLT* x,FLT *y,FLT *z, CPX* cj,int iflag,
     #                FLT eps,BIGINT nk,FLT* s, FLT* t, FLT *u,
     #                CPX* fk, nufft_opts opts);
-    ret = ccall( (:finufft3d3, libfinufft),
-                 Cint,
-                 (BIGINT,
-                  Ref{Cdouble},
-                  Ref{Cdouble},
-                  Ref{Cdouble},                  
-                  Ref{ComplexF64},
-                  Cint,
-                  Cdouble,
-                  BIGINT,
-                  Ref{Cdouble},
-                  Ref{Cdouble},
-                  Ref{Cdouble},                        
-                  Ref{ComplexF64},
-                  Ref{nufft_opts}),
-                 nj, xj, yj, zj, cj, iflag, eps, nk, sk, tk, uk, fk, opts
-                 )
+    if T <: fftwDouble
+        ret = ccall( (:finufft3d3, libfinufft),
+                    Cint,
+                    (BIGINT,
+                    Ref{Cdouble},
+                    Ref{Cdouble},
+                    Ref{Cdouble},                  
+                    Ref{ComplexF64},
+                    Cint,
+                    Cdouble,
+                    BIGINT,
+                    Ref{Cdouble},
+                    Ref{Cdouble},
+                    Ref{Cdouble},                        
+                    Ref{ComplexF64},
+                    Ref{nufft_opts}),
+                    nj, xj, yj, zj, cj, iflag, eps, nk, sk, tk, uk, fk, opts
+                    )
+    else
+        ret = ccall( (:finufftf3d3, libfinufft),
+                    Cint,
+                    (BIGINT,
+                    Ref{Cfloat},
+                    Ref{Cfloat},
+                    Ref{Cfloat},                  
+                    Ref{ComplexF32},
+                    Cint,
+                    Cfloat,
+                    BIGINT,
+                    Ref{Cfloat},
+                    Ref{Cfloat},
+                    Ref{Cfloat},                        
+                    Ref{ComplexF32},
+                    Ref{nufft_opts}),
+                    nj, xj, yj, zj, cj, iflag, eps, nk, sk, tk, uk, fk, opts
+                    )
+    end
     check_ret(ret)
 end
 
