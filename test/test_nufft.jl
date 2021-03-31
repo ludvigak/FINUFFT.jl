@@ -335,7 +335,7 @@ k3 = modevec(mu)
                            out_C32
                            )
                 relerr_3d3 = norm(vec(out_C32)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_3d3 < 1e-3
+                @test relerr_3d3 < 2e-3
             end                
         end        
     end
