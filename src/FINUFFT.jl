@@ -907,7 +907,6 @@ function nufft2d2!(xj      :: StridedArray{T},
                     nj, xj, yj, cj, iflag, eps, ms, mt, fk, opts
                     )
     end
-    end
     check_ret(ret)
 end
 
