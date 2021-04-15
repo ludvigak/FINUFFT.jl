@@ -3,11 +3,11 @@ finufft_plan{T} = Ptr{T} where T <: Union{Float32,Float64}
 
 function finufft_makeplan(type::Integer,
                           dim::Integer,
-                          n_modes::Array{BIGINT},
+                          n_modes::T,
                           iflag::Integer,
                           ntrans::Integer,
                           eps::Float64,
-                          opts::nufft_opts=finufft_default_opts())
+                          opts::nufft_opts=finufft_default_opts()) where T <: Union{Array{BIGINT}, NTuple{3,BIGINT}}
 
     # see https://stackoverflow.com/questions/40140699/the-proper-way-to-declare-c-void-pointers-in-julia for how to declare c-void pointers in julia
     plan_p = Ref{finufft_plan{Float64}}()
@@ -29,14 +29,13 @@ function finufft_makeplan(type::Integer,
     plan = plan_p[]
     return plan
 end
-
 function finufft_makeplan(type::Integer,
     dim::Integer,
-    n_modes::Array{BIGINT},
+    n_modes::T,
     iflag::Integer,
     ntrans::Integer,
     eps::Float32,
-    opts::nufft_opts=finufft_default_opts())
+    opts::nufft_opts=finufft_default_opts()) where T <: Union{Array{BIGINT}, NTuple{3,BIGINT}}
     
     # see https://stackoverflow.com/questions/40140699/the-proper-way-to-declare-c-void-pointers-in-julia for how to declare c-void pointers in julia
     plan_p = Ref{finufft_plan{Float32}}()
@@ -86,7 +85,6 @@ function finufft_setpts(plan::finufft_plan{Float64},
                 )
 
     check_ret(ret)
-    return ret
 end
 function finufft_setpts(plan::finufft_plan{Float32},
     xj::StridedArray{Float32},
@@ -114,7 +112,6 @@ function finufft_setpts(plan::finufft_plan{Float32},
                 )
 
     check_ret(ret)
-    return ret
 end
 
 
@@ -129,7 +126,6 @@ function finufft_exec(plan::finufft_plan{Float64}, cj::StridedArray{ComplexF64},
                 )
 
     check_ret(ret)
-    return ret
 end
 function finufft_exec(plan::finufft_plan{Float32}, cj::StridedArray{ComplexF32}, fk::StridedArray{ComplexF32})
         
@@ -142,7 +138,6 @@ function finufft_exec(plan::finufft_plan{Float32}, cj::StridedArray{ComplexF32},
                 )
 
     check_ret(ret)
-    return ret
 end
 
 function finufft_destroy(plan::finufft_plan{Float64})
@@ -153,7 +148,6 @@ function finufft_destroy(plan::finufft_plan{Float64})
                 )
     
     check_ret(ret)
-    return ret
 end
 function finufft_destroy(plan::finufft_plan{Float32})
     ret = ccall( (:finufftf_destroy, libfinufft),
@@ -163,5 +157,4 @@ function finufft_destroy(plan::finufft_plan{Float32})
             )
 
     check_ret(ret)
-    return ret
 end
