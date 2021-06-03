@@ -4,21 +4,21 @@
 ## 1D
 
 """
-    nufft1d1!(xj      :: StridedArray{Float32},
-               cj      :: StridedArray{ComplexF32},
+    nufft1d1!(xj      :: Array{Float32},
+               cj      :: Array{ComplexF32},
                iflag   :: Integer,
                eps     :: Float32,
-               fk      :: StridedArray{ComplexF32}
+               fk      :: Array{ComplexF32}
                [, opts :: nufft_opts]
              )
 
 Single precision type-1 1D complex nonuniform FFT. Output stored in fk.
 """
-function nufft1d1!(xj      :: StridedArray{Float32},
-                    cj      :: StridedArray{ComplexF32},
+function nufft1d1!(xj      :: Array{Float32},
+                    cj      :: Array{ComplexF32},
                     iflag   :: Integer,
                     eps     :: Float32,
-                    fk      :: StridedArray{ComplexF32},
+                    fk      :: Array{ComplexF32},
                     opts    :: nufft_opts = finufft_default_opts())
     nj = length(xj)
     @assert length(cj)==nj
@@ -39,21 +39,21 @@ function nufft1d1!(xj      :: StridedArray{Float32},
 end
 
 """
-    nufft1d2!(xj      :: StridedArray{Float32}, 
-               cj      :: StridedArray{ComplexF32}, 
+    nufft1d2!(xj      :: Array{Float32}, 
+               cj      :: Array{ComplexF32}, 
                iflag   :: Integer, 
                eps     :: Float32,
-               fk      :: StridedArray{ComplexF32} 
+               fk      :: Array{ComplexF32} 
                [, opts :: nufft_opts]
              )
 
 Single precision type-2 1D complex nonuniform FFT. Output stored in cj.
 """
-function nufft1d2!(xj      :: StridedArray{Float32}, 
-                    cj      :: StridedArray{ComplexF32}, 
+function nufft1d2!(xj      :: Array{Float32}, 
+                    cj      :: Array{ComplexF32}, 
                     iflag   :: Integer, 
                     eps     :: Float32,
-                    fk      :: StridedArray{ComplexF32},
+                    fk      :: Array{ComplexF32},
                     opts    :: nufft_opts = finufft_default_opts())
     nj = length(xj)
     @assert length(cj)==nj        
@@ -75,23 +75,23 @@ end
 
 
 """
-    nufft1d3!(xj      :: StridedArray{Float32}, 
-               cj      :: StridedArray{ComplexF32}, 
+    nufft1d3!(xj      :: Array{Float32}, 
+               cj      :: Array{ComplexF32}, 
                iflag   :: Integer, 
                eps     :: Float32,
-               sk      :: StridedArray{Float32},
-               fk      :: StridedArray{ComplexF32},
+               sk      :: Array{Float32},
+               fk      :: Array{ComplexF32},
                [, opts :: nufft_opts]
               )
 
 Single precision type-3 1D complex nonuniform FFT. Output stored in fk.
 """
-function nufft1d3!(xj      :: StridedArray{Float32}, 
-                    cj      :: StridedArray{ComplexF32}, 
+function nufft1d3!(xj      :: Array{Float32}, 
+                    cj      :: Array{ComplexF32}, 
                     iflag   :: Integer, 
                     eps     :: Float32,
-                    sk      :: StridedArray{Float32},
-                    fk      :: StridedArray{ComplexF32},
+                    sk      :: Array{Float32},
+                    fk      :: Array{ComplexF32},
                     opts    :: nufft_opts = finufft_default_opts())
     nj = length(xj)
     @assert length(cj)==nj        
@@ -116,23 +116,23 @@ end
 ## 2D
 
 """
-    nufft2d1!(xj      :: StridedArray{Float32}, 
-               yj      :: StridedArray{Float32}, 
-               cj      :: StridedArray{ComplexF32}, 
+    nufft2d1!(xj      :: Array{Float32}, 
+               yj      :: Array{Float32}, 
+               cj      :: Array{ComplexF32}, 
                iflag   :: Integer, 
                eps     :: Float32,
-               fk      :: StridedArray{ComplexF32} 
+               fk      :: Array{ComplexF32} 
                [, opts :: nufft_opts]
              )
 
 Single precision type-1 2D complex nonuniform FFT. Output stored in fk.
 """
-function nufft2d1!(xj      :: StridedArray{Float32}, 
-                    yj      :: StridedArray{Float32}, 
-                    cj      :: StridedArray{ComplexF32}, 
+function nufft2d1!(xj      :: Array{Float32}, 
+                    yj      :: Array{Float32}, 
+                    cj      :: Array{ComplexF32}, 
                     iflag   :: Integer, 
                     eps     :: Float32,
-                    fk      :: StridedArray{ComplexF32},
+                    fk      :: Array{ComplexF32},
                     opts    :: nufft_opts = finufft_default_opts())
     nj = length(xj)
     @assert length(yj)==nj
@@ -157,23 +157,23 @@ end
 
 
 """
-    nufft2d2!(xj      :: StridedArray{Float32}, 
-               yj      :: StridedArray{Float32}, 
-               cj      :: StridedArray{ComplexF32}, 
+    nufft2d2!(xj      :: Array{Float32}, 
+               yj      :: Array{Float32}, 
+               cj      :: Array{ComplexF32}, 
                iflag   :: Integer, 
                eps     :: Float32,
-               fk      :: StridedArray{ComplexF32} 
+               fk      :: Array{ComplexF32} 
                [, opts :: nufft_opts]
              )
 
 Single precision type-2 2D complex nonuniform FFT. Output stored in cj.
 """
-function nufft2d2!(xj      :: StridedArray{Float32}, 
-                    yj      :: StridedArray{Float32}, 
-                    cj      :: StridedArray{ComplexF32}, 
+function nufft2d2!(xj      :: Array{Float32}, 
+                    yj      :: Array{Float32}, 
+                    cj      :: Array{ComplexF32}, 
                     iflag   :: Integer, 
                     eps     :: Float32,
-                    fk      :: StridedArray{ComplexF32},
+                    fk      :: Array{ComplexF32},
                     opts    :: nufft_opts = finufft_default_opts())
     nj = length(xj)
     @assert length(yj)==nj
@@ -197,27 +197,27 @@ function nufft2d2!(xj      :: StridedArray{Float32},
 end
 
 """
-    nufft2d3!(xj      :: StridedArray{Float32}, 
-               yj      :: StridedArray{Float32},
-               cj      :: StridedArray{ComplexF32}, 
+    nufft2d3!(xj      :: Array{Float32}, 
+               yj      :: Array{Float32},
+               cj      :: Array{ComplexF32}, 
                iflag   :: Integer, 
                eps     :: Float32,
-               sk      :: StridedArray{Float32},
-               tk      :: StridedArray{Float32},
-               fk      :: StridedArray{ComplexF32}
+               sk      :: Array{Float32},
+               tk      :: Array{Float32},
+               fk      :: Array{ComplexF32}
                [, opts :: nufft_opts]
               )
 
 Single precision type-3 2D complex nonuniform FFT. Output stored in fk.
     """
-function nufft2d3!(xj      :: StridedArray{Float32}, 
-                    yj      :: StridedArray{Float32},
-                    cj      :: StridedArray{ComplexF32}, 
+function nufft2d3!(xj      :: Array{Float32}, 
+                    yj      :: Array{Float32},
+                    cj      :: Array{ComplexF32}, 
                     iflag   :: Integer, 
                     eps     :: Float32,
-                    sk      :: StridedArray{Float32},
-                    tk      :: StridedArray{Float32},
-                    fk      :: StridedArray{ComplexF32},
+                    sk      :: Array{Float32},
+                    tk      :: Array{Float32},
+                    fk      :: Array{ComplexF32},
                     opts    :: nufft_opts = finufft_default_opts())
     nj = length(xj)
     @assert length(yj)==nj
@@ -246,25 +246,25 @@ end
 ## 3D
 
 """
-    nufft3d1!(xj      :: StridedArray{Float32}, 
-               yj      :: StridedArray{Float32}, 
-               zj      :: StridedArray{Float32}, 
-               cj      :: StridedArray{ComplexF32}, 
+    nufft3d1!(xj      :: Array{Float32}, 
+               yj      :: Array{Float32}, 
+               zj      :: Array{Float32}, 
+               cj      :: Array{ComplexF32}, 
                iflag   :: Integer, 
                eps     :: Float32,
-               fk      :: StridedArray{ComplexF32} 
+               fk      :: Array{ComplexF32} 
                [, opts :: nufft_opts]
              )
 
 Single precision type-1 3D complex nonuniform FFT. Output stored in fk.
 """
-function nufft3d1!(xj      :: StridedArray{Float32}, 
-                    yj      :: StridedArray{Float32}, 
-                    zj      :: StridedArray{Float32}, 
-                    cj      :: StridedArray{ComplexF32}, 
+function nufft3d1!(xj      :: Array{Float32}, 
+                    yj      :: Array{Float32}, 
+                    zj      :: Array{Float32}, 
+                    cj      :: Array{ComplexF32}, 
                     iflag   :: Integer, 
                     eps     :: Float32,
-                    fk      :: StridedArray{ComplexF32},
+                    fk      :: Array{ComplexF32},
                     opts    :: nufft_opts = finufft_default_opts())
     nj = length(xj)
     @assert length(yj)==nj
@@ -291,25 +291,25 @@ function nufft3d1!(xj      :: StridedArray{Float32},
 end
 
 """
-    nufft3d2!(xj      :: StridedArray{Float32}, 
-               yj      :: StridedArray{Float32}, 
-               zj      :: StridedArray{Float32}, 
-               cj      :: StridedArray{ComplexF32}, 
+    nufft3d2!(xj      :: Array{Float32}, 
+               yj      :: Array{Float32}, 
+               zj      :: Array{Float32}, 
+               cj      :: Array{ComplexF32}, 
                iflag   :: Integer, 
                eps     :: Float32,
-               fk      :: StridedArray{ComplexF32} 
+               fk      :: Array{ComplexF32} 
                [, opts :: nufft_opts]
              )
 
 Single precision type-2 3D complex nonuniform FFT. Output stored in cj.
 """
-function nufft3d2!(xj      :: StridedArray{Float32}, 
-                    yj      :: StridedArray{Float32},
-                    zj      :: StridedArray{Float32},                    
-                    cj      :: StridedArray{ComplexF32}, 
+function nufft3d2!(xj      :: Array{Float32}, 
+                    yj      :: Array{Float32},
+                    zj      :: Array{Float32},                    
+                    cj      :: Array{ComplexF32}, 
                     iflag   :: Integer, 
                     eps     :: Float32,
-                    fk      :: StridedArray{ComplexF32},
+                    fk      :: Array{ComplexF32},
                     opts    :: nufft_opts = finufft_default_opts())
     nj = length(xj)
     @assert length(yj)==nj
@@ -336,31 +336,31 @@ function nufft3d2!(xj      :: StridedArray{Float32},
 end
 
 """
-    nufft3d3!(xj      :: StridedArray{Float32}, 
-               yj      :: StridedArray{Float32},
-               zj      :: StridedArray{Float32},
-               cj      :: StridedArray{ComplexF32}, 
+    nufft3d3!(xj      :: Array{Float32}, 
+               yj      :: Array{Float32},
+               zj      :: Array{Float32},
+               cj      :: Array{ComplexF32}, 
                iflag   :: Integer, 
                eps     :: Float32,
-               sk      :: StridedArray{Float32},
-               tk      :: StridedArray{Float32},
-               uk      :: StridedArray{Float32},
-               fk      :: StridedArray{ComplexF32}
+               sk      :: Array{Float32},
+               tk      :: Array{Float32},
+               uk      :: Array{Float32},
+               fk      :: Array{ComplexF32}
                [, opts :: nufft_opts]
               )
 
 Single precision type-3 3D complex nonuniform FFT. Output stored in fk.
 """
-function nufft3d3!(xj      :: StridedArray{Float32}, 
-                    yj      :: StridedArray{Float32},
-                    zj      :: StridedArray{Float32},                   
-                    cj      :: StridedArray{ComplexF32}, 
+function nufft3d3!(xj      :: Array{Float32}, 
+                    yj      :: Array{Float32},
+                    zj      :: Array{Float32},                   
+                    cj      :: Array{ComplexF32}, 
                     iflag   :: Integer, 
                     eps     :: Float32,
-                    sk      :: StridedArray{Float32},
-                    tk      :: StridedArray{Float32},
-                    uk      :: StridedArray{Float32},
-                    fk      :: StridedArray{ComplexF32},
+                    sk      :: Array{Float32},
+                    tk      :: Array{Float32},
+                    uk      :: Array{Float32},
+                    fk      :: Array{ComplexF32},
                     opts    :: nufft_opts = finufft_default_opts())
     nj = length(xj)
     @assert length(yj)==nj

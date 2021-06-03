@@ -60,12 +60,12 @@ end
 
 
 function finufft_setpts(plan::finufft_plan{Float64},
-                        xj::StridedArray{Float64},
-                        yj::StridedArray{Float64}=Float64[],
-                        zj::StridedArray{Float64}=Float64[],
-                        s::StridedArray{Float64}=Float64[],
-                        t::StridedArray{Float64}=Float64[],
-                        u::StridedArray{Float64}=Float64[])
+                        xj::Array{Float64},
+                        yj::Array{Float64}=Float64[],
+                        zj::Array{Float64}=Float64[],
+                        s::Array{Float64}=Float64[],
+                        t::Array{Float64}=Float64[],
+                        u::Array{Float64}=Float64[])
 
     nj = length(xj)
     nk = length(s)
@@ -87,12 +87,12 @@ function finufft_setpts(plan::finufft_plan{Float64},
     check_ret(ret)
 end
 function finufft_setpts(plan::finufft_plan{Float32},
-    xj::StridedArray{Float32},
-    yj::StridedArray{Float32}=Float32[],
-    zj::StridedArray{Float32}=Float32[],
-    s::StridedArray{Float32}=Float32[],
-    t::StridedArray{Float32}=Float32[],
-    u::StridedArray{Float32}=Float32[])
+    xj::Array{Float32},
+    yj::Array{Float32}=Float32[],
+    zj::Array{Float32}=Float32[],
+    s::Array{Float32}=Float32[],
+    t::Array{Float32}=Float32[],
+    u::Array{Float32}=Float32[])
 
     nj = length(xj)
     nk = length(s)
@@ -115,7 +115,7 @@ function finufft_setpts(plan::finufft_plan{Float32},
 end
 
 
-function finufft_exec(plan::finufft_plan{Float64}, cj::StridedArray{ComplexF64}, fk::StridedArray{ComplexF64})
+function finufft_exec(plan::finufft_plan{Float64}, cj::Array{ComplexF64}, fk::Array{ComplexF64})
 
     ret = ccall( (:finufft_execute, libfinufft),
                 Cint,
@@ -127,7 +127,7 @@ function finufft_exec(plan::finufft_plan{Float64}, cj::StridedArray{ComplexF64},
 
     check_ret(ret)
 end
-function finufft_exec(plan::finufft_plan{Float32}, cj::StridedArray{ComplexF32}, fk::StridedArray{ComplexF32})
+function finufft_exec(plan::finufft_plan{Float32}, cj::Array{ComplexF32}, fk::Array{ComplexF32})
         
     ret = ccall( (:finufftf_execute, libfinufft),
                 Cint,

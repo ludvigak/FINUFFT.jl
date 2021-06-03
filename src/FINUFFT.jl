@@ -237,8 +237,8 @@ end
 ## Type-1
 
 """
-    nufft1d1(xj      :: StridedArray{Float64}, 
-             cj      :: StridedArray{ComplexF64}, 
+    nufft1d1(xj      :: Array{Float64}, 
+             cj      :: Array{ComplexF64}, 
              iflag   :: Integer, 
              eps     :: Float64,
              ms      :: Integer
@@ -247,8 +247,8 @@ end
 
 Compute type-1 1D complex nonuniform FFT. 
 """
-function nufft1d1(xj::StridedArray{T},
-                  cj::StridedArray{Complex{T}},
+function nufft1d1(xj::Array{T},
+                  cj::Array{Complex{T}},
                   iflag::Integer,
                   eps::T,
                   ms::Integer,
@@ -259,9 +259,9 @@ function nufft1d1(xj::StridedArray{T},
 end
 
 """
-    nufft2d1(xj      :: StridedArray{Float64}, 
-             yj      :: StridedArray{Float64}, 
-             cj      :: StridedArray{ComplexF64}, 
+    nufft2d1(xj      :: Array{Float64}, 
+             yj      :: Array{Float64}, 
+             cj      :: Array{ComplexF64}, 
              iflag   :: Integer, 
              eps     :: Float64,
              ms      :: Integer,
@@ -271,9 +271,9 @@ end
 
 Compute type-1 2D complex nonuniform FFT.
 """
-function nufft2d1(xj      :: StridedArray{T}, 
-                  yj      :: StridedArray{T}, 
-                  cj      :: StridedArray{Complex{T}}, 
+function nufft2d1(xj      :: Array{T}, 
+                  yj      :: Array{T}, 
+                  cj      :: Array{Complex{T}}, 
                   iflag   :: Integer, 
                   eps     :: T,
                   ms      :: Integer,
@@ -285,10 +285,10 @@ function nufft2d1(xj      :: StridedArray{T},
 end
 
 """
-    nufft3d1(xj      :: StridedArray{Float64}, 
-             yj      :: StridedArray{Float64}, 
-             zj      :: StridedArray{Float64}, 
-             cj      :: StridedArray{ComplexF64}, 
+    nufft3d1(xj      :: Array{Float64}, 
+             yj      :: Array{Float64}, 
+             zj      :: Array{Float64}, 
+             cj      :: Array{ComplexF64}, 
              iflag   :: Integer, 
              eps     :: Float64,
              ms      :: Integer,
@@ -299,10 +299,10 @@ end
 
 Compute type-1 3D complex nonuniform FFT.
 """
-function nufft3d1(xj      :: StridedArray{T}, 
-                  yj      :: StridedArray{T},
-                  zj      :: StridedArray{T},                   
-                  cj      :: StridedArray{Complex{T}}, 
+function nufft3d1(xj      :: Array{T}, 
+                  yj      :: Array{T},
+                  zj      :: Array{T},                   
+                  cj      :: Array{Complex{T}}, 
                   iflag   :: Integer, 
                   eps     :: T,
                   ms      :: Integer,
@@ -318,19 +318,19 @@ end
 ## Type-2
 
 """
-    nufft1d2(xj      :: StridedArray{Float64}, 
+    nufft1d2(xj      :: Array{Float64}, 
              iflag   :: Integer, 
              eps     :: Float64,
-             fk      :: StridedArray{ComplexF64} 
+             fk      :: Array{ComplexF64} 
              [, opts :: nufft_opts]
             ) -> Array{ComplexF64}
 
 Compute type-2 1D complex nonuniform FFT. 
 """
-function nufft1d2(xj      :: StridedArray{T},                    
+function nufft1d2(xj      :: Array{T},                    
                   iflag   :: Integer, 
                   eps     :: T,
-                  fk      :: StridedArray{Complex{T}},
+                  fk      :: Array{Complex{T}},
                   opts    :: nufft_opts = finufft_default_opts()) where T <: Union{Float32,Float64}
     nj = length(xj)
     cj = Array{Complex{T}}(undef, nj)
@@ -339,21 +339,21 @@ function nufft1d2(xj      :: StridedArray{T},
 end
 
 """
-    nufft2d2(xj      :: StridedArray{Float64}, 
-             yj      :: StridedArray{Float64}, 
+    nufft2d2(xj      :: Array{Float64}, 
+             yj      :: Array{Float64}, 
              iflag   :: Integer, 
              eps     :: Float64,
-             fk      :: StridedArray{ComplexF64} 
+             fk      :: Array{ComplexF64} 
              [, opts :: nufft_opts]
             ) -> Array{ComplexF64}
 
 Compute type-2 2D complex nonuniform FFT. 
 """
-function nufft2d2(xj      :: StridedArray{T}, 
-                  yj      :: StridedArray{T}, 
+function nufft2d2(xj      :: Array{T}, 
+                  yj      :: Array{T}, 
                   iflag   :: Integer, 
                   eps     :: T,
-                  fk      :: StridedArray{Complex{T}},
+                  fk      :: Array{Complex{T}},
                   opts    :: nufft_opts = finufft_default_opts()) where T <: Union{Float32,Float64}
     nj = length(xj)
     cj = Array{Complex{T}}(undef, nj)
@@ -362,23 +362,23 @@ function nufft2d2(xj      :: StridedArray{T},
 end
 
 """
-    nufft3d2(xj      :: StridedArray{Float64}, 
-             yj      :: StridedArray{Float64}, 
-             zj      :: StridedArray{Float64}, 
+    nufft3d2(xj      :: Array{Float64}, 
+             yj      :: Array{Float64}, 
+             zj      :: Array{Float64}, 
              iflag   :: Integer, 
              eps     :: Float64,
-             fk      :: StridedArray{ComplexF64} 
+             fk      :: Array{ComplexF64} 
              [, opts :: nufft_opts]
             ) -> Array{ComplexF64}
 
 Compute type-2 3D complex nonuniform FFT. 
 """
-function nufft3d2(xj      :: StridedArray{T}, 
-                  yj      :: StridedArray{T},
-                  zj      :: StridedArray{T}, 
+function nufft3d2(xj      :: Array{T}, 
+                  yj      :: Array{T},
+                  zj      :: Array{T}, 
                   iflag   :: Integer, 
                   eps     :: T,
-                  fk      :: StridedArray{Complex{T}},
+                  fk      :: Array{Complex{T}},
                   opts    :: nufft_opts = finufft_default_opts()) where T <: Union{Float32,Float64}
     nj = length(xj)
     cj = Array{Complex{T}}(undef, nj)
@@ -390,21 +390,21 @@ end
 ## Type-3
 
 """
-    nufft1d3(xj      :: StridedArray{Float64}, 
-             cj      :: StridedArray{ComplexF64}, 
+    nufft1d3(xj      :: Array{Float64}, 
+             cj      :: Array{ComplexF64}, 
              iflag   :: Integer, 
              eps     :: Float64,
-             sk      :: StridedArray{Float64},
+             sk      :: Array{Float64},
              [, opts :: nufft_opts]
             ) -> Array{ComplexF64}
 
 Compute type-3 1D complex nonuniform FFT.
 """
-function nufft1d3(xj      :: StridedArray{T}, 
-                  cj      :: StridedArray{Complex{T}}, 
+function nufft1d3(xj      :: Array{T}, 
+                  cj      :: Array{Complex{T}}, 
                   iflag   :: Integer, 
                   eps     :: T,
-                  sk      :: StridedArray{T},
+                  sk      :: Array{T},
                   opts    :: nufft_opts = finufft_default_opts()) where T <: Union{Float32,Float64}
     nj = length(xj)
     @assert length(cj)==nj        
@@ -415,25 +415,25 @@ function nufft1d3(xj      :: StridedArray{T},
 end
 
 """
-    nufft2d3(xj      :: StridedArray{Float64}, 
-             yj      :: StridedArray{Float64},
-             cj      :: StridedArray{ComplexF64}, 
+    nufft2d3(xj      :: Array{Float64}, 
+             yj      :: Array{Float64},
+             cj      :: Array{ComplexF64}, 
              iflag   :: Integer, 
              eps     :: Float64,
-             sk      :: StridedArray{Float64},
-             tk      :: StridedArray{Float64}
+             sk      :: Array{Float64},
+             tk      :: Array{Float64}
              [, opts :: nufft_opts]
             ) -> Array{ComplexF64}
 
 Compute type-3 2D complex nonuniform FFT.
 """
-function nufft2d3(xj      :: StridedArray{T},
-                  yj      :: StridedArray{T}, 
-                  cj      :: StridedArray{Complex{T}}, 
+function nufft2d3(xj      :: Array{T},
+                  yj      :: Array{T}, 
+                  cj      :: Array{Complex{T}}, 
                   iflag   :: Integer, 
                   eps     :: T,
-                  sk      :: StridedArray{T},
-                  tk      :: StridedArray{T},                  
+                  sk      :: Array{T},
+                  tk      :: Array{T},                  
                   opts    :: nufft_opts = finufft_default_opts()) where T <: Union{Float32,Float64}
     nj = length(xj)
     @assert length(cj)==nj        
@@ -444,29 +444,29 @@ function nufft2d3(xj      :: StridedArray{T},
 end
 
 """
-    nufft3d3(xj      :: StridedArray{Float64}, 
-             yj      :: StridedArray{Float64},
-             zj      :: StridedArray{Float64},
-             cj      :: StridedArray{ComplexF64}, 
+    nufft3d3(xj      :: Array{Float64}, 
+             yj      :: Array{Float64},
+             zj      :: Array{Float64},
+             cj      :: Array{ComplexF64}, 
              iflag   :: Integer, 
              eps     :: Float64,
-             sk      :: StridedArray{Float64},
-             tk      :: StridedArray{Float64}
-             uk      :: StridedArray{Float64}
+             sk      :: Array{Float64},
+             tk      :: Array{Float64}
+             uk      :: Array{Float64}
              [, opts :: nufft_opts]
             ) -> Array{ComplexF64}
 
 Compute type-3 3D complex nonuniform FFT.
 """
-function nufft3d3(xj      :: StridedArray{T},
-                  yj      :: StridedArray{T},
-                  zj      :: StridedArray{T},                   
-                  cj      :: StridedArray{Complex{T}}, 
+function nufft3d3(xj      :: Array{T},
+                  yj      :: Array{T},
+                  zj      :: Array{T},                   
+                  cj      :: Array{Complex{T}}, 
                   iflag   :: Integer, 
                   eps     :: T,
-                  sk      :: StridedArray{T},
-                  tk      :: StridedArray{T},
-                  uk      :: StridedArray{T},                  
+                  sk      :: Array{T},
+                  tk      :: Array{T},
+                  uk      :: Array{T},                  
                   opts    :: nufft_opts = finufft_default_opts()) where T <: Union{Float32,Float64}
     nj = length(xj)
     @assert length(cj)==nj        
@@ -482,21 +482,21 @@ end
 ## 1D
 
 """
-    nufft1d1!(xj      :: StridedArray{Float64}, 
-              cj      :: StridedArray{ComplexF64}, 
+    nufft1d1!(xj      :: Array{Float64}, 
+              cj      :: Array{ComplexF64}, 
               iflag   :: Integer, 
               eps     :: Float64,
-              fk      :: StridedArray{ComplexF64} 
+              fk      :: Array{ComplexF64} 
               [, opts :: nufft_opts]
             )
 
 Compute type-1 1D complex nonuniform FFT. Output stored in fk.
 """
-function nufft1d1!(xj      :: StridedArray{Float64}, 
-                   cj      :: StridedArray{ComplexF64}, 
+function nufft1d1!(xj      :: Array{Float64}, 
+                   cj      :: Array{ComplexF64}, 
                    iflag   :: Integer, 
                    eps     :: Float64,
-                   fk      :: StridedArray{ComplexF64},
+                   fk      :: Array{ComplexF64},
                    opts    :: nufft_opts = finufft_default_opts())
     nj = length(xj) 
     @assert length(cj)==nj        
@@ -521,21 +521,21 @@ end
 
 
 """
-    nufft1d2!(xj      :: StridedArray{Float64}, 
-              cj      :: StridedArray{ComplexF64}, 
+    nufft1d2!(xj      :: Array{Float64}, 
+              cj      :: Array{ComplexF64}, 
               iflag   :: Integer, 
               eps     :: Float64,
-              fk      :: StridedArray{ComplexF64} 
+              fk      :: Array{ComplexF64} 
               [, opts :: nufft_opts]
             )
 
 Compute type-2 1D complex nonuniform FFT. Output stored in cj.
 """
-function nufft1d2!(xj      :: StridedArray{Float64}, 
-                   cj      :: StridedArray{ComplexF64}, 
+function nufft1d2!(xj      :: Array{Float64}, 
+                   cj      :: Array{ComplexF64}, 
                    iflag   :: Integer, 
                    eps     :: Float64,
-                   fk      :: StridedArray{ComplexF64},
+                   fk      :: Array{ComplexF64},
                    opts    :: nufft_opts = finufft_default_opts())
     nj = length(xj)
     @assert length(cj)==nj        
@@ -559,23 +559,23 @@ function nufft1d2!(xj      :: StridedArray{Float64},
 end
 
 """
-    nufft1d3!(xj      :: StridedArray{Float64}, 
-              cj      :: StridedArray{ComplexF64}, 
+    nufft1d3!(xj      :: Array{Float64}, 
+              cj      :: Array{ComplexF64}, 
               iflag   :: Integer, 
               eps     :: Float64,
-              sk      :: StridedArray{Float64},
-              fk      :: StridedArray{ComplexF64},
+              sk      :: Array{Float64},
+              fk      :: Array{ComplexF64},
               [, opts :: nufft_opts]
              )
 
 Compute type-3 1D complex nonuniform FFT. Output stored in fk.
 """
-function nufft1d3!(xj      :: StridedArray{Float64}, 
-                   cj      :: StridedArray{ComplexF64}, 
+function nufft1d3!(xj      :: Array{Float64}, 
+                   cj      :: Array{ComplexF64}, 
                    iflag   :: Integer, 
                    eps     :: Float64,
-                   sk      :: StridedArray{Float64},
-                   fk      :: StridedArray{ComplexF64},
+                   sk      :: Array{Float64},
+                   fk      :: Array{ComplexF64},
                    opts    :: nufft_opts = finufft_default_opts())
     nj = length(xj)
     @assert length(cj)==nj        
@@ -603,23 +603,23 @@ end
 ## 2D
 
 """
-    nufft2d1!(xj      :: StridedArray{Float64}, 
-              yj      :: StridedArray{Float64}, 
-              cj      :: StridedArray{ComplexF64}, 
+    nufft2d1!(xj      :: Array{Float64}, 
+              yj      :: Array{Float64}, 
+              cj      :: Array{ComplexF64}, 
               iflag   :: Integer, 
               eps     :: Float64,
-              fk      :: StridedArray{ComplexF64} 
+              fk      :: Array{ComplexF64} 
               [, opts :: nufft_opts]
             )
 
 Compute type-1 2D complex nonuniform FFT. Output stored in fk.
 """
-function nufft2d1!(xj      :: StridedArray{Float64}, 
-                   yj      :: StridedArray{Float64}, 
-                   cj      :: StridedArray{ComplexF64}, 
+function nufft2d1!(xj      :: Array{Float64}, 
+                   yj      :: Array{Float64}, 
+                   cj      :: Array{ComplexF64}, 
                    iflag   :: Integer, 
                    eps     :: Float64,
-                   fk      :: StridedArray{ComplexF64},
+                   fk      :: Array{ComplexF64},
                    opts    :: nufft_opts = finufft_default_opts())
     nj = length(xj)
     @assert length(yj)==nj
@@ -647,23 +647,23 @@ end
 
 
 """
-    nufft2d2!(xj      :: StridedArray{Float64}, 
-              yj      :: StridedArray{Float64}, 
-              cj      :: StridedArray{ComplexF64}, 
+    nufft2d2!(xj      :: Array{Float64}, 
+              yj      :: Array{Float64}, 
+              cj      :: Array{ComplexF64}, 
               iflag   :: Integer, 
               eps     :: Float64,
-              fk      :: StridedArray{ComplexF64} 
+              fk      :: Array{ComplexF64} 
               [, opts :: nufft_opts]
             )
 
 Compute type-2 2D complex nonuniform FFT. Output stored in cj.
 """
-function nufft2d2!(xj      :: StridedArray{Float64}, 
-                   yj      :: StridedArray{Float64}, 
-                   cj      :: StridedArray{ComplexF64}, 
+function nufft2d2!(xj      :: Array{Float64}, 
+                   yj      :: Array{Float64}, 
+                   cj      :: Array{ComplexF64}, 
                    iflag   :: Integer, 
                    eps     :: Float64,
-                   fk      :: StridedArray{ComplexF64},
+                   fk      :: Array{ComplexF64},
                    opts    :: nufft_opts = finufft_default_opts())
     nj = length(xj)
     @assert length(yj)==nj
@@ -690,27 +690,27 @@ function nufft2d2!(xj      :: StridedArray{Float64},
 end
 
 """
-    nufft2d3!(xj      :: StridedArray{Float64}, 
-              yj      :: StridedArray{Float64},
-              cj      :: StridedArray{ComplexF64}, 
+    nufft2d3!(xj      :: Array{Float64}, 
+              yj      :: Array{Float64},
+              cj      :: Array{ComplexF64}, 
               iflag   :: Integer, 
               eps     :: Float64,
-              sk      :: StridedArray{Float64},
-              tk      :: StridedArray{Float64},
-              fk      :: StridedArray{ComplexF64}
+              sk      :: Array{Float64},
+              tk      :: Array{Float64},
+              fk      :: Array{ComplexF64}
               [, opts :: nufft_opts]
              )
 
 Compute type-3 2D complex nonuniform FFT. Output stored in fk.
 """
-function nufft2d3!(xj      :: StridedArray{Float64}, 
-                   yj      :: StridedArray{Float64},
-                   cj      :: StridedArray{ComplexF64}, 
+function nufft2d3!(xj      :: Array{Float64}, 
+                   yj      :: Array{Float64},
+                   cj      :: Array{ComplexF64}, 
                    iflag   :: Integer, 
                    eps     :: Float64,
-                   sk      :: StridedArray{Float64},
-                   tk      :: StridedArray{Float64},
-                   fk      :: StridedArray{ComplexF64},
+                   sk      :: Array{Float64},
+                   tk      :: Array{Float64},
+                   fk      :: Array{ComplexF64},
                    opts    :: nufft_opts = finufft_default_opts())
     nj = length(xj)
     @assert length(yj)==nj
@@ -741,25 +741,25 @@ end
 ## 3D
 
 """
-    nufft3d1!(xj      :: StridedArray{Float64}, 
-              yj      :: StridedArray{Float64}, 
-              zj      :: StridedArray{Float64}, 
-              cj      :: StridedArray{ComplexF64}, 
+    nufft3d1!(xj      :: Array{Float64}, 
+              yj      :: Array{Float64}, 
+              zj      :: Array{Float64}, 
+              cj      :: Array{ComplexF64}, 
               iflag   :: Integer, 
               eps     :: Float64,
-              fk      :: StridedArray{ComplexF64} 
+              fk      :: Array{ComplexF64} 
               [, opts :: nufft_opts]
             )
 
 Compute type-1 3D complex nonuniform FFT. Output stored in fk.
 """
-function nufft3d1!(xj      :: StridedArray{Float64}, 
-                   yj      :: StridedArray{Float64}, 
-                   zj      :: StridedArray{Float64}, 
-                   cj      :: StridedArray{ComplexF64}, 
+function nufft3d1!(xj      :: Array{Float64}, 
+                   yj      :: Array{Float64}, 
+                   zj      :: Array{Float64}, 
+                   cj      :: Array{ComplexF64}, 
                    iflag   :: Integer, 
                    eps     :: Float64,
-                   fk      :: StridedArray{ComplexF64},
+                   fk      :: Array{ComplexF64},
                    opts    :: nufft_opts = finufft_default_opts())
     nj = length(xj)
     @assert length(yj)==nj
@@ -789,25 +789,25 @@ function nufft3d1!(xj      :: StridedArray{Float64},
 end
 
 """
-    nufft3d2!(xj      :: StridedArray{Float64}, 
-              yj      :: StridedArray{Float64}, 
-              zj      :: StridedArray{Float64}, 
-              cj      :: StridedArray{ComplexF64}, 
+    nufft3d2!(xj      :: Array{Float64}, 
+              yj      :: Array{Float64}, 
+              zj      :: Array{Float64}, 
+              cj      :: Array{ComplexF64}, 
               iflag   :: Integer, 
               eps     :: Float64,
-              fk      :: StridedArray{ComplexF64} 
+              fk      :: Array{ComplexF64} 
               [, opts :: nufft_opts]
             )
 
 Compute type-2 3D complex nonuniform FFT. Output stored in cj.
 """
-function nufft3d2!(xj      :: StridedArray{Float64}, 
-                   yj      :: StridedArray{Float64},
-                   zj      :: StridedArray{Float64},                    
-                   cj      :: StridedArray{ComplexF64}, 
+function nufft3d2!(xj      :: Array{Float64}, 
+                   yj      :: Array{Float64},
+                   zj      :: Array{Float64},                    
+                   cj      :: Array{ComplexF64}, 
                    iflag   :: Integer, 
                    eps     :: Float64,
-                   fk      :: StridedArray{ComplexF64},
+                   fk      :: Array{ComplexF64},
                    opts    :: nufft_opts = finufft_default_opts())
     nj = length(xj)
     @assert length(yj)==nj
@@ -837,31 +837,31 @@ function nufft3d2!(xj      :: StridedArray{Float64},
 end
 
 """
-    nufft3d3!(xj      :: StridedArray{Float64}, 
-              yj      :: StridedArray{Float64},
-              zj      :: StridedArray{Float64},
-              cj      :: StridedArray{ComplexF64}, 
+    nufft3d3!(xj      :: Array{Float64}, 
+              yj      :: Array{Float64},
+              zj      :: Array{Float64},
+              cj      :: Array{ComplexF64}, 
               iflag   :: Integer, 
               eps     :: Float64,
-              sk      :: StridedArray{Float64},
-              tk      :: StridedArray{Float64},
-              uk      :: StridedArray{Float64},
-              fk      :: StridedArray{ComplexF64}
+              sk      :: Array{Float64},
+              tk      :: Array{Float64},
+              uk      :: Array{Float64},
+              fk      :: Array{ComplexF64}
               [, opts :: nufft_opts]
              )
 
 Compute type-3 3D complex nonuniform FFT. Output stored in fk.
 """
-function nufft3d3!(xj      :: StridedArray{Float64}, 
-                   yj      :: StridedArray{Float64},
-                   zj      :: StridedArray{Float64},                   
-                   cj      :: StridedArray{ComplexF64}, 
+function nufft3d3!(xj      :: Array{Float64}, 
+                   yj      :: Array{Float64},
+                   zj      :: Array{Float64},                   
+                   cj      :: Array{ComplexF64}, 
                    iflag   :: Integer, 
                    eps     :: Float64,
-                   sk      :: StridedArray{Float64},
-                   tk      :: StridedArray{Float64},
-                   uk      :: StridedArray{Float64},
-                   fk      :: StridedArray{ComplexF64},
+                   sk      :: Array{Float64},
+                   tk      :: Array{Float64},
+                   uk      :: Array{Float64},
+                   fk      :: Array{ComplexF64},
                    opts    :: nufft_opts = finufft_default_opts())
     nj = length(xj)
     @assert length(yj)==nj
@@ -895,12 +895,6 @@ function nufft3d3!(xj      :: StridedArray{Float64},
     check_ret(ret)
 end
 
-
-function __init__()
-    # generate plan once per precision to ensure thread-safety
-    finufft_destroy(finufft_makeplan(1,1,[100;1;1],1,1,1f-4))
-    finufft_destroy(finufft_makeplan(1,1,[100;1;1],1,1,1e-4))
-end
 
 # Load single precision interfaces
 include("single.jl")
