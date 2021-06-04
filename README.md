@@ -28,7 +28,7 @@ A reference of the provided functions is available at <https://ludvigak.github.i
 * The functions named `nufftDdN` return the output array.
 * The functions named `nufftDdN!` take the output array as an argument. This needs to be preallocated.
 * The functions named `nufftfDdN!` are them same as above, but operate on 32-bit arguments.
-* The last argument of the nufft routines is the options struct, which is optional. Default values are used if it is omitted.
+* The keyword arguments of the nufft routines are used internally to set up the options struct. Default values are used if they are omitted.
 * `finufft_default_opts()` returns an options struct with default values.
 * The advanced interfaces `finufft2d1many` and `finufft2d2many` have not been implemented yet.
 
@@ -53,9 +53,7 @@ out = Array{ComplexF64}(undef, ms)
 nufft1d1!(x, c, 1, tol, out)
 
 # Call using modified opts 
-opts = finufft_default_opts()
-opts.debug = 1
-fk2 = nufft1d1(x, c, 1, tol, ms, opts)
+fk2 = nufft1d1(x, c, 1, tol, ms, opts, debug=1)
 ```
 
 ### More examples
