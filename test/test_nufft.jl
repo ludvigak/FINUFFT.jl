@@ -4,339 +4,229 @@ using Test
 using LinearAlgebra
 using Random
 
-Random.seed!(1)
+select_tol(some_number::T) where T <: Float64 = 1e-15
+select_tol(some_number::T) where T <: Float32 = 1f-4
 
-nj = 10
-nk = 11
-ms = 12
-mt = 13
-mu = 14
+function test_nufft(some_number::T) where T <: FINUFFT.fftwReal
+    Random.seed!(1)
 
-tol = 1e-15
-tol_F32 = convert(Float32, 6e-8)
+    nj = 10
+    nk = 11
+    ms = 12
+    mt = 13
+    mu = 14
 
-# nonuniform data
-x = 3*pi*(1.0 .- 2*rand(nj))
-y = 3*pi*(1.0 .- 2*rand(nj))
-z = 3*pi*(1.0 .- 2*rand(nj))
-c = rand(nj) + 1im*rand(nj)
-s = rand(nk)
-t = rand(nk)
-u = rand(nk)
-f = rand(nk) + 1im*rand(nk)
+    tol = select_tol(some_number)
 
-# uniform data
-F1D = rand(ms) + 1im*rand(ms)
-F2D = rand(ms, mt) + 1im*rand(ms,mt)
-F3D = rand(ms, mt, mu) + 1im*rand(ms,mt, mu)
+    arrT = Array{T}
 
-modevec(m) = -floor(m/2):floor((m-1)/2+1)
-k1 = modevec(ms)
-k2 = modevec(mt)
-k3 = modevec(mu)
+    # nonuniform data
+    x = arrT(3*pi*(1.0 .- 2*rand(nj)))
+    y = arrT(3*pi*(1.0 .- 2*rand(nj)))
+    z = arrT(3*pi*(1.0 .- 2*rand(nj)))
+    c = rand(Complex{T},nj)
+    s = rand(T,nk)
+    t = rand(T,nk)
+    u = rand(T,nk)
+    f = rand(Complex{T},nk)
 
-@testset "NUFFT" begin
-    ## 1D
-    @testset "1D" begin
-        # 1D1
-        @testset "1D1" begin
-            out = complex(zeros(ms))
-            ref = complex(zeros(ms))
-            for j=1:nj
-                for ss=1:ms
-                    ref[ss] += c[j] * exp(1im*k1[ss]*x[j])
+    # uniform data
+    F1D = rand(Complex{T}, ms)
+    F2D = rand(Complex{T}, ms, mt)
+    F3D = rand(Complex{T}, ms, mt, mu)
+
+    modevec(m) = -floor(m/2):floor((m-1)/2+1)
+    k1 = modevec(ms)
+    k2 = modevec(mt)
+    k3 = modevec(mu)
+
+
+    @testset "NUFFT ($T)" begin
+        ## 1D
+        @testset "1D" begin
+            # 1D1
+            @testset "1D1" begin
+                out = zeros(Complex{T},ms)
+                ref = zeros(Complex{T},ms)
+                for j=1:nj
+                    for ss=1:ms
+                        ref[ss] += c[j] * exp(1im*k1[ss]*x[j])
+                    end
                 end
-            end
-            @testset "64-bit" begin
                 # Try this one with explicit opts struct
-                opts = finufft_default_opts()
-                opts.spread_kerpad = 0 # This should also work
-                nufft1d1!(x, c, 1, tol, out, opts)
+                nufft1d1!(x, c, 1, tol, out, debug=1, spread_kerpad=0)
                 relerr_1d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_1d1 < 1e-13
-                # Different caller
-                out2 = nufft1d1(x, c, 1, tol, ms)
+                @test relerr_1d1 < 100tol
+    #            # Different caller
+                out2 = nufft1d1(x, c, 1, tol, ms, debug=1, spread_kerpad=0)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-                @test reldiff < 1e-14
-            end            
-            @testset "32-bit" begin
-                out_C32 = convert(Array{ComplexF32}, out)
-                nufft1d1!(convert(Array{Float32}, x),
-                           convert(Array{ComplexF32},c),
-                           1,
-                           tol_F32,
-                           out_C32)
-                relerr_f1d1 = norm(vec(out_C32)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_f1d1 < 1e-5            
+                @test reldiff < 10tol
+
+                #guru1d1
+                plan = finufft_makeplan(1,[ms;],1,1,tol,spread_debug=1,debug=1)
+                finufft_setpts(plan,x)
+                out3 = finufft_exec(plan,c)
+                finufft_destroy(plan)
+                relerr_guru = norm(vec(out3)-vec(ref), Inf) / norm(vec(ref), Inf)
+                @test relerr_guru < 10tol
             end
-        end
-        
-        # 1D2
-        @testset "1D2" begin
-            out = complex(zeros(nj))
-            ref = complex(zeros(nj))
-            for j=1:nj
-                for ss=1:ms
-                    ref[j] += F1D[ss] * exp(1im*k1[ss]*x[j])
+            
+            # 1D2
+            @testset "1D2" begin
+                out = zeros(Complex{T},nj)
+                ref = zeros(Complex{T},nj)
+                for j=1:nj
+                    for ss=1:ms
+                        ref[j] += F1D[ss] * exp(1im*k1[ss]*x[j])
+                    end
                 end
-            end
-            @testset "64-bit" begin            
                 nufft1d2!(x, out, 1, tol, F1D)
                 relerr_1d2 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_1d2 < 1e-13
+                @test relerr_1d2 < 100tol
                 out2 = nufft1d2(x, 1, tol, F1D)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-                @test reldiff < 1e-14
+                @test reldiff < 10tol
             end
-            @testset "32-bit" begin
-                out_C32 = convert(Array{ComplexF32}, out)
-                nufft1d2!(convert(Array{Float32}, x),
-                           out_C32, 1, tol_F32,
-                           convert(Array{ComplexF32}, F1D))
-                reldiff = norm(vec(out)-vec(out_C32), Inf) / norm(vec(out), Inf)
-                @test reldiff < 1e-5              
-            end
-        end
-        
-        # 1D3
-        @testset "1D3" begin
-            out = complex(zeros(nk))
-            ref = complex(zeros(nk))
-            for k=1:nk
-                for j=1:nj
-                    ref[k] += c[j] * exp(1im*s[k]*x[j])
+            
+            # 1D3
+            @testset "1D3" begin
+                out = zeros(Complex{T},nk)
+                ref = zeros(Complex{T},nk)
+                for k=1:nk
+                    for j=1:nj
+                        ref[k] += c[j] * exp(1im*s[k]*x[j])
+                    end
                 end
-            end
-            @testset "64-bit" begin
                 nufft1d3!(x,c,1,tol,s,out)
                 relerr_1d3 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_1d3 < 1e-13
+                @test relerr_1d3 < 100tol
                 out2 = nufft1d3(x,c,1,tol,s)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-                @test reldiff < 1e-14
-            end
-            @testset "32-bit" begin
-                out_C32 = convert(Array{ComplexF32}, out)
-                nufft1d3!(convert(Array{Float32}, x),
-                           convert(Array{ComplexF32}, c),
-                           1,
-                           tol_F32,
-                           convert(Array{Float32}, s),
-                           out_C32)
-                relerr_1d3 = norm(vec(out_C32)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_1d3 < 5e-5           
+                @test reldiff < 10tol
             end
         end
-    end
 
-    ## 2D
-    @testset "2D" begin
-        @testset "2D1" begin
-            # 2D1
-            out = complex(zeros(ms, mt))
-            ref = complex(zeros(ms, mt))
-            for j=1:nj
-                for ss=1:ms
-                    for tt=1:mt
-                        ref[ss,tt] += c[j] * exp(1im*(k1[ss]*x[j]+k2[tt]*y[j]))
+        ## 2D
+        @testset "2D" begin
+            @testset "2D1" begin
+                # 2D1
+                out = zeros(Complex{T},ms,mt)
+                ref = zeros(Complex{T},ms,mt)
+                for j=1:nj
+                    for ss=1:ms
+                        for tt=1:mt
+                            ref[ss,tt] += c[j] * exp(1im*(k1[ss]*x[j]+k2[tt]*y[j]))
+                        end
                     end
                 end
-            end
-            @testset "64-bit" begin
                 nufft2d1!(x, y, c, 1, tol, out)
                 relerr_2d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_2d1 < 1e-13
+                @test relerr_2d1 < 100tol
                 out2 = nufft2d1(x, y, c, 1, tol, ms, mt)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-                @test reldiff < 1e-14
+                @test reldiff < 10tol        
             end
-            @testset "32-bit" begin
-                out_C32 = convert(Array{ComplexF32}, out)
-                nufft2d1!(convert(Array{Float32}, x),
-                           convert(Array{Float32}, y),
-                           convert(Array{ComplexF32}, c),
-                           1,
-                           tol_F32,
-                           out_C32
-                           )
-                relerr_2d1 = norm(vec(out_C32)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_2d1 < 1e-5               
-            end
-        end
 
-        @testset "2D2" begin
-            # 2D2
-            out = complex(zeros(nj))
-            ref = complex(zeros(nj))
-            for j=1:nj
-                for ss=1:ms
-                    for tt=1:mt
-                        ref[j] += F2D[ss, tt] * exp(1im*(k1[ss]*x[j]+k2[tt]*y[j]))
+            @testset "2D2" begin
+                # 2D2
+                out = zeros(Complex{T},nj)
+                ref = zeros(Complex{T},nj)
+                for j=1:nj
+                    for ss=1:ms
+                        for tt=1:mt
+                            ref[j] += F2D[ss, tt] * exp(1im*(k1[ss]*x[j]+k2[tt]*y[j]))
+                        end
                     end
                 end
-            end
-            @testset "64-bit" begin            
                 nufft2d2!(x, y, out, 1, tol, F2D)
                 relerr_2d2 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_2d2 < 1e-13
+                @test relerr_2d2 < 100tol
                 out2 = nufft2d2(x, y, 1, tol, F2D)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-                @test reldiff < 1e-14
+                @test reldiff < 10tol        
             end
-            @testset "32-bit" begin
-                out_C32 = convert(Array{ComplexF32}, out)
-                nufft2d2!(
-                    convert(Array{Float32}, x),
-                    convert(Array{Float32}, y),
-                    out_C32,
-                    1,
-                    tol_F32,
-                    convert(Array{ComplexF32}, F2D)
-                )
-                relerr_2d2 = norm(vec(out_C32)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_2d2 < 1e-5
-            end
-        end
 
-        @testset "2D3" begin
-            # 2D3
-            out = complex(zeros(nk))
-            ref = complex(zeros(nk))
-            for k=1:nk
-                for j=1:nj
-                    ref[k] += c[j] * exp(1im*(s[k]*x[j]+t[k]*y[j]))
+            @testset "3D3" begin
+                # 2D3
+                out = zeros(Complex{T},nk)
+                ref = zeros(Complex{T},nk)
+                for k=1:nk
+                    for j=1:nj
+                        ref[k] += c[j] * exp(1im*(s[k]*x[j]+t[k]*y[j]))
+                    end
                 end
-            end
-            @testset "64-bit" begin
                 nufft2d3!(x,y,c,1,tol,s,t,out)
                 relerr_2d3 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_2d3 < 1e-13
+                @test relerr_2d3 < 100tol
                 out2 = nufft2d3(x,y,c,1,tol,s,t)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-                @test reldiff < 1e-14
-            end
-            @testset "32-bit" begin
-                out_C32 = convert(Array{ComplexF32}, out)
-                nufft2d3!(convert(Array{Float32}, x),
-                           convert(Array{Float32}, y),
-                           convert(Array{ComplexF32}, c),
-                           1,
-                           tol_F32,
-                           convert(Array{Float32}, s),
-                           convert(Array{Float32}, t),
-                           out_C32)
-                relerr_2d3 = norm(vec(out_C32)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_2d3 < 1e-4
-            end
-        end        
-    end
+                @test reldiff < 10tol
+            end        
+        end
 
-    ## 3D
-    @testset "3D" begin
-        @testset "3D1" begin
-            # 3D1
-            out = complex(zeros(ms, mt, mu))
-            ref = complex(zeros(ms, mt, mu))
-            for j=1:nj
-                for ss=1:ms
-                    for tt=1:mt
-                        for uu=1:mu
-                            ref[ss,tt,uu] += c[j] * exp(1im*(k1[ss]*x[j]+k2[tt]*y[j]+k3[uu]*z[j]))
+        ## 3D
+        @testset "3D" begin
+            @testset "3D1" begin
+                # 3D1
+                out = zeros(Complex{T},ms,mt,mu)
+                ref = zeros(Complex{T},ms,mt,mu)
+                for j=1:nj
+                    for ss=1:ms
+                        for tt=1:mt
+                            for uu=1:mu
+                                ref[ss,tt,uu] += c[j] * exp(1im*(k1[ss]*x[j]+k2[tt]*y[j]+k3[uu]*z[j]))
+                            end
                         end
                     end
                 end
-            end
-            @testset "64-bit" begin
                 nufft3d1!(x, y, z, c, 1, tol, out)
                 relerr_3d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_3d1 < 1e-13
+                @test relerr_3d1 < 100tol
                 out2 = nufft3d1(x, y, z, c, 1, tol, ms, mt, mu)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-                @test reldiff < 1e-14
+                @test reldiff < 10tol
             end
-            out_C32 = convert(Array{ComplexF32}, out)
-            @testset "32-bit" begin
-                nufft3d1!(convert(Array{Float32}, x),
-                           convert(Array{Float32}, y),
-                           convert(Array{Float32}, z),
-                           convert(Array{ComplexF32}, c),
-                           1,
-                           tol_F32,
-                           out_C32)
-                relerr_3d1 = norm(vec(out_C32)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_3d1 < 1e-5
-            end            
-        end
 
-        @testset "3D2" begin
-            # 3D2
-            out = complex(zeros(nj))
-            ref = complex(zeros(nj))
-            for j=1:nj
-                for ss=1:ms
-                    for tt=1:mt
-                        for uu=1:mu
-                            ref[j] += F3D[ss, tt, uu] * exp(1im*(k1[ss]*x[j]+k2[tt]*y[j]+k3[uu]*z[j]))
+            @testset "3D2" begin
+                # 3D2
+                out = zeros(Complex{T},nj)
+                ref = zeros(Complex{T},nj)
+                for j=1:nj
+                    for ss=1:ms
+                        for tt=1:mt
+                            for uu=1:mu
+                                ref[j] += F3D[ss, tt, uu] * exp(1im*(k1[ss]*x[j]+k2[tt]*y[j]+k3[uu]*z[j]))
+                            end
                         end
                     end
                 end
-            end
-            @testset "64-bit" begin            
                 nufft3d2!(x, y, z, out, 1, tol, F3D)
                 relerr_3d2 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_3d2 < 1e-13
+                @test relerr_3d2 < 100tol
                 out2 = nufft3d2(x, y, z, 1, tol, F3D)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-                @test reldiff < 1e-14
+                @test reldiff < 10tol
             end
-            @testset "32-bit" begin
-                out_C32 = convert(Array{ComplexF32}, out)                
-                nufft3d2!(convert(Array{Float32}, x),
-                           convert(Array{Float32}, y),
-                           convert(Array{Float32}, z),
-                           out_C32,
-                           1,
-                           tol_F32,
-                           convert(Array{ComplexF32}, F3D)
-                           )
-                relerr_3d2 = norm(vec(out_C32)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_3d2 < 1e-5
-            end
-        end
 
-        @testset "3D3" begin
-            # 3D3
-            out = complex(zeros(nk))
-            ref = complex(zeros(nk))
-            for k=1:nk
-                for j=1:nj
-                    ref[k] += c[j] * exp(1im*(s[k]*x[j]+t[k]*y[j]+u[k]*z[j]))
-                end
-            end
-            @testset "64-bit" begin
+            @testset "3D3" begin
+                # 3D3
+                out = zeros(Complex{T},nk)
+                ref = zeros(Complex{T},nk)
+                for k=1:nk
+                    for j=1:nj
+                        ref[k] += c[j] * exp(1im*(s[k]*x[j]+t[k]*y[j]+u[k]*z[j]))
+                    end
+                end        
                 nufft3d3!(x,y,z,c,1,tol,s,t,u,out)
                 relerr_3d3 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_3d3 < 1e-13
+                @test relerr_3d3 < 100tol
                 out2 = nufft3d3(x,y,z,c,1,tol,s,t,u)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-                @test reldiff < 1e-14
-            end
-            @testset "32-bit" begin
-                out_C32 = convert(Array{ComplexF32}, out)
-                nufft3d3!(convert(Array{Float32}, x),
-                           convert(Array{Float32}, y),
-                           convert(Array{Float32}, z),
-                           convert(Array{ComplexF32}, c),
-                           1,
-                           tol_F32,
-                           convert(Array{Float32}, s),
-                           convert(Array{Float32}, t),
-                           convert(Array{Float32}, u),
-                           out_C32
-                           )
-                relerr_3d3 = norm(vec(out_C32)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_3d3 < 2e-3
-            end                
-        end        
+                @test reldiff < 10tol
+            end        
+        end
     end
 end
+
+test_nufft(1e0)
+test_nufft(1f0)
