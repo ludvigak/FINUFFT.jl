@@ -4,10 +4,8 @@ using Test
 using LinearAlgebra
 using Random
 
-select_tol(some_number::T) where T <: Float64 = 1e-15
-select_tol(some_number::T) where T <: Float32 = 1f-4
 
-function test_nufft(some_number::T) where T <: FINUFFT.fftwReal
+function test_nufft(tol::T) where T <: FINUFFT.fftwReal
     Random.seed!(1)
 
     nj = 10
@@ -15,8 +13,6 @@ function test_nufft(some_number::T) where T <: FINUFFT.fftwReal
     ms = 12
     mt = 13
     mu = 14
-
-    tol = select_tol(some_number)
 
     arrT = Array{T}
 
@@ -228,5 +224,5 @@ function test_nufft(some_number::T) where T <: FINUFFT.fftwReal
     end
 end
 
-test_nufft(1e0)
-test_nufft(1f0)
+test_nufft(1e-15)
+test_nufft(1f-4)
