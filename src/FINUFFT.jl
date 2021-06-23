@@ -122,25 +122,23 @@ const nufft_c_opts = nufft_opts # backward compability
 Return a [`nufft_opts`](@ref) struct with the default FINUFFT settings. Set up the double precision variant by default.\\
 See: <https://finufft.readthedocs.io/en/latest/usage.html#options>
 """
-finufft_default_opts() = finufft_default_opts(nufft_opts{Float64}())
+function finufft_default_opts(dtype::DataType=Float64)
+    opts = nufft_opts{dtype}()
 
-function finufft_default_opts(opts::nufft_opts{T}) where T <: Float64
+    if dtype==Float64
+        ccall( (:finufft_default_opts, libfinufft),
+               Nothing,
+               (Ref{nufft_opts},),
+               opts
+               )
 
-    ccall( (:finufft_default_opts, libfinufft),
-            Nothing,
-            (Ref{nufft_opts},),
-            opts
-            )
-
-    return opts
-end
-
-function finufft_default_opts(opts::nufft_opts{T}) where T <: Float32
-    ccall( (:finufftf_default_opts, libfinufft),
-            Nothing,
-            (Ref{nufft_opts},),
-            opts
-            )
+    else
+        ccall( (:finufftf_default_opts, libfinufft),
+               Nothing,
+               (Ref{nufft_opts},),
+               opts
+               )
+    end
 
     return opts
 end
