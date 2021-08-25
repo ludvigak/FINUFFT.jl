@@ -96,21 +96,21 @@ if >=0, threads above which spreader OMP critical goes atomic
 if >0, overrides spreader (dir=1) max subproblem size
 """
 mutable struct nufft_opts{T}    
-    modeord            :: Cint
-    chkbnds            :: Cint
-    debug              :: Cint
-    spread_debug       :: Cint
-    showwarn           :: Cint
-    nthreads           :: Cint
-    fftw               :: Cint
-    spread_sort        :: Cint
-    spread_kerevalmeth :: Cint
-    spread_kerpad      :: Cint
-    upsampfac          :: Cdouble
-    spread_thread      :: Cint
-    maxbatchsize       :: Cint
-    spread_nthr_atomic :: Cint
-    spread_max_sp_size :: Cint
+    modeord::Cint
+    chkbnds::Cint
+    debug::Cint
+    spread_debug::Cint
+    showwarn::Cint
+    nthreads::Cint
+    fftw::Cint
+    spread_sort::Cint
+    spread_kerevalmeth::Cint
+    spread_kerpad::Cint
+    upsampfac::Cdouble
+    spread_thread::Cint
+    maxbatchsize::Cint
+    spread_nthr_atomic::Cint
+    spread_max_sp_size::Cint
     nufft_opts{T}() where T <: fftwReal = new{T}()
 end
 
@@ -125,13 +125,13 @@ See: <https://finufft.readthedocs.io/en/latest/usage.html#options>
 finufft_default_opts() = finufft_default_opts(nufft_opts{Float64}())
 
 function finufft_default_opts(opts::nufft_opts{T}) where T <: Float64
-
+    
     ccall( (:finufft_default_opts, libfinufft),
             Nothing,
             (Ref{nufft_opts},),
             opts
             )
-
+    
     return opts
 end
 
@@ -141,7 +141,7 @@ function finufft_default_opts(opts::nufft_opts{T}) where T <: Float32
             (Ref{nufft_opts},),
             opts
             )
-
+    
     return opts
 end
 
@@ -169,33 +169,33 @@ Base.showerror(io::IO, e::FINUFFTError) = print(io, "FINUFFT Error ($(e.errno)):
 
 function check_ret(ret)
     # Check return value and output error messages
-    if ret==0
+    if ret == 0
         return
-    elseif ret==ERR_EPS_TOO_SMALL
+    elseif ret == ERR_EPS_TOO_SMALL
         msg = "requested tolerance epsilon too small"
-    elseif ret==ERR_MAXNALLOC
+    elseif ret == ERR_MAXNALLOC
         msg = "attemped to allocate internal arrays larger than MAX_NF (defined in common.h)"
-    elseif ret==ERR_SPREAD_BOX_SMALL
+    elseif ret == ERR_SPREAD_BOX_SMALL
         msg = "spreader: fine grid too small"
-    elseif ret==ERR_SPREAD_PTS_OUT_RANGE
+    elseif ret == ERR_SPREAD_PTS_OUT_RANGE
         msg = "spreader: if chkbnds=1, a nonuniform point out of input range [-3pi,3pi]^d"
-    elseif ret==ERR_SPREAD_ALLOC
+    elseif ret == ERR_SPREAD_ALLOC
         msg = "spreader: array allocation error"
-    elseif ret==ERR_SPREAD_DIR
+    elseif ret == ERR_SPREAD_DIR
         msg = "spreader: illegal direction (should be 1 or 2)"
-    elseif ret==ERR_UPSAMPFAC_TOO_SMALL
+    elseif ret == ERR_UPSAMPFAC_TOO_SMALL
         msg = "upsampfac too small (should be >1)"
-    elseif ret==HORNER_WRONG_BETA
+    elseif ret == HORNER_WRONG_BETA
         msg = "upsampfac not a value with known Horner eval: currently 2.0 or 1.25 only"
-    elseif ret==ERR_NDATA_NOTVALID
+    elseif ret == ERR_NDATA_NOTVALID
         msg = "ndata not valid (should be >= 1)"
-    elseif ret==ERR_TYPE_NOTVALID
+    elseif ret == ERR_TYPE_NOTVALID
         msg = "undefined type, type should be 1, 2, or 3"
-    elseif ret==ERR_DIM_NOTVALID
+    elseif ret == ERR_DIM_NOTVALID
         msg = "dimension should be 1, 2, or 3"
-    elseif ret==ERR_ALLOC
+    elseif ret == ERR_ALLOC
         msg = "allocation error"
-    elseif ret==ERR_SPREAD_THREAD_NOTVALID
+    elseif ret == ERR_SPREAD_THREAD_NOTVALID
         msg = "spread thread not valid"
     else
         msg = "unknown error"
@@ -215,26 +215,26 @@ function valid_setpts(type::Integer,
                       t::Array{T}=T[],
                       u::Array{T}=T[]) where T <: fftwReal
     nj = length(x)
-    if type==3
+    if type == 3
         nk = length(s)
     else
         nk = 0
     end
-
-    if dim>1
+    
+    if dim > 1
         @assert nj == length(y)
-        if type==3
+        if type == 3
             @assert nk == length(t)
         end
     end
-
-    if dim>2
+    
+    if dim > 2
         @assert nj == length(z)
-        if type==3
+        if type == 3
             @assert nk == length(u)
         end
     end
-
+    
     return (nj, nk)
 end
 
@@ -242,7 +242,7 @@ end
 function valid_ntr(x::Array{T},
                    c::Array{Complex{T}}) where T <: fftwReal
     ntrans = Cint(length(c) / length(x))
-    @assert ntrans*length(x) == length(c)
+    @assert ntrans * length(x) == length(c)
     return ntrans
 end
 
@@ -250,11 +250,11 @@ end
 function get_nmodes_from_fk(dim::Integer,
                             fk::Array{Complex{T}}) where T <: fftwReal
     ndim = ndims(fk)
-    @assert dim==1 || dim==2 || dim==3
-    @assert ndim==dim || ndim==dim+1
-    if ndim==dim
+    @assert dim == 1 || dim == 2 || dim == 3
+    @assert ndim == dim || ndim == dim + 1
+    if ndim == dim
         ntrans = 1
-        return (size(fk)...,ntrans)
+        return (size(fk)..., ntrans)
     else
         return size(fk)
     end
@@ -264,13 +264,13 @@ end
 function setkwopts!(opts::nufft_opts; kwargs...)
     dtype = Float64
     for (key, value) in kwargs
-        if hasproperty(opts, key::Symbol)
+        if hasproperty(opts, key)
             setproperty!(opts, key, value)
-        elseif String(key)=="dtype"
+        elseif key == :dtype
             @assert value <: fftwReal
             dtype = value
         else
-            @warn "nufft_opts does not have attribute " * String(key)
+            @warn "nufft_opts does not have attribute $key"
         end
     end
     return dtype
@@ -279,8 +279,8 @@ end
 ### check kwargs with dtype
 function checkkwdtype(dtype::DataType; kwargs...)
     for (key, value) in kwargs
-        if String(key)=="dtype"
-            @assert  value == dtype
+        if key == :dtype
+            @assert value == dtype
         end
     end
 end
