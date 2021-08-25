@@ -263,8 +263,9 @@ function nufft3d3(xj::Array{T},
                   sk::Array{T},
                   tk::Array{T},
                   uk::Array{T};
+                  dtype::DataType=T,
                   kwargs...) where T <: fftwReal
-    dtype::DataType = T,
+    tol = dtype(eps)
     (nj, nk) = valid_setpts(3, 3, xj, yj, zj, sk, tk, uk)
     ntrans = valid_ntr(xj, cj)
     fk = Array{Complex{T}}(undef, nk, ntrans)
