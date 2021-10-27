@@ -20,17 +20,16 @@ Older versions of the package are available also for Julia v1.0-v1.2, but the us
 
 ## Usage
 
-This module provides functions `nufft1d1`, `nufft1d2`, ..., `nufft3d3`, `nufft1d1!`, `nufft1d2!`, ..., `nufft3d3!`, `nufftf1d1!`, ..., `nufftf3d3!`, and `finufft_default_opts` that call the interface defined in <https://finufft.readthedocs.io/en/latest/usage.html>
+This module provides functions `nufft1d1`, `nufft1d2`, ..., `nufft3d3`, `nufft1d1!`, `nufft1d2!`, ..., `nufft3d3!`, `finufft_makeplan`, `finufft_setpts`, `finufft_exec`, `finufft_exec!` and `finufft_destroy` that call the interface defined in <https://finufft.readthedocs.io/en/latest/usage.html>
 
 A reference of the provided functions is available at <https://ludvigak.github.io/FINUFFT.jl/latest/>
 
 * Function calls mimic the C/C++ interface, with the exception that you don't need to pass the dimensions of any arrays in the argument (they are inferred using `size()`).
 * The functions named `nufftDdN` return the output array.
 * The functions named `nufftDdN!` take the output array as an argument. This needs to be preallocated.
-* The functions named `nufftfDdN!` are them same as above, but operate on 32-bit arguments.
-* The keyword arguments of the nufft routines are used internally to set up the options struct. Default values are used if they are omitted.
-* `finufft_default_opts()` returns an options struct with default values.
-* The advanced interfaces `finufft2d1many` and `finufft2d2many` have not been implemented yet.
+* `finufft_exec` returns the output array.
+* `finufft_exec!` takes the output array as an argument. This needs to be preallocated.
+* The keyword arguments of the nufft routines are used to set up the options struct. Default values are used if they are omitted.
 
 ### Example
 ```julia
@@ -52,12 +51,9 @@ fk = nufft1d1(x, c, 1, tol, ms)
 out = Array{ComplexF64}(undef, ms)
 nufft1d1!(x, c, 1, tol, out)
 
-# Call using modified opts 
-fk2 = nufft1d1(x, c, 1, tol, ms, opts, debug=1)
+# Call using kwargs
+fk2 = nufft1d1(x, c, 1, tol, ms, debug=1, spread_kerpad=0, dtype=Float64)
 ```
 
 ### More examples
 See [test/test_nufft.jl](test/test_nufft.jl)
-
-## TODO
-* Implement advanced interface

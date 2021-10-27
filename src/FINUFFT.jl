@@ -28,7 +28,7 @@ const libfinufft = finufft_jll.libfinufft
 
 const BIGINT = Int64 # defined in include/dataTypes.h
 
-const fftwReal = Union{Float64,Float32}
+const finufftReal = Union{Float64,Float32}
 
 ## FINUFFT opts struct from include/nufft_opts.h
 """
@@ -111,7 +111,7 @@ mutable struct nufft_opts{T}
     maxbatchsize       :: Cint
     spread_nthr_atomic :: Cint
     spread_max_sp_size :: Cint
-    nufft_opts{T}() where T <: fftwReal = new{T}()
+    nufft_opts{T}() where T <: finufftReal = new{T}()
 end
 
 const nufft_c_opts = nufft_opts # backward compability
@@ -211,7 +211,7 @@ function valid_setpts(type::Integer,
                       z::Array{T}=T[],
                       s::Array{T}=T[],
                       t::Array{T}=T[],
-                      u::Array{T}=T[]) where T <: fftwReal
+                      u::Array{T}=T[]) where T <: finufftReal
     nj = length(x)
     if type==3
         nk = length(s)
@@ -238,7 +238,7 @@ end
 
 ### validate number of transforms
 function valid_ntr(x::Array{T},
-                   c::Array{Complex{T}}) where T <: fftwReal
+                   c::Array{Complex{T}}) where T <: finufftReal
     ntrans = Cint(length(c) / length(x))
     @assert ntrans*length(x) == length(c)
     return ntrans
@@ -246,7 +246,7 @@ end
 
 ### infer number of modes from fk array
 function get_nmodes_from_fk(dim::Integer,
-                            fk::Array{Complex{T}}) where T <: fftwReal
+                            fk::Array{Complex{T}}) where T <: finufftReal
     ndim = ndims(fk)
     @assert dim==1 || dim==2 || dim==3
     @assert ndim==dim || ndim==dim+1
@@ -265,7 +265,7 @@ function setkwopts!(opts::nufft_opts; kwargs...)
         if hasproperty(opts, key::Symbol)
             setproperty!(opts, key, value)
         elseif String(key)=="dtype"
-            @assert value <: fftwReal
+            @assert value <: finufftReal
             dtype = value
         else
             @warn "nufft_opts does not have attribute " * String(key)

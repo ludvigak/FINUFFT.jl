@@ -5,9 +5,12 @@ using LinearAlgebra
 using Random
 
 
-function test_nufft(tol::T) where T <: FINUFFT.fftwReal
+function test_nufft(tol::T_tol, dtype::DataType=Float64) where T_tol <: FINUFFT.finufftReal
+    @assert dtype <: FINUFFT.finufftReal
+
     Random.seed!(1)
 
+    T = dtype
     nj = 10
     nk = 11
     ms = 12
@@ -36,6 +39,8 @@ function test_nufft(tol::T) where T <: FINUFFT.fftwReal
     k2 = modevec(mt)
     k3 = modevec(mu)
 
+    errfac = 100
+    errdifffac = 10
 
     @testset "NUFFT ($T)" begin
         ## 1D
@@ -50,21 +55,30 @@ function test_nufft(tol::T) where T <: FINUFFT.fftwReal
                     end
                 end
                 # Try this one with explicit opts struct
-                nufft1d1!(x, c, 1, tol, out, debug=1, spread_kerpad=0)
+                nufft1d1!(x, c, 1, tol, out, debug=1, spread_kerpad=0, dtype=T)
                 relerr_1d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_1d1 < 100tol
+                @test relerr_1d1 < errfac*tol
     #            # Different caller
-                out2 = nufft1d1(x, c, 1, tol, ms, debug=1, spread_kerpad=0)
+                out2 = nufft1d1(x, c, 1, tol, ms, debug=1, spread_kerpad=0, dtype=T)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-                @test reldiff < 10tol
+                @test reldiff < errdifffac*tol
 
                 #guru1d1
-                plan = finufft_makeplan(1,[ms;],1,1,tol,spread_debug=1,debug=1)
+                plan = finufft_makeplan(1,[ms;],1,1,tol,spread_debug=1,debug=1, dtype=T)
                 finufft_setpts(plan,x)
                 out3 = finufft_exec(plan,c)
                 finufft_destroy(plan)
                 relerr_guru = norm(vec(out3)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_guru < 10tol
+                @test relerr_guru < errfac*tol
+
+                #guru1d1 many
+                ntrans = 3
+                plan = finufft_makeplan(1,[ms;],1,ntrans,tol,spread_debug=1,debug=1, dtype=T)
+                finufft_setpts(plan,x)
+                out4 = finufft_exec(plan,hcat(c,c,c))
+                finufft_destroy(plan)
+                relerr_guru_many = norm(vec(out4)-vec(hcat(ref,ref,ref)), Inf) / norm(vec(hcat(ref,ref,ref)), Inf)
+                @test relerr_guru_many < errfac*tol
             end
             
             # 1D2
@@ -76,12 +90,12 @@ function test_nufft(tol::T) where T <: FINUFFT.fftwReal
                         ref[j] += F1D[ss] * exp(1im*k1[ss]*x[j])
                     end
                 end
-                nufft1d2!(x, out, 1, tol, F1D)
+                nufft1d2!(x, out, 1, tol, F1D, dtype=T)
                 relerr_1d2 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_1d2 < 100tol
-                out2 = nufft1d2(x, 1, tol, F1D)
+                @test relerr_1d2 < errfac*tol
+                out2 = nufft1d2(x, 1, tol, F1D, dtype=T)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-                @test reldiff < 10tol
+                @test reldiff < errdifffac*tol
             end
             
             # 1D3
@@ -93,12 +107,12 @@ function test_nufft(tol::T) where T <: FINUFFT.fftwReal
                         ref[k] += c[j] * exp(1im*s[k]*x[j])
                     end
                 end
-                nufft1d3!(x,c,1,tol,s,out)
+                nufft1d3!(x,c,1,tol,s,out, dtype=T)
                 relerr_1d3 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_1d3 < 100tol
-                out2 = nufft1d3(x,c,1,tol,s)
+                @test relerr_1d3 < errfac*tol
+                out2 = nufft1d3(x,c,1,tol,s, dtype=T)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-                @test reldiff < 10tol
+                @test reldiff < errdifffac*tol
             end
         end
 
@@ -115,12 +129,12 @@ function test_nufft(tol::T) where T <: FINUFFT.fftwReal
                         end
                     end
                 end
-                nufft2d1!(x, y, c, 1, tol, out)
+                nufft2d1!(x, y, c, 1, tol, out, dtype=T)
                 relerr_2d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_2d1 < 100tol
-                out2 = nufft2d1(x, y, c, 1, tol, ms, mt)
+                @test relerr_2d1 < errfac*tol
+                out2 = nufft2d1(x, y, c, 1, tol, ms, mt, dtype=T)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-                @test reldiff < 10tol        
+                @test reldiff < errdifffac*tol
             end
 
             @testset "2D2" begin
@@ -134,12 +148,12 @@ function test_nufft(tol::T) where T <: FINUFFT.fftwReal
                         end
                     end
                 end
-                nufft2d2!(x, y, out, 1, tol, F2D)
+                nufft2d2!(x, y, out, 1, tol, F2D, dtype=T)
                 relerr_2d2 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_2d2 < 100tol
-                out2 = nufft2d2(x, y, 1, tol, F2D)
+                @test relerr_2d2 < errfac*tol
+                out2 = nufft2d2(x, y, 1, tol, F2D, dtype=T)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-                @test reldiff < 10tol        
+                @test reldiff < errdifffac*tol
             end
 
             @testset "3D3" begin
@@ -151,12 +165,12 @@ function test_nufft(tol::T) where T <: FINUFFT.fftwReal
                         ref[k] += c[j] * exp(1im*(s[k]*x[j]+t[k]*y[j]))
                     end
                 end
-                nufft2d3!(x,y,c,1,tol,s,t,out)
+                nufft2d3!(x,y,c,1,tol,s,t,out, dtype=T)
                 relerr_2d3 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_2d3 < 100tol
-                out2 = nufft2d3(x,y,c,1,tol,s,t)
+                @test relerr_2d3 < errfac*tol
+                out2 = nufft2d3(x,y,c,1,tol,s,t, dtype=T)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-                @test reldiff < 10tol
+                @test reldiff < errdifffac*tol
             end        
         end
 
@@ -175,12 +189,12 @@ function test_nufft(tol::T) where T <: FINUFFT.fftwReal
                         end
                     end
                 end
-                nufft3d1!(x, y, z, c, 1, tol, out)
+                nufft3d1!(x, y, z, c, 1, tol, out, dtype=T)
                 relerr_3d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_3d1 < 100tol
-                out2 = nufft3d1(x, y, z, c, 1, tol, ms, mt, mu)
+                @test relerr_3d1 < errfac*tol
+                out2 = nufft3d1(x, y, z, c, 1, tol, ms, mt, mu, dtype=T)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-                @test reldiff < 10tol
+                @test reldiff < errdifffac*tol
             end
 
             @testset "3D2" begin
@@ -196,12 +210,12 @@ function test_nufft(tol::T) where T <: FINUFFT.fftwReal
                         end
                     end
                 end
-                nufft3d2!(x, y, z, out, 1, tol, F3D)
+                nufft3d2!(x, y, z, out, 1, tol, F3D, dtype=T)
                 relerr_3d2 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_3d2 < 100tol
-                out2 = nufft3d2(x, y, z, 1, tol, F3D)
+                @test relerr_3d2 < errfac*tol
+                out2 = nufft3d2(x, y, z, 1, tol, F3D, dtype=T)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-                @test reldiff < 10tol
+                @test reldiff < errdifffac*tol
             end
 
             @testset "3D3" begin
@@ -213,16 +227,16 @@ function test_nufft(tol::T) where T <: FINUFFT.fftwReal
                         ref[k] += c[j] * exp(1im*(s[k]*x[j]+t[k]*y[j]+u[k]*z[j]))
                     end
                 end        
-                nufft3d3!(x,y,z,c,1,tol,s,t,u,out)
+                nufft3d3!(x,y,z,c,1,tol,s,t,u,out, dtype=T)
                 relerr_3d3 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
-                @test relerr_3d3 < 100tol
-                out2 = nufft3d3(x,y,z,c,1,tol,s,t,u)
+                @test relerr_3d3 < errfac*tol
+                out2 = nufft3d3(x,y,z,c,1,tol,s,t,u, dtype=T)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
-                @test reldiff < 10tol
+                @test reldiff < errdifffac*tol
             end        
         end
     end
 end
 
-test_nufft(1e-15)
-test_nufft(1f-4)
+test_nufft(1e-15, Float64)
+test_nufft(1f-4, Float32)
