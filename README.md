@@ -33,10 +33,8 @@ The underlying C++ routines that are called have full documentation
 
 An auto-generated reference for all provided Julia functions is [here](https://ludvigak.github.io/FINUFFT.jl/latest/).
 
-.. note::
-
-   As of 10/28/21, the interface has changed (improved) significantly,
-   breaking backward-compatibility.
+> Warning: On 10/28/21, the interface has changed (improved) significantly,
+> breaking backward-compatibility.
 
 * Function calls mimic the C/C++ interface, with the exception that you don't need to pass the dimensions of any arrays in the argument (they are inferred using `size()`).
 * A vectorized call (performing multiple transforms, each with different coefficient vectors but the same set of nonuniform points) can now be performed using the same functions as the single-transform interface, detected from the size of the input arrays.
