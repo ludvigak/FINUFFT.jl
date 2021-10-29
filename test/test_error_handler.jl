@@ -22,32 +22,29 @@ using Test
 
     # Allocate too much
     opts = finufft_default_opts()
-    opts.spread_kerevalmeth = 0
-    opts.upsampfac = maxintfloat(typeof(opts.upsampfac))
+    spread_kerevalmeth = 0
+    upsampfac = maxintfloat(typeof(opts.upsampfac))
     try 
-        nufft1d1(xj, cj, iflag, tol, ms, opts)
+        nufft1d1(xj, cj, iflag, tol, ms, spread_kerevalmeth=spread_kerevalmeth, upsampfac=upsampfac)
     catch e
         @test e.errno == FINUFFT.ERR_MAXNALLOC
     end
 
     # Too small upsampfac
-    opts = finufft_default_opts()
-    opts.spread_kerevalmeth = 0
-    opts.upsampfac = 0
+    spread_kerevalmeth = 0
+    upsampfac = 0
     try 
-        nufft1d1(xj, cj, iflag, tol, ms, opts)
+        nufft1d1(xj, cj, iflag, tol, ms, spread_kerevalmeth=spread_kerevalmeth, upsampfac=upsampfac)
     catch e
         @test e.errno == FINUFFT.ERR_UPSAMPFAC_TOO_SMALL
     end
     
     # Wrong beta
-    opts = finufft_default_opts()
-    opts.upsampfac = 0
+    upsampfac = 0
     try 
-        nufft1d1(xj, cj, iflag, tol, ms, opts)
+        nufft1d1(xj, cj, iflag, tol, ms, upsampfac=upsampfac)
     catch e
         @test e.errno == FINUFFT.HORNER_WRONG_BETA
     end
-
-    @info("Error handling tests finished")
+    
 end

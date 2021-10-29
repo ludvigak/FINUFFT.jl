@@ -10,146 +10,108 @@ export nufft1d1!, nufft1d2!, nufft1d3!
 export nufft2d1!, nufft2d2!, nufft2d3!
 export nufft3d1!, nufft3d2!, nufft3d3!
 
-export nufftf1d1!, nufftf1d2!, nufftf1d3!
-export nufftf2d1!, nufftf2d2!, nufftf2d3!
-export nufftf3d1!, nufftf3d2!, nufftf3d3!
-
-export finufft_default_opts
 export nufft_opts
 export nufft_c_opts # backward-compability
+export finufft_plan
+export finufft_default_opts
+export finufft_makeplan
+export finufft_setpts
+export finufft_exec
+export finufft_destroy
+export finufft_exec!
+export BIGINT
 
 ## External dependencies
 using finufft_jll
 
 const libfinufft = finufft_jll.libfinufft
 
-const BIGINT = Int64 # defined in src/finufft.h
+const BIGINT = Int64 # defined in include/dataTypes.h
 
+const finufftReal = Union{Float64,Float32}
 
-## FINUFFT opts struct from src/finufft.h
+## FINUFFT opts struct from include/nufft_opts.h
 """
     mutable struct nufft_opts    
-        modeord             :: Cint
-        chkbnds             :: Cint              
-        debug               :: Cint                
-        spread_debug        :: Cint         
-        showwarn            :: Cint
-        nthreads            :: Cint
-        fftw                :: Cint                 
-        spread_sort         :: Cint          
-        spread_kerevalmeth  :: Cint   
-        spread_kerpad       :: Cint        
-        upsampfac           :: Cdouble         
-        spread_thread       :: Cint
-        maxbatchsize        :: Cint
-        spread_nthr_atomic  :: Cint
-        spread_max_sp_size  :: Cint
+        debug              :: Cint
+        spread_debug       :: Cint
+        spread_sort        :: Cint
+        spread_kerevalmeth :: Cint
+        spread_kerpad      :: Cint
+        chkbnds            :: Cint
+        fftw               :: Cint
+        modeord            :: Cint
+        upsampfac          :: Cdouble
+        spread_thread      :: Cint
+        maxbatchsize       :: Cint
+        nthreads           :: Cint
+        showwarn           :: Cint
     end
 
 Options struct passed to the FINUFFT library.
 
 # Fields
 
-## Data handling opts
-
-    modeord :: Cint 
-
-(type 1,2 only):    0: CMCL-style increasing mode order,
-                    1: FFT-style mode order
-
-    chkbnds :: Cint
-    
-0: don't check NU pts in [-3pi,3pi),
-1: do (<few % slower)
-
-## Diagnostic opts
-
     debug :: Cint
-
-0: silent,
-1: some timing/debug,
-2: more
+0: silent, 1: text basic timing output
 
     spread_debug :: Cint
-
-0: silent,
-1: some timing/debug,
-2: tonnes
-
-    showwarn :: Cint
-
-0: don't print warnings to stderr,
-1: do
-
-
-## Algorithm performance opts
-
-    nthreads :: Cint
-
-number of threads to use, or 0 uses all available
-
-    fftw :: Cint
-
-plan flags to FFTW (`FFTW_ESTIMATE`=64, `FFTW_MEASURE`=0,...)
+passed to spread_opts, 0 (no text) 1 (some) or 2 (lots)
 
     spread_sort :: Cint
-
-0: don't sort,
-1: do,
-2: heuristic choice
+passed to spread_opts, 0 (don't sort) 1 (do) or 2 (heuristic)
 
     spread_kerevalmeth :: Cint
-
-0: exp(sqrt()) spreading kernel,
-1: Horner piecewise poly (faster)
+passed to spread_opts, 0: exp(sqrt()), 1: Horner ppval (faster)
 
     spread_kerpad :: Cint
+passed to spread_opts, 0: don't pad to mult of 4, 1: do
 
-option only for exp(sqrt()).
-0: don't pad kernel to 4n,
-1: do
+    chkbnds :: Cint
+0: don't check if input NU pts in [-3pi,3pi], 1: do
+
+    fftw :: Cint
+0:`FFTW_ESTIMATE`, or 1:`FFTW_MEASURE` (slow plan but faster)
+
+    modeord :: Cint
+0: CMCL-style increasing mode ordering (neg to pos), or\\
+1: FFT-style mode ordering (affects type-1,2 only)
 
     upsampfac :: Cdouble
-
-upsampling ratio sigma: 2.0 std, 1.25 small FFT, 0.0 auto
+upsampling ratio sigma, either 2.0 (standard) or 1.25 (small FFT)
 
     spread_thread :: Cint
-
-(vectorized ntr>1 only):    0: auto, 1: seq multithreaded,
-                            2: parallel single-thread spread
+for ntrans>1 only.\\
+0:auto,\\
+1: sequential multithreaded,\\
+2: parallel singlethreaded (Melody),\\
+3: nested multithreaded (Andrea).
 
     maxbatchsize :: Cint
-
-option for vectorized ntr>1 only:
-max transform batch, 0 auto
+// for ntrans>1 only. max blocking size for vectorized, 0 for auto-set
 
     spread_nthr_atomic :: Cint
-
 if >=0, threads above which spreader OMP critical goes atomic
-
     spread_max_sp_size :: Cint
-
 if >0, overrides spreader (dir=1) max subproblem size
-
 """
-mutable struct nufft_opts    
-    modeord             :: Cint
-    chkbnds             :: Cint              
-    # 
-    debug               :: Cint                
-    spread_debug        :: Cint         
-    showwarn            :: Cint
-    # 
-    nthreads            :: Cint
-    fftw                :: Cint                 
-    spread_sort         :: Cint          
-    spread_kerevalmeth  :: Cint   
-    spread_kerpad       :: Cint        
-    upsampfac           :: Cdouble         
-    spread_thread       :: Cint
-    maxbatchsize        :: Cint
-    spread_nthr_atomic  :: Cint
-    spread_max_sp_size  :: Cint
+mutable struct nufft_opts{T}    
+    modeord            :: Cint
+    chkbnds            :: Cint
+    debug              :: Cint
+    spread_debug       :: Cint
+    showwarn           :: Cint
+    nthreads           :: Cint
+    fftw               :: Cint
+    spread_sort        :: Cint
+    spread_kerevalmeth :: Cint
+    spread_kerpad      :: Cint
+    upsampfac          :: Cdouble
+    spread_thread      :: Cint
+    maxbatchsize       :: Cint
+    spread_nthr_atomic :: Cint
+    spread_max_sp_size :: Cint
+    nufft_opts{T}() where T <: finufftReal = new{T}()
 end
 
 const nufft_c_opts = nufft_opts # backward compability
@@ -157,36 +119,45 @@ const nufft_c_opts = nufft_opts # backward compability
 """
     finufft_default_opts()
 
-Return a [`nufft_opts`](@ref) struct with the default FINUFFT settings.\\
+Return a [`nufft_opts`](@ref) struct with the default FINUFFT settings. Set up the double precision variant by default.\\
 See: <https://finufft.readthedocs.io/en/latest/usage.html#options>
 """
-function finufft_default_opts()
-    opts = nufft_opts(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0)
-    ccall( (:finufft_default_opts, libfinufft),
-           Nothing,
-           (Ref{nufft_opts},),
-           opts
-           )
-    # default to number of julia threads
-    opts.nthreads = Threads.nthreads()
+function finufft_default_opts(dtype::DataType=Float64)
+    opts = nufft_opts{dtype}()
+
+    if dtype==Float64
+        ccall( (:finufft_default_opts, libfinufft),
+               Nothing,
+               (Ref{nufft_opts},),
+               opts
+               )
+
+    else
+        ccall( (:finufftf_default_opts, libfinufft),
+               Nothing,
+               (Ref{nufft_opts},),
+               opts
+               )
+    end
+
     return opts
 end
 
 ### Error handling
-const WARN_EPS_TOO_SMALL            = 1
-const ERR_MAXNALLOC                 = 2
-const ERR_SPREAD_BOX_SMALL          = 3
-const ERR_SPREAD_PTS_OUT_RANGE      = 4
-const ERR_SPREAD_ALLOC              = 5
-const ERR_SPREAD_DIR                = 6
-const ERR_UPSAMPFAC_TOO_SMALL       = 7
-const HORNER_WRONG_BETA             = 8
-const ERR_NDATA_NOTVALID            = 9
-const ERR_TYPE_NOTVALID             = 10
-# some generic internal allocation failure...
-const ERR_ALLOC                     = 11
-const ERR_DIM_NOTVALID              = 12
-const ERR_SPREAD_THREAD_NOTVALID    = 13
+### Error code should match Error code in https://github.com/flatironinstitute/finufft/blob/master/include/defs.h
+const ERR_EPS_TOO_SMALL        = 1
+const ERR_MAXNALLOC            = 2
+const ERR_SPREAD_BOX_SMALL     = 3
+const ERR_SPREAD_PTS_OUT_RANGE = 4
+const ERR_SPREAD_ALLOC         = 5
+const ERR_SPREAD_DIR           = 6
+const ERR_UPSAMPFAC_TOO_SMALL  = 7
+const HORNER_WRONG_BETA        = 8
+const ERR_NDATA_NOTVALID       = 9
+const ERR_TYPE_NOTVALID        = 10
+const ERR_ALLOC                = 11
+const ERR_DIM_NOTVALID         = 12
+const ERR_SPREAD_THREAD_NOTVALID = 13
 
 struct FINUFFTError <: Exception
     errno::Cint
@@ -198,704 +169,121 @@ function check_ret(ret)
     # Check return value and output error messages
     if ret==0
         return
-    elseif ret==WARN_EPS_TOO_SMALL
-        @warn "requested tolerance epsilon too small to achieve"
-        return
+    elseif ret==ERR_EPS_TOO_SMALL
+        msg = "requested tolerance epsilon too small"
     elseif ret==ERR_MAXNALLOC
-        msg = "attemped to allocate internal array larger than MAX_NF (defined in defs.h)"
+        msg = "attemped to allocate internal arrays larger than MAX_NF (defined in common.h)"
     elseif ret==ERR_SPREAD_BOX_SMALL
-        msg = "spreader: fine grid too small compared to spread (kernel) width"
+        msg = "spreader: fine grid too small"
     elseif ret==ERR_SPREAD_PTS_OUT_RANGE
-        msg = "spreader: if chkbnds=1, a nonuniform point coordinate is out of input range [-3pi,3pi]^d"
+        msg = "spreader: if chkbnds=1, a nonuniform point out of input range [-3pi,3pi]^d"
     elseif ret==ERR_SPREAD_ALLOC
         msg = "spreader: array allocation error"
     elseif ret==ERR_SPREAD_DIR
         msg = "spreader: illegal direction (should be 1 or 2)"
     elseif ret==ERR_UPSAMPFAC_TOO_SMALL
-        msg = "upsampfac too small (should be >1.0)"
+        msg = "upsampfac too small (should be >1)"
     elseif ret==HORNER_WRONG_BETA
-        msg = "upsampfac not a value with known Horner poly eval rule (currently 2.0 or 1.25 only)"
+        msg = "upsampfac not a value with known Horner eval: currently 2.0 or 1.25 only"
     elseif ret==ERR_NDATA_NOTVALID
-        msg = "ntrans not valid in many (vectorized) or guru interface (should be >= 1)"
+        msg = "ndata not valid (should be >= 1)"
     elseif ret==ERR_TYPE_NOTVALID
-        msg = "transform type invalid"
-    elseif ret==ERR_ALLOC
-        msg = "general allocation failure"
+        msg = "undefined type, type should be 1, 2, or 3"
     elseif ret==ERR_DIM_NOTVALID
-        msg = "dimension invalid"
+        msg = "dimension should be 1, 2, or 3"
+    elseif ret==ERR_ALLOC
+        msg = "allocation error"
     elseif ret==ERR_SPREAD_THREAD_NOTVALID
-        msg = "spread_thread option invalid"
+        msg = "spread thread not valid"
     else
         msg = "unknown error"
     end
     throw(FINUFFTError(ret, msg))
 end
 
-### Simple Interfaces (allocate output)
 
-## Type-1
 
-"""
-    nufft1d1(xj      :: Array{Float64}, 
-             cj      :: Array{ComplexF64}, 
-             iflag   :: Integer, 
-             eps     :: Float64,
-             ms      :: Integer
-             [, opts :: nufft_opts]
-            ) -> Array{ComplexF64}
+### validate sizes of inputs for setpts
+function valid_setpts(type::Integer,
+                      dim::Integer,
+                      x::Array{T},
+                      y::Array{T}=T[],
+                      z::Array{T}=T[],
+                      s::Array{T}=T[],
+                      t::Array{T}=T[],
+                      u::Array{T}=T[]) where T <: finufftReal
+    nj = length(x)
+    if type==3
+        nk = length(s)
+    else
+        nk = 0
+    end
 
-Compute type-1 1D complex nonuniform FFT. 
-"""
-function nufft1d1(xj::Array{Float64},
-                  cj::Array{ComplexF64},
-                  iflag::Integer,
-                  eps::Float64,
-                  ms::Integer,
-                  opts::nufft_opts=finufft_default_opts())
-    fk = Array{ComplexF64}(undef, ms)
-    nufft1d1!(xj, cj, iflag, eps, fk, opts)
-    return fk
+    if dim>1
+        @assert nj == length(y)
+        if type==3
+            @assert nk == length(t)
+        end
+    end
+
+    if dim>2
+        @assert nj == length(z)
+        if type==3
+            @assert nk == length(u)
+        end
+    end
+
+    return (nj, nk)
 end
 
-"""
-    nufft2d1(xj      :: Array{Float64}, 
-             yj      :: Array{Float64}, 
-             cj      :: Array{ComplexF64}, 
-             iflag   :: Integer, 
-             eps     :: Float64,
-             ms      :: Integer,
-             mt      :: Integer,
-             [, opts :: nufft_opts]
-            ) -> Array{ComplexF64}
-
-Compute type-1 2D complex nonuniform FFT.
-"""
-function nufft2d1(xj      :: Array{Float64}, 
-                  yj      :: Array{Float64}, 
-                  cj      :: Array{ComplexF64}, 
-                  iflag   :: Integer, 
-                  eps     :: Float64,
-                  ms      :: Integer,
-                  mt      :: Integer,                   
-                  opts    :: nufft_opts = finufft_default_opts())
-    fk = Array{ComplexF64}(undef, ms, mt)
-    nufft2d1!(xj, yj, cj, iflag, eps, fk, opts)
-    return fk
+### validate number of transforms
+function valid_ntr(x::Array{T},
+                   c::Array{Complex{T}}) where T <: finufftReal
+    ntrans = Cint(length(c) / length(x))
+    @assert ntrans*length(x) == length(c)
+    return ntrans
 end
 
-"""
-    nufft3d1(xj      :: Array{Float64}, 
-             yj      :: Array{Float64}, 
-             zj      :: Array{Float64}, 
-             cj      :: Array{ComplexF64}, 
-             iflag   :: Integer, 
-             eps     :: Float64,
-             ms      :: Integer,
-             mt      :: Integer,
-             mu      :: Integer,
-             [, opts :: nufft_opts]
-            ) -> Array{ComplexF64}
-
-Compute type-1 3D complex nonuniform FFT.
-"""
-function nufft3d1(xj      :: Array{Float64}, 
-                  yj      :: Array{Float64},
-                  zj      :: Array{Float64},                   
-                  cj      :: Array{ComplexF64}, 
-                  iflag   :: Integer, 
-                  eps     :: Float64,
-                  ms      :: Integer,
-                  mt      :: Integer,
-                  mu      :: Integer,                                     
-                  opts    :: nufft_opts = finufft_default_opts())
-    fk = Array{ComplexF64}(undef, ms, mt, mu)
-    nufft3d1!(xj, yj, zj, cj, iflag, eps, fk, opts)
-    return fk
+### infer number of modes from fk array
+function get_nmodes_from_fk(dim::Integer,
+                            fk::Array{Complex{T}}) where T <: finufftReal
+    ndim = ndims(fk)
+    @assert dim==1 || dim==2 || dim==3
+    @assert ndim==dim || ndim==dim+1
+    if ndim==dim
+        ntrans = 1
+        return (size(fk)...,ntrans)
+    else
+        return size(fk)
+    end
 end
 
-
-## Type-2
-
-"""
-    nufft1d2(xj      :: Array{Float64}, 
-             iflag   :: Integer, 
-             eps     :: Float64,
-             fk      :: Array{ComplexF64} 
-             [, opts :: nufft_opts]
-            ) -> Array{ComplexF64}
-
-Compute type-2 1D complex nonuniform FFT. 
-"""
-function nufft1d2(xj      :: Array{Float64},                    
-                  iflag   :: Integer, 
-                  eps     :: Float64,
-                  fk      :: Array{ComplexF64},
-                  opts    :: nufft_opts = finufft_default_opts())
-    nj = length(xj)
-    cj = Array{ComplexF64}(undef, nj)
-    nufft1d2!(xj, cj, iflag, eps, fk, opts)
-    return cj
+### kwargs opt set
+function setkwopts!(opts::nufft_opts; kwargs...)
+    dtype = Float64
+    for (key, value) in kwargs
+        if hasproperty(opts, key::Symbol)
+            setproperty!(opts, key, value)
+        elseif String(key)=="dtype"
+            @assert value <: finufftReal
+            dtype = value
+        else
+            @warn "nufft_opts does not have attribute " * String(key)
+        end
+    end
+    return dtype
 end
 
-"""
-    nufft2d2(xj      :: Array{Float64}, 
-             yj      :: Array{Float64}, 
-             iflag   :: Integer, 
-             eps     :: Float64,
-             fk      :: Array{ComplexF64} 
-             [, opts :: nufft_opts]
-            ) -> Array{ComplexF64}
-
-Compute type-2 2D complex nonuniform FFT. 
-"""
-function nufft2d2(xj      :: Array{Float64}, 
-                  yj      :: Array{Float64}, 
-                  iflag   :: Integer, 
-                  eps     :: Float64,
-                  fk      :: Array{ComplexF64},
-                  opts    :: nufft_opts = finufft_default_opts())
-    nj = length(xj)
-    cj = Array{ComplexF64}(undef, nj)
-    nufft2d2!(xj, yj, cj, iflag, eps, fk, opts)
-    return cj
+### check kwargs with dtype
+function checkkwdtype(dtype::DataType; kwargs...)
+    for (key, value) in kwargs
+        if String(key)=="dtype"
+            @assert  value == dtype
+        end
+    end
 end
 
-"""
-    nufft3d2(xj      :: Array{Float64}, 
-             yj      :: Array{Float64}, 
-             zj      :: Array{Float64}, 
-             iflag   :: Integer, 
-             eps     :: Float64,
-             fk      :: Array{ComplexF64} 
-             [, opts :: nufft_opts]
-            ) -> Array{ComplexF64}
-
-Compute type-2 3D complex nonuniform FFT. 
-"""
-function nufft3d2(xj      :: Array{Float64}, 
-                  yj      :: Array{Float64},
-                  zj      :: Array{Float64}, 
-                  iflag   :: Integer, 
-                  eps     :: Float64,
-                  fk      :: Array{ComplexF64},
-                  opts    :: nufft_opts = finufft_default_opts())
-    nj = length(xj)
-    cj = Array{ComplexF64}(undef, nj)
-    nufft3d2!(xj, yj, zj, cj, iflag, eps, fk, opts)
-    return cj
-end
-
-
-## Type-3
-
-"""
-    nufft1d3(xj      :: Array{Float64}, 
-             cj      :: Array{ComplexF64}, 
-             iflag   :: Integer, 
-             eps     :: Float64,
-             sk      :: Array{Float64},
-             [, opts :: nufft_opts]
-            ) -> Array{ComplexF64}
-
-Compute type-3 1D complex nonuniform FFT.
-"""
-function nufft1d3(xj      :: Array{Float64}, 
-                  cj      :: Array{ComplexF64}, 
-                  iflag   :: Integer, 
-                  eps     :: Float64,
-                  sk      :: Array{Float64},
-                  opts    :: nufft_opts = finufft_default_opts())
-    nj = length(xj)
-    @assert length(cj)==nj        
-    nk = length(sk)
-    fk = Array{ComplexF64}(undef, nk)
-    nufft1d3!(xj, cj, iflag, eps, sk, fk, opts);
-    return fk
-end
-
-"""
-    nufft2d3(xj      :: Array{Float64}, 
-             yj      :: Array{Float64},
-             cj      :: Array{ComplexF64}, 
-             iflag   :: Integer, 
-             eps     :: Float64,
-             sk      :: Array{Float64},
-             tk      :: Array{Float64}
-             [, opts :: nufft_opts]
-            ) -> Array{ComplexF64}
-
-Compute type-3 2D complex nonuniform FFT.
-"""
-function nufft2d3(xj      :: Array{Float64},
-                  yj      :: Array{Float64}, 
-                  cj      :: Array{ComplexF64}, 
-                  iflag   :: Integer, 
-                  eps     :: Float64,
-                  sk      :: Array{Float64},
-                  tk      :: Array{Float64},                  
-                  opts    :: nufft_opts = finufft_default_opts())
-    nj = length(xj)
-    @assert length(cj)==nj        
-    nk = length(sk)
-    fk = Array{ComplexF64}(undef, nk)
-    nufft2d3!(xj, yj, cj, iflag, eps, sk, tk, fk, opts);
-    return fk
-end
-
-"""
-    nufft3d3(xj      :: Array{Float64}, 
-             yj      :: Array{Float64},
-             zj      :: Array{Float64},
-             cj      :: Array{ComplexF64}, 
-             iflag   :: Integer, 
-             eps     :: Float64,
-             sk      :: Array{Float64},
-             tk      :: Array{Float64}
-             uk      :: Array{Float64}
-             [, opts :: nufft_opts]
-            ) -> Array{ComplexF64}
-
-Compute type-3 3D complex nonuniform FFT.
-"""
-function nufft3d3(xj      :: Array{Float64},
-                  yj      :: Array{Float64},
-                  zj      :: Array{Float64},                   
-                  cj      :: Array{ComplexF64}, 
-                  iflag   :: Integer, 
-                  eps     :: Float64,
-                  sk      :: Array{Float64},
-                  tk      :: Array{Float64},
-                  uk      :: Array{Float64},                  
-                  opts    :: nufft_opts = finufft_default_opts())
-    nj = length(xj)
-    @assert length(cj)==nj        
-    nk = length(sk)
-    fk = Array{ComplexF64}(undef, nk)
-    nufft3d3!(xj, yj, zj, cj, iflag, eps, sk, tk, uk, fk, opts);
-    return fk
-end
-
-
-### Direct interfaces (No allocation)
-
-## 1D
-
-"""
-    nufft1d1!(xj      :: Array{Float64}, 
-              cj      :: Array{ComplexF64}, 
-              iflag   :: Integer, 
-              eps     :: Float64,
-              fk      :: Array{ComplexF64} 
-              [, opts :: nufft_opts]
-            )
-
-Compute type-1 1D complex nonuniform FFT. Output stored in fk.
-"""
-function nufft1d1!(xj      :: Array{Float64}, 
-                   cj      :: Array{ComplexF64}, 
-                   iflag   :: Integer, 
-                   eps     :: Float64,
-                   fk      :: Array{ComplexF64},
-                   opts    :: nufft_opts = finufft_default_opts())
-    nj = length(xj) 
-    @assert length(cj)==nj        
-    ms = length(fk)    
-    # Calling interface
-    # int finufft1d1(BIGINT nj,FLT* xj,CPX* cj,int iflag,FLT eps,BIGINT ms,
-    # 	       CPX* fk, nufft_opts opts);
-    ret = ccall( (:finufft1d1, libfinufft),
-                 Cint,
-                 (BIGINT,
-                  Ref{Cdouble},
-                  Ref{ComplexF64},
-                  Cint,
-                  Cdouble,
-                  BIGINT,
-                  Ref{ComplexF64},
-                  Ref{nufft_opts}),
-                 nj, xj, cj, iflag, eps, ms, fk, opts
-                 )
-    check_ret(ret)
-end
-
-
-"""
-    nufft1d2!(xj      :: Array{Float64}, 
-              cj      :: Array{ComplexF64}, 
-              iflag   :: Integer, 
-              eps     :: Float64,
-              fk      :: Array{ComplexF64} 
-              [, opts :: nufft_opts]
-            )
-
-Compute type-2 1D complex nonuniform FFT. Output stored in cj.
-"""
-function nufft1d2!(xj      :: Array{Float64}, 
-                   cj      :: Array{ComplexF64}, 
-                   iflag   :: Integer, 
-                   eps     :: Float64,
-                   fk      :: Array{ComplexF64},
-                   opts    :: nufft_opts = finufft_default_opts())
-    nj = length(xj)
-    @assert length(cj)==nj        
-    ms = length(fk)    
-    # Calling interface
-    # int finufft1d2(BIGINT nj,FLT* xj,CPX* cj,int iflag,FLT eps,BIGINT ms,
-    #                CPX* fk, nufft_opts opts);
-    ret = ccall( (:finufft1d2, libfinufft),
-                 Cint,
-                 (BIGINT,
-                  Ref{Cdouble},
-                  Ref{ComplexF64},
-                  Cint,
-                  Cdouble,
-                  BIGINT,
-                  Ref{ComplexF64},
-                  Ref{nufft_opts}),
-                 nj, xj, cj, iflag, eps, ms, fk, opts
-                 )
-    check_ret(ret)    
-end
-
-
-"""
-    nufft1d3!(xj      :: Array{Float64}, 
-              cj      :: Array{ComplexF64}, 
-              iflag   :: Integer, 
-              eps     :: Float64,
-              sk      :: Array{Float64},
-              fk      :: Array{ComplexF64},
-              [, opts :: nufft_opts]
-             )
-
-Compute type-3 1D complex nonuniform FFT. Output stored in fk.
-"""
-function nufft1d3!(xj      :: Array{Float64}, 
-                   cj      :: Array{ComplexF64}, 
-                   iflag   :: Integer, 
-                   eps     :: Float64,
-                   sk      :: Array{Float64},
-                   fk      :: Array{ComplexF64},
-                   opts    :: nufft_opts = finufft_default_opts())
-    nj = length(xj)
-    @assert length(cj)==nj        
-    nk = length(sk)
-    @assert length(fk)==nk
-    # Calling interface
-    # int finufft1d3(BIGINT nj,FLT* x,CPX* c,int iflag,FLT eps,BIGINT nk, FLT* s, CPX* f, nufft_opts opts);
-    ret = ccall( (:finufft1d3, libfinufft),
-                 Cint,
-                 (BIGINT,
-                  Ref{Cdouble},
-                  Ref{ComplexF64},
-                  Cint,
-                  Cdouble,
-                  BIGINT,
-                  Ref{Cdouble},            
-                  Ref{ComplexF64},
-                  Ref{nufft_opts}),
-                 nj, xj, cj, iflag, eps, nk, sk, fk, opts
-                 )
-    check_ret(ret)
-end
-
-
-## 2D
-
-"""
-    nufft2d1!(xj      :: Array{Float64}, 
-              yj      :: Array{Float64}, 
-              cj      :: Array{ComplexF64}, 
-              iflag   :: Integer, 
-              eps     :: Float64,
-              fk      :: Array{ComplexF64} 
-              [, opts :: nufft_opts]
-            )
-
-Compute type-1 2D complex nonuniform FFT. Output stored in fk.
-"""
-function nufft2d1!(xj      :: Array{Float64}, 
-                   yj      :: Array{Float64}, 
-                   cj      :: Array{ComplexF64}, 
-                   iflag   :: Integer, 
-                   eps     :: Float64,
-                   fk      :: Array{ComplexF64},
-                   opts    :: nufft_opts = finufft_default_opts())
-    nj = length(xj)
-    @assert length(yj)==nj
-    @assert length(cj)==nj    
-    ms, mt = size(fk)    
-    # Calling interface
-    # int finufft2d1(BIGINT nj,FLT* xj,FLT *yj,CPX* cj,int iflag,FLT eps,
-    #                BIGINT ms, BIGINT mt, CPX* fk, nufft_opts opts);
-    ret = ccall( (:finufft2d1, libfinufft),
-                 Cint,
-                 (BIGINT,
-                  Ref{Cdouble},
-                  Ref{Cdouble},            
-                  Ref{ComplexF64},
-                  Cint,
-                  Cdouble,
-                  BIGINT,
-                  BIGINT,            
-                  Ref{ComplexF64},
-                  Ref{nufft_opts}),
-                 nj, xj, yj, cj, iflag, eps, ms, mt, fk, opts
-                 )
-    check_ret(ret)
-end
-
-
-"""
-    nufft2d2!(xj      :: Array{Float64}, 
-              yj      :: Array{Float64}, 
-              cj      :: Array{ComplexF64}, 
-              iflag   :: Integer, 
-              eps     :: Float64,
-              fk      :: Array{ComplexF64} 
-              [, opts :: nufft_opts]
-            )
-
-Compute type-2 2D complex nonuniform FFT. Output stored in cj.
-"""
-function nufft2d2!(xj      :: Array{Float64}, 
-                   yj      :: Array{Float64}, 
-                   cj      :: Array{ComplexF64}, 
-                   iflag   :: Integer, 
-                   eps     :: Float64,
-                   fk      :: Array{ComplexF64},
-                   opts    :: nufft_opts = finufft_default_opts())
-    nj = length(xj)
-    @assert length(yj)==nj
-    @assert length(cj)==nj    
-    ms, mt = size(fk)    
-    # Calling interface
-    # int finufft2d2(BIGINT nj,FLT* xj,FLT *yj,CPX* cj,int iflag,FLT eps,
-    #                BIGINT ms, BIGINT mt, CPX* fk, nufft_opts opts);
-    ret = ccall( (:finufft2d2, libfinufft),
-                 Cint,
-                 (BIGINT,
-                  Ref{Cdouble},
-                  Ref{Cdouble},            
-                  Ref{ComplexF64},
-                  Cint,
-                  Cdouble,
-                  BIGINT,
-                  BIGINT,            
-                  Ref{ComplexF64},
-                  Ref{nufft_opts}),
-                 nj, xj, yj, cj, iflag, eps, ms, mt, fk, opts
-                 )
-    check_ret(ret)
-end
-
-"""
-    nufft2d3!(xj      :: Array{Float64}, 
-              yj      :: Array{Float64},
-              cj      :: Array{ComplexF64}, 
-              iflag   :: Integer, 
-              eps     :: Float64,
-              sk      :: Array{Float64},
-              tk      :: Array{Float64},
-              fk      :: Array{ComplexF64}
-              [, opts :: nufft_opts]
-             )
-
-Compute type-3 2D complex nonuniform FFT. Output stored in fk.
-"""
-function nufft2d3!(xj      :: Array{Float64}, 
-                   yj      :: Array{Float64},
-                   cj      :: Array{ComplexF64}, 
-                   iflag   :: Integer, 
-                   eps     :: Float64,
-                   sk      :: Array{Float64},
-                   tk      :: Array{Float64},
-                   fk      :: Array{ComplexF64},
-                   opts    :: nufft_opts = finufft_default_opts())
-    nj = length(xj)
-    @assert length(yj)==nj
-    @assert length(cj)==nj
-    nk = length(sk)
-    @assert length(tk)==nk
-    @assert length(fk)==nk    
-    # Calling interface
-    # int finufft2d3(BIGINT nj,FLT* x,FLT *y,CPX* cj,int iflag,FLT eps,BIGINT nk, FLT* s, FLT* t, CPX* fk, nufft_opts opts);    
-    ret = ccall( (:finufft2d3, libfinufft),
-                 Cint,
-                 (BIGINT,
-                  Ref{Cdouble},
-                  Ref{Cdouble},            
-                  Ref{ComplexF64},
-                  Cint,
-                  Cdouble,
-                  BIGINT,
-                  Ref{Cdouble},
-                  Ref{Cdouble},            
-                  Ref{ComplexF64},
-                  Ref{nufft_opts}),
-                 nj, xj, yj, cj, iflag, eps, nk, sk, tk, fk, opts
-                 )
-    check_ret(ret)
-end
-
-## 3D
-
-"""
-    nufft3d1!(xj      :: Array{Float64}, 
-              yj      :: Array{Float64}, 
-              zj      :: Array{Float64}, 
-              cj      :: Array{ComplexF64}, 
-              iflag   :: Integer, 
-              eps     :: Float64,
-              fk      :: Array{ComplexF64} 
-              [, opts :: nufft_opts]
-            )
-
-Compute type-1 3D complex nonuniform FFT. Output stored in fk.
-"""
-function nufft3d1!(xj      :: Array{Float64}, 
-                   yj      :: Array{Float64}, 
-                   zj      :: Array{Float64}, 
-                   cj      :: Array{ComplexF64}, 
-                   iflag   :: Integer, 
-                   eps     :: Float64,
-                   fk      :: Array{ComplexF64},
-                   opts    :: nufft_opts = finufft_default_opts())
-    nj = length(xj)
-    @assert length(yj)==nj
-    @assert length(zj)==nj    
-    @assert length(cj)==nj    
-    ms, mt, mu = size(fk)    
-    # Calling interface
-    # int finufft3d1(BIGINT nj,FLT* xj,FLT *yj,FLT *zj,CPX* cj,int iflag,FLT eps,
-    # 	       BIGINT ms, BIGINT mt, BIGINT mu, CPX* fk, nufft_opts opts);
-    ret = ccall( (:finufft3d1, libfinufft),
-                 Cint,
-                 (BIGINT,
-                  Ref{Cdouble},
-                  Ref{Cdouble},
-                  Ref{Cdouble},                
-                  Ref{ComplexF64},
-                  Cint,
-                  Cdouble,
-                  BIGINT,
-                  BIGINT,
-                  BIGINT,
-                  Ref{ComplexF64},
-                  Ref{nufft_opts}),
-                 nj, xj, yj, zj, cj, iflag, eps, ms, mt, mu, fk, opts
-                 )
-    check_ret(ret)
-end
-
-"""
-    nufft3d2!(xj      :: Array{Float64}, 
-              yj      :: Array{Float64}, 
-              zj      :: Array{Float64}, 
-              cj      :: Array{ComplexF64}, 
-              iflag   :: Integer, 
-              eps     :: Float64,
-              fk      :: Array{ComplexF64} 
-              [, opts :: nufft_opts]
-            )
-
-Compute type-2 3D complex nonuniform FFT. Output stored in cj.
-"""
-function nufft3d2!(xj      :: Array{Float64}, 
-                   yj      :: Array{Float64},
-                   zj      :: Array{Float64},                    
-                   cj      :: Array{ComplexF64}, 
-                   iflag   :: Integer, 
-                   eps     :: Float64,
-                   fk      :: Array{ComplexF64},
-                   opts    :: nufft_opts = finufft_default_opts())
-    nj = length(xj)
-    @assert length(yj)==nj
-    @assert length(zj)==nj    
-    @assert length(cj)==nj    
-    ms, mt, mu = size(fk)    
-    # Calling interface
-    # int finufft3d2(BIGINT nj,FLT* xj,FLT *yj,FLT *zj,CPX* cj,int iflag,FLT eps,
-    #                BIGINT ms, BIGINT mt, BIGINT mu, CPX* fk, nufft_opts opts);
-    ret = ccall( (:finufft3d2, libfinufft),
-                 Cint,
-                 (BIGINT,
-                  Ref{Cdouble},
-                  Ref{Cdouble},            
-                  Ref{Cdouble},            
-                  Ref{ComplexF64},
-                  Cint,
-                  Cdouble,
-                  BIGINT,
-                  BIGINT,
-                  BIGINT,
-                  Ref{ComplexF64},
-                  Ref{nufft_opts}),
-                 nj, xj, yj, zj, cj, iflag, eps, ms, mt, mu, fk, opts
-                 )
-    check_ret(ret)
-end
-
-"""
-    nufft3d3!(xj      :: Array{Float64}, 
-              yj      :: Array{Float64},
-              zj      :: Array{Float64},
-              cj      :: Array{ComplexF64}, 
-              iflag   :: Integer, 
-              eps     :: Float64,
-              sk      :: Array{Float64},
-              tk      :: Array{Float64},
-              uk      :: Array{Float64},
-              fk      :: Array{ComplexF64}
-              [, opts :: nufft_opts]
-             )
-
-Compute type-3 3D complex nonuniform FFT. Output stored in fk.
-"""
-function nufft3d3!(xj      :: Array{Float64}, 
-                   yj      :: Array{Float64},
-                   zj      :: Array{Float64},                   
-                   cj      :: Array{ComplexF64}, 
-                   iflag   :: Integer, 
-                   eps     :: Float64,
-                   sk      :: Array{Float64},
-                   tk      :: Array{Float64},
-                   uk      :: Array{Float64},
-                   fk      :: Array{ComplexF64},
-                   opts    :: nufft_opts = finufft_default_opts())
-    nj = length(xj)
-    @assert length(yj)==nj
-    @assert length(zj)==nj    
-    @assert length(cj)==nj
-    nk = length(sk)
-    @assert length(tk)==nk
-    @assert length(uk)==nk    
-    @assert length(fk)==nk    
-    # Calling interface
-    # int finufft3d3(BIGINT nj,FLT* x,FLT *y,FLT *z, CPX* cj,int iflag,
-    #                FLT eps,BIGINT nk,FLT* s, FLT* t, FLT *u,
-    #                CPX* fk, nufft_opts opts);
-    ret = ccall( (:finufft3d3, libfinufft),
-                 Cint,
-                 (BIGINT,
-                  Ref{Cdouble},
-                  Ref{Cdouble},
-                  Ref{Cdouble},                  
-                  Ref{ComplexF64},
-                  Cint,
-                  Cdouble,
-                  BIGINT,
-                  Ref{Cdouble},
-                  Ref{Cdouble},
-                  Ref{Cdouble},                        
-                  Ref{ComplexF64},
-                  Ref{nufft_opts}),
-                 nj, xj, yj, zj, cj, iflag, eps, nk, sk, tk, uk, fk, opts
-                 )
-    check_ret(ret)
-end
-
-# Load single precision interfaces
-include("single.jl")
+include("guru.jl")
+include("simple.jl")
 
 end # module
