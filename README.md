@@ -21,7 +21,7 @@ Older versions of the package are available also for Julia v1.0-v1.2, but the us
 
 ## Usage
 
-This module provides the functions `nufft1d1`, `nufft1d2`, ..., `nufft3d3`, `nufft1d1!`, `nufft1d2!`, ..., `nufft3d3!`, that now wrap the
+This module now provides the functions `nufft1d1`, `nufft1d2`, ..., `nufft3d3`, `nufft1d1!`, `nufft1d2!`, ..., `nufft3d3!`, that now wrap the
 simple and vectorized interfaces in a unified way,
 as well as
 `finufft_makeplan`, `finufft_setpts`, `finufft_exec`, `finufft_exec!` and `finufft_destroy` that wrap the guru interface.
@@ -29,12 +29,14 @@ This brings the Julia interface up to the standards of the
 FINUFFT's [MATLAB/Octave](https://finufft.readthedocs.io/en/latest/matlab.html)
 and [Python](https://finufft.readthedocs.io/en/latest/python.html) interfaces.
 The underlying C++ routines that are called have full documentation
-[here](https://finufft.readthedocs.io/en/latest/c.html)
+[here](https://finufft.readthedocs.io/en/latest/c.html).
 
-A reference of the provided Julia functions is available at <https://ludvigak.github.io/FINUFFT.jl/latest/>
+An auto-generated reference for all provided Julia functions is [here](https://ludvigak.github.io/FINUFFT.jl/latest/).
 
-As of 10/28/21, the interface has changed (improved) significantly.
-The way to set options is not backward-compatible.
+.. note::
+
+   As of 10/28/21, the interface has changed (improved) significantly,
+   breaking backward-compatibility.
 
 * Function calls mimic the C/C++ interface, with the exception that you don't need to pass the dimensions of any arrays in the argument (they are inferred using `size()`).
 * A vectorized call (performing multiple transforms, each with different coefficient vectors but the same set of nonuniform points) can now be performed using the same functions as the single-transform interface, detected from the size of the input arrays.
