@@ -26,12 +26,12 @@ using finufft_jll
 
 const libfinufft = finufft_jll.libfinufft
 
-const BIGINT = Int64 # defined in include/dataTypes.h
+const BIGINT = Int64        # must match that in FINUFFT include/dataTypes.h
 
 # our allowed real array types...
 const finufftReal = Union{Float64,Float32}
 
-## FINUFFT opts struct from include/nufft_opts.h
+## FINUFFT opts struct, must bytewise match that in include/nufft_opts.h
 """
     mutable struct nufft_opts    
         modeord            :: Cint
@@ -158,22 +158,8 @@ function finufft_default_opts(dtype::DataType=Float64)
     return opts
 end
 
-### Error handling
-### Error code should match Error code in https://github.com/flatironinstitute/finufft/blob/master/include/defs.h
-const ERR_EPS_TOO_SMALL        = 1
-const ERR_MAXNALLOC            = 2
-const ERR_SPREAD_BOX_SMALL     = 3
-const ERR_SPREAD_PTS_OUT_RANGE = 4
-const ERR_SPREAD_ALLOC         = 5
-const ERR_SPREAD_DIR           = 6
-const ERR_UPSAMPFAC_TOO_SMALL  = 7
-const HORNER_WRONG_BETA        = 8
-const ERR_NDATA_NOTVALID       = 9
-const ERR_TYPE_NOTVALID        = 10
-const ERR_ALLOC                = 11
-const ERR_DIM_NOTVALID         = 12
-const ERR_SPREAD_THREAD_NOTVALID = 13
 
+# Error handling
 struct FINUFFTError <: Exception
     errno::Cint
     msg::String
@@ -181,42 +167,47 @@ end
 Base.showerror(io::IO, e::FINUFFTError) = print(io, "FINUFFT Error ($(e.errno)): ", e.msg)
 
 function check_ret(ret)
-    # Check return value and output error messages
-    if ret==0
+    # Check return value and output corresponding error message to Julia side.
+    # This should be kepts up to date with error code interpretation in
+    # https://finufft.readthedocs.io/en/latest/error.html
+    # which is generated from
+    # https://github.com/flatironinstitute/finufft/blob/master/docs/error.rst
+    if ret==0     # no error or warning
         return
-    elseif ret==ERR_EPS_TOO_SMALL
-        msg = "requested tolerance epsilon too small"
-    elseif ret==ERR_MAXNALLOC
-        msg = "attemped to allocate internal arrays larger than MAX_NF (defined in common.h)"
-    elseif ret==ERR_SPREAD_BOX_SMALL
-        msg = "spreader: fine grid too small"
-    elseif ret==ERR_SPREAD_PTS_OUT_RANGE
-        msg = "spreader: if chkbnds=1, a nonuniform point out of input range [-3pi,3pi]^d"
-    elseif ret==ERR_SPREAD_ALLOC
+    elseif ret==1
+        msg = "requested tolerance epsilon too small to achieve (warning only)"
+    elseif ret==2
+        msg = "attemped to allocate internal array larger than MAX_NF (defined in defs.h)"
+    elseif ret==3
+        msg = "spreader: fine grid too small compared to spread (kernel) width"
+    elseif ret==4
+        msg = "spreader: if chkbnds=1, a nonuniform point is out of input range [-3pi,3pi]^d"
+    elseif ret==5
         msg = "spreader: array allocation error"
-    elseif ret==ERR_SPREAD_DIR
+    elseif ret==6
         msg = "spreader: illegal direction (should be 1 or 2)"
-    elseif ret==ERR_UPSAMPFAC_TOO_SMALL
-        msg = "upsampfac too small (should be >1)"
-    elseif ret==HORNER_WRONG_BETA
+    elseif ret==7
+        msg = "upsampfac too small (should be >1.0)"
+    elseif ret==8
         msg = "upsampfac not a value with known Horner eval: currently 2.0 or 1.25 only"
-    elseif ret==ERR_NDATA_NOTVALID
-        msg = "ndata not valid (should be >= 1)"
-    elseif ret==ERR_TYPE_NOTVALID
-        msg = "undefined type, type should be 1, 2, or 3"
-    elseif ret==ERR_DIM_NOTVALID
-        msg = "dimension should be 1, 2, or 3"
-    elseif ret==ERR_ALLOC
-        msg = "allocation error"
-    elseif ret==ERR_SPREAD_THREAD_NOTVALID
-        msg = "spread thread not valid"
+    elseif ret==9
+        msg = "ntrans not valid in vectorized interface (should be >= 1)"
+    elseif ret==10
+        msg = "invalid transform type, type should be 1, 2, or 3"
+    elseif ret==11
+        msg = "general allocation failure"
+    elseif ret==12        
+        msg = "invalid dimension, should be 1, 2, or 3"
+    elseif ret==13
+        msg = "spread_thread option not valid"
     else
-        msg = "unknown error"
+        msg = "error of type unknown to Julia interface. Check FINUFFT documentation"
     end
     throw(FINUFFTError(ret, msg))
 end
 
 
+# HELPER routines for guru interface...
 
 ### validate sizes of inputs for setpts
 function valid_setpts(type::Integer,
@@ -298,6 +289,9 @@ function checkkwdtype(dtype::DataType; kwargs...)
     end
 end
 
+
+# Finally, bring in the main user-facing interfaces...
+        
 include("guru.jl")
 include("simple.jl")
 
