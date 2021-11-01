@@ -249,5 +249,5 @@ end
 
 # Main: do the tests
 # 1st arg is tolerance (no longer used to infer dtype), 2nd is dtype...
-test_nufft(1e-15, Float64)
+test_nufft(1e-14, Float64)
 test_nufft(1e-4, Float32)
