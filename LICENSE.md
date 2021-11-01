@@ -1,6 +1,8 @@
-The FINUFFT.jl package is licensed under the MIT "Expat" License:
+The FINUFFT.jl interface (wrapper) is licensed under the MIT "Expat" License:
 
-> Copyright (c) 2018: Ludvig af Klinteberg.
+> Copyright (c) 2018-2021
+> Ludvig af Klinteberg, and Simons Foundation.
+> Other principal authors: Libin Lu (CCM), Alex Barnett (CCM), Jonas Krimmer.
 >
 > Permission is hereby granted, free of charge, to any person obtaining a copy
 > of this software and associated documentation files (the "Software"), to deal
@@ -19,4 +21,8 @@ The FINUFFT.jl package is licensed under the MIT "Expat" License:
 > LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 > OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 > SOFTWARE.
->
+
+Note that this license does not cover FINUFFT itself; see the source
+for that package for licensing.
+
+
