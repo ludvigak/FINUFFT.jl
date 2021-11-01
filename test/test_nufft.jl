@@ -55,11 +55,12 @@ function test_nufft(tol::Real, dtype::DataType)
                         ref[ss] += c[j] * exp(1im*k1[ss]*x[j])
                     end
                 end
-                # Try this one with some opts
-                nufft1d1!(x, c, 1, tol, out, debug=1, upsampfac=2.0, dtype=T)
+                # Simple, writing into array, setting some non-default opts...
+                nufft1d1!(x, c, 1, tol, out, debug=1, spread_sort=0, dtype=T)
                 relerr_1d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
                 @test relerr_1d1 < errfac*tol
-                # Different caller
+                
+                # Different caller which returns array
                 out2 = nufft1d1(x, c, 1, tol, ms, dtype=T)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
                 @test reldiff < errdifffac*tol
@@ -72,14 +73,21 @@ function test_nufft(tol::Real, dtype::DataType)
                 relerr_guru = norm(vec(out3)-vec(ref), Inf) / norm(vec(ref), Inf)
                 @test relerr_guru < errfac*tol
 
-                # guru1d1 many
-                ntrans = 3
+                # guru1d1 vectorized ("many")
+                ntrans = 3         # let's stack 3 transforms at once
                 plan = finufft_makeplan(1,[ms;],1,ntrans,tol,dtype=T)
                 finufft_setpts(plan,x)
-                out4 = finufft_exec(plan,hcat(c,c,c))
+                cstack = hcat(c,2*c,3*c);           # change the coeff vectors
+                out4 = finufft_exec(plan,cstack)
                 finufft_destroy(plan)
-                relerr_guru_many = norm(vec(out4)-vec(hcat(ref,ref,ref)), Inf) / norm(vec(hcat(ref,ref,ref)), Inf)
+                refstack = hcat(ref,2*ref,3*ref);   # ditto
+                relerr_guru_many = norm(vec(out4)-vec(refstack), Inf) / norm(vec(refstack), Inf)
                 @test relerr_guru_many < errfac*tol
+
+                # simple vectorized ("many")
+                fstack = nufft1d1(x,cstack,+1,tol,ms,dtype=T)
+                relerr_many = norm(vec(fstack)-vec(refstack), Inf) / norm(vec(refstack), Inf)               
+                @test relerr_many < errfac*tol
             end
             
             # 1D2
@@ -242,4 +250,4 @@ end
 # Main: do the tests
 # 1st arg is tolerance (no longer used to infer dtype), 2nd is dtype...
 test_nufft(1e-15, Float64)
-test_nufft(1e-4, Float32)        # breaks; 1f-4 doesn't !!!!  *******
+test_nufft(1e-4, Float32)

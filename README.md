@@ -50,31 +50,32 @@ while `finufft_exec!` takes the output array as an argument that needs to be pre
 ```julia
 using FINUFFT
 
-# nonuniform data
-nj = 100
-x = pi*(1.0 .- 2.0*rand(nj))
-c = rand(nj) + 1im*rand(nj)
+# Here we demo a Float64 1D type 1 transform
+nj = 1000000
+x = pi*(1.0 .- 2.0*rand(nj))      # nonuniform points
+c = rand(nj) + 1im*rand(nj)       # their strengths
 
-# Parameters
-ms = 20      # Output size
-tol = 1e-10  # Tolerance
+ms = 2000000      # output size (number of Fourier modes)
+tol = 1e-9        # requested relative tolerance
 
-# Output as return value
+# Output as return value (1e6 pts to 2e6 modes takes about 0.1 sec)...
 fk = nufft1d1(x, c, 1, tol, ms)
 
-# Or, preallocate output and pass as argument
+# Or, output into preallocated array, whose size determines ms...
 out = Array{ComplexF64}(undef, ms)
 nufft1d1!(x, c, 1, tol, out)
 
-# Demo using kwargs to change options from defaults...
-fk2 = nufft1d1(x, c, 1, tol, ms, debug=1, modeord=1)
+# Demo using keyword args to change options from defaults...
+fk_fftord = nufft1d1(x, c, 1, tol, ms, debug=1, modeord=1, nthreads=4)
 ```
 
 ### More examples
 
 See the code [test/test_nufft.jl](test/test_nufft.jl)
-which tests `dtype=Float64` and `dtype=Float32` cases,
-including a vectorized and a guru call (1d1 only for now).
+which tests `dtype=Float64` and `dtype=Float32` precisions
+for all nine transform types.
+In the 1D type 1 it also tests a vectorized simple, a guru call and
+a vectorized guru call.
 
 ### Developers
 
@@ -88,3 +89,7 @@ Additional authors:
 
 * Alex Barnett (guidance/tweaks)
 * Mose Giordano (packaging)
+
+### To do
+
+- Add more extensive tests, including dumbinputs
