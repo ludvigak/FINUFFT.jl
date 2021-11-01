@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/ludvigak/FINUFFT.jl/branch/master/graph/badge.svg?token=Tkx7kma18J)](https://codecov.io/gh/ludvigak/FINUFFT.jl)
 [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://ludvigak.github.io/FINUFFT.jl/latest/)
 
-This is a full-featured Julia interface to [FINUFFT](https://github.com/flatironinstitute/finufft), a lightweight and fast nonuniform FFT (nufft) library released by the Flatiron Institute.
+This is a full-featured Julia interface to [FINUFFT](https://github.com/flatironinstitute/finufft), a lightweight and fast nonuniform fast Fourier transform (NUFFT) library released by the Flatiron Institute. FINUFFT version 2.0.3 and above is supported.
 
 ## Installation
 
@@ -33,8 +33,8 @@ The underlying C++ routines that are called have full documentation
 
 An auto-generated reference for all provided Julia functions is [here](https://ludvigak.github.io/FINUFFT.jl/latest/).
 
-> Warning: On 10/28/21, the interface has changed (improved) significantly,
-> breaking backward-compatibility.
+> **Warning:** On 10/28/21, the interface has changed (improved) significantly,
+> breaking some backward compatibility. Please read the documentation.
 
 * Function calls mimic the C/C++ interface, with the exception that you don't need to pass the dimensions of any arrays in the argument (they are inferred using `size()`).
 * A vectorized call (performing multiple transforms, each with different coefficient vectors but the same set of nonuniform points) can now be performed using the same functions as the single-transform interface, detected from the size of the input arrays.
@@ -67,12 +67,14 @@ out = Array{ComplexF64}(undef, ms)
 nufft1d1!(x, c, 1, tol, out)
 
 # Demo using kwargs to change options from defaults...
-fk2 = nufft1d1(x, c, 1, tol, ms, debug=1, dtype=Float64)
+fk2 = nufft1d1(x, c, 1, tol, ms, debug=1, modeord=1)
 ```
 
 ### More examples
 
 See the code [test/test_nufft.jl](test/test_nufft.jl)
+which tests `dtype=Float64` and `dtype=Float32` cases,
+including a vectorized and a guru call (1d1 only for now).
 
 ### Developers
 

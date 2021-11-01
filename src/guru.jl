@@ -24,9 +24,10 @@ Inputs:
                     Its length sets the dimension, which must be 1, 2 or 3.
                     If type is 3, in contrast, its *value* fixes the dimension
     iflag   if >=0, uses + sign in exponential, otherwise - sign.
-    eps     relative precision requested (generally between 1e-15 and 1e-1)
+    eps     relative precision requested (generally between 1e-15 and 1e-1),
+            real, need not match type of dtype
     ntrans          number of transforms to compute simultaneously
-    dtype           Float32 or Float64, run in single precision or double precision
+    dtype           Float32 or Float64, plan for single precision or double precision
     kwargs  (optional), for more options, see https://finufft.readthedocs.io/en/latest/opts.html
 Outputs:
     plan            finufft_plan struct
@@ -35,7 +36,7 @@ function finufft_makeplan(type::Integer,
                           n_modes_or_dim::Union{Array{BIGINT},Integer},
                           iflag::Integer,
                           ntrans::Integer,
-                          eps::AbstractFloat;
+                          eps::Real;
                           dtype=Float64,
                           kwargs...)
 # see https://stackoverflow.com/questions/40140699/the-proper-way-to-declare-c-void-pointers-in-julia for how to declare c-void pointers in julia

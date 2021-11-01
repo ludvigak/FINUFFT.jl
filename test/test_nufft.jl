@@ -1,28 +1,29 @@
+# the main tester for FINUFFT.jl
+
 using FINUFFT
 
 using Test
 using LinearAlgebra
 using Random
 
-
-function test_nufft(tol::T_tol, dtype::DataType=Float64) where T_tol <: FINUFFT.finufftReal
+# run a test at requested tolerance tol, floating-point precision dtype...
+function test_nufft(tol::Real, dtype::DataType)
     @assert dtype <: FINUFFT.finufftReal
 
     Random.seed!(1)
 
-    T = dtype
-    nj = 10
-    nk = 11
-    ms = 12
-    mt = 13
-    mu = 14
+    T = dtype    # abbrev; we no longer infer dtype as type of tol
+                 # (this would be confusing since tol can be any type)
+    nj = 10      # sizes for this small test: # NU pts
+    nk = 11      # targ NU pts for t3
+    ms = 12      # modes x
+    mt = 13      # modes y
+    mu = 14      # modes z
 
-    arrT = Array{T}
-
-    # nonuniform data
-    x = arrT(3*pi*(1.0 .- 2*rand(nj)))
-    y = arrT(3*pi*(1.0 .- 2*rand(nj)))
-    z = arrT(3*pi*(1.0 .- 2*rand(nj)))
+    # nonuniform data, using the full allowed input domain [-3pi,3pi)
+    x = Array{T}(3*pi*(2*rand(nj).-1.0))
+    y = Array{T}(3*pi*(2*rand(nj).-1.0))
+    z = Array{T}(3*pi*(2*rand(nj).-1.0))
     c = rand(Complex{T},nj)
     s = rand(T,nk)
     t = rand(T,nk)
@@ -39,41 +40,41 @@ function test_nufft(tol::T_tol, dtype::DataType=Float64) where T_tol <: FINUFFT.
     k2 = modevec(mt)
     k3 = modevec(mu)
 
-    errfac = 100
-    errdifffac = 10
+    errfac = 100       # allowed multiple of tol for errors rel to direct calc
+    errdifffac = 10    # allowed multiple of tol for errors rel to 2nd NUFFT
 
     @testset "NUFFT ($T)" begin
         ## 1D
         @testset "1D" begin
-            # 1D1
+            # 1D1 - here we include tests of opts-setting, vectorized, guru...
             @testset "1D1" begin
                 out = zeros(Complex{T},ms)
-                ref = zeros(Complex{T},ms)
+                ref = zeros(Complex{T},ms)     # direct calc...
                 for j=1:nj
                     for ss=1:ms
                         ref[ss] += c[j] * exp(1im*k1[ss]*x[j])
                     end
                 end
-                # Try this one with explicit opts struct
-                nufft1d1!(x, c, 1, tol, out, debug=1, spread_kerpad=0, dtype=T)
+                # Try this one with some opts
+                nufft1d1!(x, c, 1, tol, out, debug=1, upsampfac=2.0, dtype=T)
                 relerr_1d1 = norm(vec(out)-vec(ref), Inf) / norm(vec(ref), Inf)
                 @test relerr_1d1 < errfac*tol
-    #            # Different caller
-                out2 = nufft1d1(x, c, 1, tol, ms, debug=1, spread_kerpad=0, dtype=T)
+                # Different caller
+                out2 = nufft1d1(x, c, 1, tol, ms, dtype=T)
                 reldiff = norm(vec(out)-vec(out2), Inf) / norm(vec(out), Inf)
                 @test reldiff < errdifffac*tol
 
-                #guru1d1
-                plan = finufft_makeplan(1,[ms;],1,1,tol,spread_debug=1,debug=1, dtype=T)
+                # guru1d1
+                plan = finufft_makeplan(1,[ms;],1,1,tol,dtype=T)
                 finufft_setpts(plan,x)
                 out3 = finufft_exec(plan,c)
                 finufft_destroy(plan)
                 relerr_guru = norm(vec(out3)-vec(ref), Inf) / norm(vec(ref), Inf)
                 @test relerr_guru < errfac*tol
 
-                #guru1d1 many
+                # guru1d1 many
                 ntrans = 3
-                plan = finufft_makeplan(1,[ms;],1,ntrans,tol,spread_debug=1,debug=1, dtype=T)
+                plan = finufft_makeplan(1,[ms;],1,ntrans,tol,dtype=T)
                 finufft_setpts(plan,x)
                 out4 = finufft_exec(plan,hcat(c,c,c))
                 finufft_destroy(plan)
@@ -238,5 +239,7 @@ function test_nufft(tol::T_tol, dtype::DataType=Float64) where T_tol <: FINUFFT.
     end
 end
 
+# Main: do the tests
+# 1st arg is tolerance (no longer used to infer dtype), 2nd is dtype...
 test_nufft(1e-15, Float64)
-test_nufft(1f-4, Float32)
+test_nufft(1e-4, Float32)        # breaks; 1f-4 doesn't !!!!  *******

@@ -6,7 +6,7 @@
     nufft1d1(xj      :: Array{Float64} or Array{Float32}, 
              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
              iflag   :: Integer, 
-             eps     :: Float64 or Float32,
+             eps     :: Real,
              ms      :: Integer;
              kwargs...
             ) -> Array{ComplexF64} or Array{ComplexF32}
@@ -32,11 +32,10 @@ This computes, to relative precision eps, via a fast algorithm:
             ntrans>1, a matrix of size (ms,ntrans).
 
 """
-### should use type of xj to decide precision or not
 function nufft1d1(xj::Array{T},
                   cj::Array{Complex{T}},
                   iflag::Integer,
-                  eps::T,
+                  eps::Real,
                   ms::Integer;
                   kwargs...) where T <: finufftReal
     valid_setpts(1,1,xj)
@@ -52,7 +51,7 @@ end
              yj      :: Array{Float64} or Array{Float32}, 
              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
              iflag   :: Integer, 
-             eps     :: Float64 or Float32,
+             eps     :: Real,
              ms      :: Integer,
              mt      :: Integer;
              kwargs...
@@ -88,7 +87,7 @@ function nufft2d1(xj      :: Array{T},
                   yj      :: Array{T},
                   cj      :: Array{Complex{T}},
                   iflag   :: Integer, 
-                  eps     :: T,
+                  eps     :: Real,
                   ms      :: Integer,
                   mt      :: Integer;
                   kwargs...) where T <: finufftReal
@@ -106,7 +105,7 @@ end
              zj      :: Array{Float64} or Array{Float32}, 
              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
              iflag   :: Integer, 
-             eps     :: Float64 or Float32,
+             eps     :: Real,
              ms      :: Integer,
              mt      :: Integer,
              mu      :: Integer;
@@ -146,7 +145,7 @@ function nufft3d1(xj      :: Array{T},
                   zj      :: Array{T},
                   cj      :: Array{Complex{T}},
                   iflag   :: Integer, 
-                  eps     :: T,
+                  eps     :: Real,
                   ms      :: Integer,
                   mt      :: Integer,
                   mu      :: Integer;
@@ -165,7 +164,7 @@ end
 """
     nufft1d2(xj      :: Array{Float64} or Array{Float32}, 
              iflag   :: Integer, 
-             eps     :: Float64 or Float32,
+             eps     :: Real,
              fk      :: Array{ComplexF64} or Array{ComplexF32};
              kwargs...
             ) -> Array{ComplexF64}
@@ -192,7 +191,7 @@ This computes, to relative precision eps, via a fast algorithm:
 """
 function nufft1d2(xj      :: Array{T},
                   iflag   :: Integer,
-                  eps     :: T,
+                  eps     :: Real,
                   fk      :: Array{Complex{T}};
                   kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(2,1,xj)
@@ -207,7 +206,7 @@ end
     nufft2d2(xj      :: Array{Float64} or Array{Float32}, 
              yj      :: Array{Float64} or Array{Float32}, 
              iflag   :: Integer, 
-             eps     :: Float64 or Float32,
+             eps     :: Real,
              fk      :: Array{ComplexF64} or Array{ComplexF32};
              kwargs...
             ) -> Array{ComplexF64}
@@ -237,7 +236,7 @@ This computes, to relative precision eps, via a fast algorithm:
 function nufft2d2(xj      :: Array{T},
                   yj      :: Array{T},
                   iflag   :: Integer,
-                  eps     :: T,
+                  eps     :: Real,
                   fk      :: Array{Complex{T}};
                   kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(2,2,xj,yj)
@@ -253,7 +252,7 @@ end
              yj      :: Array{Float64} or Array{Float32}, 
              zj      :: Array{Float64} or Array{Float32}, 
              iflag   :: Integer, 
-             eps     :: Float64 or Float32,
+             eps     :: Real,
              fk      :: Array{ComplexF64} or Array{ComplexF32};
              kwargs...
             ) -> Array{ComplexF64}
@@ -286,7 +285,7 @@ function nufft3d2(xj      :: Array{T},
                   yj      :: Array{T},
                   zj      :: Array{T},
                   iflag   :: Integer, 
-                  eps     :: T,
+                  eps     :: Real,
                   fk      :: Array{Complex{T}};
                   kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(2,3,xj,yj,zj)
@@ -304,7 +303,7 @@ end
     nufft1d3(xj      :: Array{Float64} or Array{Float32}, 
              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
              iflag   :: Integer, 
-             eps     :: Float64 or Float32,
+             eps     :: Real,
              sk      :: Array{Float64} or Array{Float32};
              kwargs...
             ) -> Array{ComplexF64}
@@ -332,7 +331,7 @@ This computes, to relative precision eps, via a fast algorithm:
 function nufft1d3(xj      :: Array{T},
                   cj      :: Array{Complex{T}},
                   iflag   :: Integer, 
-                  eps     :: T,
+                  eps     :: Real,
                   sk      :: Array{T};
                   kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(3,1,xj,T[],T[],sk)
@@ -348,7 +347,7 @@ end
              yj      :: Array{Float64} or Array{Float32},
              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
              iflag   :: Integer, 
-             eps     :: Float64 or Float32,
+             eps     :: Real,
              sk      :: Array{Float64} or Array{Float32},
              tk      :: Array{Float64} or Array{Float32};
              kwargs...
@@ -379,7 +378,7 @@ function nufft2d3(xj      :: Array{T},
                   yj      :: Array{T}, 
                   cj      :: Array{Complex{T}}, 
                   iflag   :: Integer, 
-                  eps     :: T,
+                  eps     :: Real,
                   sk      :: Array{T},
                   tk      :: Array{T};
                   kwargs...) where T <: finufftReal
@@ -397,7 +396,7 @@ end
              zj      :: Array{Float64} or Array{Float32},
              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
              iflag   :: Integer, 
-             eps     :: Float64 or Float32,
+             eps     :: Real,
              sk      :: Array{Float64} or Array{Float32},
              tk      :: Array{Float64} or Array{Float32},
              uk      :: Array{Float64} or Array{Float32};
@@ -431,7 +430,7 @@ function nufft3d3(xj      :: Array{T},
                   zj      :: Array{T},                   
                   cj      :: Array{Complex{T}}, 
                   iflag   :: Integer, 
-                  eps     :: T,
+                  eps     :: Real,
                   sk      :: Array{T},
                   tk      :: Array{T},
                   uk      :: Array{T};
@@ -453,7 +452,7 @@ end
     nufft1d1!(xj      :: Array{Float64} or Array{Float32}, 
               cj      :: Array{ComplexF64} or Array{ComplexF32}, 
               iflag   :: Integer, 
-              eps     :: Float64 or Float32,
+              eps     :: Real,
               fk      :: Array{ComplexF64} or Array{ComplexF32};
               kwargs...
             )
@@ -463,7 +462,7 @@ Compute type-1 1D complex nonuniform FFT. Output stored in fk.
 function nufft1d1!(xj      :: Array{T},
                    cj      :: Array{Complex{T}},
                    iflag   :: Integer, 
-                   eps     :: T,
+                   eps     :: Real,
                    fk      :: Array{Complex{T}};
                    kwargs...) where T <: finufftReal
     valid_setpts(1,1,xj)
@@ -483,7 +482,7 @@ end
     nufft1d2!(xj      :: Array{Float64} or Array{Float32}, 
               cj      :: Array{ComplexF64} or Array{ComplexF32}, 
               iflag   :: Integer, 
-              eps     :: Float64 or Float32,
+              eps     :: Real,
               fk      :: Array{ComplexF64} or Array{ComplexF32};
               kwargs...
             )
@@ -493,7 +492,7 @@ Compute type-2 1D complex nonuniform FFT. Output stored in cj.
 function nufft1d2!(xj      :: Array{T},
                    cj      :: Array{Complex{T}},
                    iflag   :: Integer, 
-                   eps     :: T,
+                   eps     :: Real,
                    fk      :: Array{Complex{T}};
                    kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(2,1,xj)
@@ -512,7 +511,7 @@ end
     nufft1d3!(xj      :: Array{Float64} or Array{Float32}, 
               cj      :: Array{ComplexF64} or Array{ComplexF32}, 
               iflag   :: Integer, 
-              eps     :: Float64 or Float32,
+              eps     :: Real,
               sk      :: Array{Float64} or Array{Float32},
               fk      :: Array{ComplexF64} or Array{ComplexF32};
               kwargs...
@@ -523,7 +522,7 @@ Compute type-3 1D complex nonuniform FFT. Output stored in fk.
 function nufft1d3!(xj      :: Array{T},
                    cj      :: Array{Complex{T}},
                    iflag   :: Integer, 
-                   eps     :: T,
+                   eps     :: Real,
                    sk      :: Array{T},
                    fk      :: Array{Complex{T}};
                    kwargs...) where T <: finufftReal
@@ -546,7 +545,7 @@ end
               yj      :: Array{Float64} or Array{Float32}, 
               cj      :: Array{ComplexF64} or Array{ComplexF32}, 
               iflag   :: Integer, 
-              eps     :: Float64 or Float32,
+              eps     :: Real,
               fk      :: Array{ComplexF64} or Array{ComplexF32};
               kwargs...
             )
@@ -557,7 +556,7 @@ function nufft2d1!(xj      :: Array{T},
                    yj      :: Array{T}, 
                    cj      :: Array{Complex{T}}, 
                    iflag   :: Integer, 
-                   eps     :: T,
+                   eps     :: Real,
                    fk      :: Array{Complex{T}};
                    kwargs...) where T <: finufftReal
     valid_setpts(1,2,xj,yj)
@@ -579,7 +578,7 @@ end
               yj      :: Array{Float64} or Array{Float32}, 
               cj      :: Array{ComplexF64} or Array{ComplexF32}, 
               iflag   :: Integer, 
-              eps     :: Float64 or Float32,
+              eps     :: Real,
               fk      :: Array{ComplexF64} or Array{ComplexF32};
               kwargs...
             )
@@ -590,7 +589,7 @@ function nufft2d2!(xj      :: Array{T},
                    yj      :: Array{T}, 
                    cj      :: Array{Complex{T}}, 
                    iflag   :: Integer, 
-                   eps     :: T,
+                   eps     :: Real,
                    fk      :: Array{Complex{T}};
                    kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(1,2,xj,yj)
@@ -609,7 +608,7 @@ end
               yj      :: Array{Float64} or Array{Float32},
               cj      :: Array{ComplexF64} or Array{ComplexF32}, 
               iflag   :: Integer, 
-              eps     :: Float64 or Float32,
+              eps     :: Real,
               sk      :: Array{Float64} or Array{Float32},
               tk      :: Array{Float64} or Array{Float32},
               fk      :: Array{ComplexF64} or Array{ComplexF32};
@@ -622,7 +621,7 @@ function nufft2d3!(xj      :: Array{T},
                    yj      :: Array{T},
                    cj      :: Array{Complex{T}}, 
                    iflag   :: Integer, 
-                   eps     :: T,
+                   eps     :: Real,
                    sk      :: Array{T},
                    tk      :: Array{T},
                    fk      :: Array{Complex{T}};
@@ -646,7 +645,7 @@ end
               zj      :: Array{Float64} or Array{Float32}, 
               cj      :: Array{ComplexF64} or Array{ComplexF32}, 
               iflag   :: Integer, 
-              eps     :: Float64 or Float32,
+              eps     :: Real,
               fk      :: Array{ComplexF64} or Array{ComplexF32};
               kwargs...
             )
@@ -658,7 +657,7 @@ function nufft3d1!(xj      :: Array{T},
                    zj      :: Array{T}, 
                    cj      :: Array{Complex{T}}, 
                    iflag   :: Integer, 
-                   eps     :: T,
+                   eps     :: Real,
                    fk      :: Array{Complex{T}};
                    kwargs...) where T <: finufftReal
     valid_setpts(1,3,xj,yj,zj)
@@ -680,7 +679,7 @@ end
               zj      :: Array{Float64} or Array{Float32}, 
               cj      :: Array{ComplexF64} or Array{ComplexF32}, 
               iflag   :: Integer, 
-              eps     :: Float64 or Float32,
+              eps     :: Real,
               fk      :: Array{ComplexF64} or Array{ComplexF32};
               kwargs...
             )
@@ -692,7 +691,7 @@ function nufft3d2!(xj      :: Array{T},
                    zj      :: Array{T},                    
                    cj      :: Array{Complex{T}}, 
                    iflag   :: Integer, 
-                   eps     :: T,
+                   eps     :: Real,
                    fk      :: Array{Complex{T}};
                    kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(2,3,xj,yj,zj)
@@ -712,7 +711,7 @@ end
               zj      :: Array{Float64} or Array{Float32},
               cj      :: Array{ComplexF64} or Array{ComplexF32}, 
               iflag   :: Integer, 
-              eps     :: Float64 or Float32,
+              eps     :: Real,
               sk      :: Array{Float64} or Array{Float32},
               tk      :: Array{Float64} or Array{Float32},
               uk      :: Array{Float64} or Array{Float32},
@@ -727,7 +726,7 @@ function nufft3d3!(xj      :: Array{T},
                    zj      :: Array{T},                   
                    cj      :: Array{Complex{T}}, 
                    iflag   :: Integer, 
-                   eps     :: T,
+                   eps     :: Real,
                    sk      :: Array{T},
                    tk      :: Array{T},
                    uk      :: Array{T},
