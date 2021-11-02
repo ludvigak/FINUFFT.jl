@@ -261,15 +261,16 @@ function finufft_exec(plan::finufft_plan{T},
 end
 
 """
-    finufft_destroy(plan::finufft_plan{T}) where T <: finufftReal
+    status = finufft_destroy(plan::finufft_plan{T}) where T <: finufftReal
 
 This destroys a FINUFFT plan object: it
 deallocates all stored FFTW plans, nonuniform point sorting arrays,
 kernel Fourier transforms arrays, etc, and zeros the plan pointer.
+An integer status code is returned, that is 0 if successful.
 """
 function finufft_destroy(plan::finufft_plan{T}) where T <: finufftReal
             
-    if plan.plan_ptr!=C_NULL       # otherwise the C destroy call will crash :(
+    if plan.plan_ptr!=C_NULL    # otherwise the C destroy call *will* crash :(
         if T==Float64
             ret = ccall( (:finufft_destroy, libfinufft),
                          Cint,
@@ -286,6 +287,8 @@ function finufft_destroy(plan::finufft_plan{T}) where T <: finufftReal
         plan.plan_ptr = C_NULL       # signifies nothing to deallocate
         check_ret(ret)
         return ret
+    else
+        return 0                     # still need to report it "worked"
     end
 end
 

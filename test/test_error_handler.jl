@@ -1,7 +1,7 @@
 using FINUFFT
 using Test
 
-@testset "Error handling" begin
+@testset "Error handling and dumb inputs" begin
 
     xj = zeros(10)
     cj = complex(zeros(10))
@@ -46,5 +46,9 @@ using Test
     catch e
         @test e.errno == FINUFFT.HORNER_WRONG_BETA
     end
-    
+
+    # Test immediate destroy and double-destroy handled properly...
+    p = finufft_makeplan(2,10,+1,1,1e-6);
+    @test finufft_destroy(p)==0   # 0 signifies success
+    @test finufft_destroy(p)==0   # but watch for crash here :)
 end
