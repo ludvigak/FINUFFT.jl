@@ -287,8 +287,7 @@ function finufft_destroy(plan::finufft_plan{T}) where T <: finufftReal
                      )
     end
     plan.plan_ptr = C_NULL       # signifies destroyed
-    check_ret(ret)
-    return ret
+    return ret                   # either 0 success or 1 for already-destroyed
 end
 
 """
