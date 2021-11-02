@@ -18,18 +18,18 @@ This computes, to relative precision eps, via a fast algorithm:
     f(k1) =  SUM c[j] exp(+/-i k1 x(j))  for -ms/2 <= k1 <= (ms-1)/2
              j=1
  # Inputs
-  - xj      locations of nonuniform sources on interval [-3pi,3pi), length nj
-  - cj      length-nj complex vector of source strengths. If length(cj)>nj,
+  - `xj`      locations of nonuniform sources on interval [-3pi,3pi), length nj
+  - `cj`      length-nj complex vector of source strengths. If length(cj)>nj,
             expects a stack of vectors (eg, a nj*ntrans matrix) each of which is
             transformed with the same source locations.
-  - iflag   if >=0, uses + sign in exponential, otherwise - sign.
-  - eps     relative precision requested (generally between 1e-15 and 1e-1)
-  - ms      number of Fourier modes computed, may be even or odd;
+  - `iflag`   if >=0, uses + sign in exponential, otherwise - sign.
+  - `eps`     relative precision requested (generally between 1e-15 and 1e-1)
+  - `ms`      number of Fourier modes computed, may be even or odd;
             in either case, mode range is integers lying in [-ms/2, (ms-1)/2]
-  - kwargs  (optional), for more options, see https://finufft.readthedocs.io/en/latest/opts.html
- # Outputs
-  - fk      size-ms complex column vector of Fourier coefficients, or, if
-            ntrans>1, a matrix of size (ms,ntrans).
+  - kwargs  (optional). See `nufft_opts` and https://finufft.readthedocs.io/en/latest/opts.html
+ # Output
+  - size `(ms,)` complex vector of Fourier coefficients f, or, if
+            `ntrans>1`, matrix of size `(ms,ntrans)`.
 
 """
 function nufft1d1(xj::Array{T},
@@ -66,22 +66,21 @@ This computes, to relative precision eps, via a fast algorithm:
 
     for -ms/2 <= k1 <= (ms-1)/2,  -mt/2 <= k2 <= (mt-1)/2.
 
-  Inputs:
-    xj,yj   coordinates of nonuniform sources on the square [-3pi,3pi)^2,
+ # Inputs
+  -  `xj`,`yj`   coordinates of nonuniform sources on the square [-3pi,3pi)^2,
             each a length-nj vector
-    cj      length-nj complex vector of source strengths. If length(cj)>nj,
+  -  `cj`      length-nj complex vector of source strengths. If length(cj)>nj,
             expects a stack of vectors (eg, a nj*ntrans matrix) each of which is
             transformed with the same source locations.
-    iflag   if >=0, uses + sign in exponential, otherwise - sign.
-    eps     relative precision requested (generally between 1e-15 and 1e-1)
-    ms,mt   number of Fourier modes requested in x & y; each may be even or odd.
+  -  `iflag`   if >=0, uses + sign in exponential, otherwise - sign.
+   - `eps`     relative precision requested (generally between 1e-15 and 1e-1)
+   - `ms`,`mt`   number of Fourier modes requested in x & y; each may be even or odd.
             In either case the mode range is integers lying in [-m/2, (m-1)/2]
-    kwargs  (optional), for more options, see https://finufft.readthedocs.io/en/latest/opts.html
-  Outputs:
-    fk      size (ms,mt) complex matrix of Fourier coefficients
-            (ordering given by opts.modeord in each dimension; ms fast, mt slow),
-            or, if ntrans>1, a 3D array of size (ms,mt,ntrans).
-
+  -  kwargs  (optional), see `nufft_opts` and https://finufft.readthedocs.io/en/latest/opts.html
+ # Output
+  - size `(ms,mt)` complex matrix of Fourier coefficients f
+            (ordering given by opts.modeord in each dimension; `ms` fast, `mt` slow),
+            or, if `ntrans>1`, a array of size `(ms,mt,ntrans)`.
 """
 function nufft2d1(xj      :: Array{T},
                   yj      :: Array{T},
@@ -122,23 +121,22 @@ This computes, to relative precision eps, via a fast algorithm:
     for -ms/2 <= k1 <= (ms-1)/2,  -mt/2 <= k2 <= (mt-1)/2,
         -mu/2 <= k3 <= (mu-1)/2.
 
-  Inputs:
-    xj,yj,zj coordinates of nonuniform sources on the cube [-3pi,3pi)^3,
+ # Inputs
+ -   `xj`,`yj`,`zj` coordinates of nonuniform sources on the cube [-3pi,3pi)^3,
              each a length-nj vector
-    cj       length-nj complex vector of source strengths. If length(cj)>nj,
+ -   `cj`       length-nj complex vector of source strengths. If length(cj)>nj,
              expects a stack of vectors (eg, a nj*ntrans matrix) each of which is
              transformed with the same source locations.
-    iflag    if >=0, uses + sign in exponential, otherwise - sign.
-    eps      relative precision requested (generally between 1e-15 and 1e-1)
-    ms,mt,mu number of Fourier modes requested in x,y and z; each may be
+ -   `iflag`    if >=0, uses + sign in exponential, otherwise - sign.
+  -  `eps`      relative precision requested (generally between 1e-15 and 1e-1)
+ -   `ms`,`mt`,`mu` number of Fourier modes requested in x,y and z; each may be
              even or odd.
              In either case the mode range is integers lying in [-m/2, (m-1)/2]
-    kwargs  (optional), for more options, see https://finufft.readthedocs.io/en/latest/opts.html
-  Outputs:
-    fk      size (ms,mt,mu) complex array of Fourier coefficients
-            (ordering given by opts.modeord in each dimension; ms fastest, mu
-            slowest), or, if ntrans>1, a 4D array of size (ms,mt,mu,ntrans).
-
+  -  kwargs  (optional). See `nufft_opts` and https://finufft.readthedocs.io/en/latest/opts.html
+ # Output
+  - size `(ms,mt,mu)` complex array of Fourier coefficients f
+            (ordering given by opts.modeord in each dimension; `ms` fastest, `mu`
+            slowest), or, if `ntrans>1`, a 4D array of size `(ms,mt,mu,ntrans)`.
 """
 function nufft3d1(xj      :: Array{T},
                   yj      :: Array{T},
@@ -176,18 +174,17 @@ This computes, to relative precision eps, via a fast algorithm:
             k1
      where sum is over -ms/2 <= k1 <= (ms-1)/2.
 
-  Inputs:
-    xj      location of nonuniform targets on interval [-3pi,3pi), length nj
-    fk      complex Fourier coefficients. If a vector, length sets ms
+ # Input
+  -  `xj`      location of nonuniform targets on interval [-3pi,3pi), length nj
+   - `fk`      complex Fourier coefficients. If a vector, length sets `ms`
             (with mode ordering given by opts.modeord). If a matrix, each
-            of ntrans columns is transformed with the same nonuniform targets.
-    iflag   if >=0, uses + sign in exponential, otherwise - sign.
-    eps     relative precision requested (generally between 1e-15 and 1e-1)
-    kwargs  (optional), for more options, see https://finufft.readthedocs.io/en/latest/opts.html
-  Outputs:
-    cj     complex column vector of nj answers at targets, or,
-           if ntrans>1, matrix of size (nj,ntrans).
-
+            column is transformed with the same nonuniform targets.
+  -  `iflag`   if >=0, uses + sign in exponential, otherwise - sign.
+  -  `eps`     relative precision requested (generally between 1e-15 and 1e-1)
+  -  kwargs  (optional). See `nufft_opts` and https://finufft.readthedocs.io/en/latest/opts.html
+ # Output
+  - complex `(nj,)` vector c of answers at targets, or,
+           if `ntrans>1`, matrix of size `(nj,ntrans)`.
 """
 function nufft1d2(xj      :: Array{T},
                   iflag   :: Integer,
@@ -218,19 +215,19 @@ This computes, to relative precision eps, via a fast algorithm:
            k1,k2
      where sum is over -ms/2 <= k1 <= (ms-1)/2, -mt/2 <= k2 <= (mt-1)/2,
 
-  Inputs:
-    xj,yj   coordinates of nonuniform targets on the square [-3pi,3pi)^2,
+ # Inputs
+   -  `xj`,`yj`   coordinates of nonuniform targets on the square [-3pi,3pi)^2,
             each a vector of length nj
-    fk      complex Fourier coefficient matrix, whose size determines (ms,mt).
+  -  `fk`      complex Fourier coefficient matrix, whose size determines (ms,mt).
             (Mode ordering given by opts.modeord, in each dimension.)
-            If a 3D array, 3rd dimension sets ntrans, and each of ntrans
+            If a 3D array, 3rd dimension sets `ntrans`, and each of `ntrans`
             matrices is transformed with the same nonuniform targets.
-    iflag   if >=0, uses + sign in exponential, otherwise - sign.
-    eps     relative precision requested (generally between 1e-15 and 1e-1)
-    kwargs  (optional), for more options, see https://finufft.readthedocs.io/en/latest/opts.html
-  Outputs:
-    cj      complex column vector of nj answers at targets, or,
-            if ntrans>1, matrix of size (nj,ntrans).
+  -  `iflag`   if >=0, uses + sign in exponential, otherwise - sign.
+  -  `eps`     relative precision requested (generally between 1e-15 and 1e-1)
+ -   kwargs  (optional). See `nufft_opts` and https://finufft.readthedocs.io/en/latest/opts.html
+ # Output
+   - complex size `(nj,)` vector c of answers at targets, or,
+            if `ntrans>1`, matrix of size `(nj,ntrans)`.
 
 """
 function nufft2d2(xj      :: Array{T},
@@ -266,20 +263,19 @@ This computes, to relative precision eps, via a fast algorithm:
      where sum is over -ms/2 <= k1 <= (ms-1)/2, -mt/2 <= k2 <= (mt-1)/2,
                       -mu/2 <= k3 <= (mu-1)/2.
 
-  Inputs:
-    xj,yj,zj coordinates of nonuniform targets on the cube [-3pi,3pi)^3,
+ # Inputs
+  -  `xj`,`yj`,`zj` coordinates of nonuniform targets on the cube [-3pi,3pi)^3,
              each a vector of length nj
-    fk       complex Fourier coefficient array, whose size sets (ms,mt,mu).
+  -  `fk`       complex Fourier coefficient array, whose size sets `(ms,mt,mu)`.
              (Mode ordering given by opts.modeord, in each dimension.)
-             If a 4D array, 4th dimension sets ntrans, and each of ntrans
+             If a 4D array, 4th dimension sets `ntrans`, and each of `ntrans`
              3D arrays is transformed with the same nonuniform targets.
-    iflag    if >=0, uses + sign in exponential, otherwise - sign.
-    eps      relative precision requested (generally between 1e-15 and 1e-1)
-    kwargs   (optional), for more options, see https://finufft.readthedocs.io/en/latest/opts.html
-  Outputs:
-    cj       complex column vector of nj answers at targets, or,
-             if ntrans>1, matrix of size (nj,ntrans).
-
+  -  `iflag`    if >=0, uses + sign in exponential, otherwise - sign.
+ -   `eps`      relative precision requested (generally between 1e-15 and 1e-1)
+   - kwargs   (optional). See `nufft_opts` and https://finufft.readthedocs.io/en/latest/opts.html
+ #  Output
+   - complex vector c of size `(nj,)` giving answers at targets, or,
+             if `ntrans>1`, matrix of size `(nj,ntrans)`.
 """
 function nufft3d2(xj      :: Array{T},
                   yj      :: Array{T},
@@ -314,19 +310,19 @@ This computes, to relative precision eps, via a fast algorithm:
              nj
     f[k]  =  SUM   c[j] exp(+-i s[k] x[j]),      for k = 1, ..., nk
              j=1
-  Inputs:
-    xj       locations of nonuniform sources on R (real line), length-nj vector.
-    cj       length-nj complex vector of source strengths. If length(cj)>nj,
-             expects a stack of vectors (eg, a nj*ntrans matrix) each of which is
-             transformed with the same source and target locations.
-    iflag    if >=0, uses + sign in exponential, otherwise - sign.
-    eps      relative precision requested (generally between 1e-15 and 1e-1)
-    sk       frequency locations of nonuniform targets on R, length-nk vector.
-    kwargs   (optional), for more options, see https://finufft.readthedocs.io/en/latest/opts.html
-  Outputs:
-    fk       length-nk complex vector of values at targets, or, if ntrans>1,
-             a matrix of size (nk,ntrans)
 
+ # Inputs
+ -   `xj`       locations of nonuniform sources on R (real line), length-nj vector.
+ -   `cj`       length-nj complex vector of source strengths. If length(cj)>nj,
+             expects a size `(nj,ntrans)` matrix each column of which is
+             transformed with the same source and target locations.
+ -    `iflag`    if >=0, uses + sign in exponential, otherwise - sign.
+ - `eps`      relative precision requested (generally between 1e-15 and 1e-1)
+ -  `sk`       frequency locations of nonuniform targets on R, length-nk vector.
+  -  kwargs   (optional). See `nufft_opts` and https://finufft.readthedocs.io/en/latest/opts.html
+ #  Output
+  - complex vector f size '(nk,)` of values at targets, or, if `ntrans>1`,
+             a matrix of size `(nk,ntrans)`
 """
 function nufft1d3(xj      :: Array{T},
                   cj      :: Array{Complex{T}},
@@ -359,20 +355,20 @@ This computes, to relative precision eps, via a fast algorithm:
              nj
     f[k]  =  SUM   c[j] exp(+-i (s[k] x[j] + t[k] y[j])),  for k = 1, ..., nk
              j=1
-  Inputs:
-    xj,yj    coordinates of nonuniform sources in R^2, each a length-nj vector.
-    cj       length-nj complex vector of source strengths. If length(cj)>nj,
-             expects a stack of vectors (eg, a nj*ntrans matrix) each of which is
-             transformed with the same source and target locations.
-    iflag    if >=0, uses + sign in exponential, otherwise - sign.
-    eps      relative precision requested (generally between 1e-15 and 1e-1)
-    sk,tk    frequency coordinates of nonuniform targets in R^2,
-             each a length-nk vector.
-    kwargs   (optional), for more options, see https://finufft.readthedocs.io/en/latest/opts.html
-  Outputs:
-    fk       length-nk complex vector of values at targets, or, if ntrans>1,
-             a matrix of size (nk,ntrans)
 
+ # Inputs
+  -  `xj`,`yj`    coordinates of nonuniform sources in R^2, each a length-nj vector.
+   - `cj`    complex vector `(nj,)` of source strengths. If length(cj)>nj,
+             expects a `(nj,ntrans)` matrix, each column of which is
+             transformed with the same source and target locations.
+ -   `iflag`    if >=0, uses + sign in exponential, otherwise - sign.
+ -   `eps`      relative precision requested (generally between 1e-15 and 1e-1)
+  -  `sk`,`tk`    frequency coordinates of nonuniform targets in R^2,
+             each a length-nk vector.
+ -   kwargs   (optional). See `nufft_opts` and https://finufft.readthedocs.io/en/latest/opts.html
+ # Output
+  - complex vector size `(nk,)` of values at targets, or, if `ntrans>1`,
+             a matrix of size `(nk,ntrans)`
 """
 function nufft2d3(xj      :: Array{T},
                   yj      :: Array{T}, 
@@ -410,20 +406,20 @@ This computes, to relative precision eps, via a fast algorithm:
     f[k]  =  SUM   c[j] exp(+-i (s[k] x[j] + t[k] y[j] + u[k] z[j])),
              j=1
                              for k = 1, ..., nk
-  Inputs:
-    xj,yj,zj coordinates of nonuniform sources in R^3, each a length-nj vector.
-    cj       length-nj complex vector of source strengths. If length(cj)>nj,
-             expects a stack of vectors (eg, a nj*ntrans matrix) each of which is
-             transformed with the same source and target locations.
-    iflag    if >=0, uses + sign in exponential, otherwise - sign.
-    eps      relative precision requested (generally between 1e-15 and 1e-1)
-    sk,tk,uk frequency coordinates of nonuniform targets in R^3,
-             each a length-nk vector.
-    kwargs   (optional), for more options, see https://finufft.readthedocs.io/en/latest/opts.html
-  Outputs:
-    fk       length-nk complex vector of values at targets, or, if ntrans>1,
-             a matrix of size (nk,ntrans)
 
+ # Inputs
+  -  `xj`,`yj`,`zj` coordinates of nonuniform sources in R^3, each a length-nj vector.
+ -   `cj`     complex `(nj,)` vector of source strengths. If length(cj)>nj,
+             expects a '(nj,ntrans)' matrix, each column of which is
+             transformed with the same source and target locations.
+ -   `iflag`    if >=0, uses + sign in exponential, otherwise - sign.
+ -   `eps`      relative precision requested (generally between 1e-15 and 1e-1)
+  -  `sk`,`tk,`uk` frequency coordinates of nonuniform targets in R^3,
+             each a length-nk vector.
+  -  kwargs   (optional). See `nufft_opts` and https://finufft.readthedocs.io/en/latest/opts.html
+ #  Output
+  - size `(nk,)` complex vector f values at targets, or, if `ntrans>1`,
+             a matrix of size `(nk,ntrans)`
 """
 function nufft3d3(xj      :: Array{T},
                   yj      :: Array{T},
@@ -457,7 +453,7 @@ end
               kwargs...
             )
 
-Compute type-1 1D complex nonuniform FFT. Output stored in fk. See `nufft1d1`.
+Compute type-1 1D complex nonuniform FFT. Output written to `fk`. See `nufft1d1`.
 """
 function nufft1d1!(xj      :: Array{T},
                    cj      :: Array{Complex{T}},
@@ -487,7 +483,7 @@ end
               kwargs...
             )
 
-Compute type-2 1D complex nonuniform FFT. Output stored in cj. See `nufft1d2`.
+Compute type-2 1D complex nonuniform FFT. Output written to `cj`. See `nufft1d2`.
 """
 function nufft1d2!(xj      :: Array{T},
                    cj      :: Array{Complex{T}},
@@ -517,7 +513,7 @@ end
               kwargs...
              )
 
-Compute type-3 1D complex nonuniform FFT. Output stored in fk. See `nufft1d3`.
+Compute type-3 1D complex nonuniform FFT. Output written to `fk`. See `nufft1d3`.
 """
 function nufft1d3!(xj      :: Array{T},
                    cj      :: Array{Complex{T}},
@@ -550,7 +546,7 @@ end
               kwargs...
             )
 
-Compute type-1 2D complex nonuniform FFT. Output stored in fk. See `nufft2d1`.
+Compute type-1 2D complex nonuniform FFT. Output written to `fk`. See `nufft2d1`.
 """
 function nufft2d1!(xj      :: Array{T}, 
                    yj      :: Array{T}, 
@@ -583,7 +579,7 @@ end
               kwargs...
             )
 
-Compute type-2 2D complex nonuniform FFT. Output stored in cj. See `nufft2d2`.
+Compute type-2 2D complex nonuniform FFT. Output written to `cj`. See `nufft2d2`.
 """
 function nufft2d2!(xj      :: Array{T}, 
                    yj      :: Array{T}, 
@@ -615,7 +611,7 @@ end
               kwargs...
              )
 
-Compute type-3 2D complex nonuniform FFT. Output stored in fk. See `nufft2d3`.
+Compute type-3 2D complex nonuniform FFT. Output written to 'fk'. See `nufft2d3`.
 """
 function nufft2d3!(xj      :: Array{T}, 
                    yj      :: Array{T},
@@ -650,7 +646,7 @@ end
               kwargs...
             )
 
-Compute type-1 3D complex nonuniform FFT. Output stored in fk. See `nufft3d1`.
+Compute type-1 3D complex nonuniform FFT. Output written to `fk`. See `nufft3d1`.
 """
 function nufft3d1!(xj      :: Array{T}, 
                    yj      :: Array{T}, 
@@ -684,7 +680,7 @@ end
               kwargs...
             )
 
-Compute type-2 3D complex nonuniform FFT. Output stored in cj. See `nufft3d2`.
+Compute type-2 3D complex nonuniform FFT. Output written to `cj`. See `nufft3d2`.
 """
 function nufft3d2!(xj      :: Array{T}, 
                    yj      :: Array{T},
@@ -719,7 +715,7 @@ end
               kwargs...
              )
 
-Compute type-3 3D complex nonuniform FFT. Output stored in fk. See `nufft3d3`.
+Compute type-3 3D complex nonuniform FFT. Output written to `fk`. See `nufft3d3`.
 """
 function nufft3d3!(xj      :: Array{T}, 
                    yj      :: Array{T},

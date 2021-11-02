@@ -76,6 +76,8 @@ which tests `dtype=Float64` and `dtype=Float32` precisions
 for all nine transform types.
 In the 1D type 1 it also tests a vectorized simple, a guru call and
 a vectorized guru call.
+The help documentation for each function will also gradually be populated
+with examples.
 
 ### Developers
 
@@ -92,5 +94,5 @@ Additional authors:
 
 ### To do
 
-- examples in docstrings
-- more extensive tests, including more "dumb inputs" as in C++ tester
+- populate the docstrings with working examples
+- more extensive tests, including more "dumb inputs" as in C++

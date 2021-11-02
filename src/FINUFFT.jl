@@ -133,8 +133,8 @@ end
 const nufft_c_opts = nufft_opts        # for backward compatibility - remove?
 
 """
-    finufft_default_opts()
-    finufft_default_opts(dtype=Float32)
+    p = finufft_default_opts()
+    p = finufft_default_opts(dtype=Float32)
 
 Return a [`nufft_opts`](@ref) struct with the default FINUFFT settings. Set up the double precision variant by default.\\
 See: <https://finufft.readthedocs.io/en/latest/usage.html#options>
@@ -161,6 +161,7 @@ function finufft_default_opts(dtype::DataType=Float64)
 end
 
 ### Error handling
+
 # Following should match error codes in https://github.com/flatironinstitute/finufft/blob/master/include/defs.h
 const ERR_EPS_TOO_SMALL        = 1
 const ERR_MAXNALLOC            = 2
