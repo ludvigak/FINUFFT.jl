@@ -11,7 +11,7 @@ export nufft2d1!, nufft2d2!, nufft2d3!
 export nufft3d1!, nufft3d2!, nufft3d3!
 
 export nufft_opts
-export nufft_c_opts # backward-compability
+export nufft_c_opts        # backward-compatibility - remove?
 export finufft_plan
 export finufft_default_opts
 export finufft_makeplan
@@ -20,6 +20,7 @@ export finufft_exec
 export finufft_destroy
 export finufft_exec!
 export BIGINT
+export finufftReal
 
 ## External dependencies
 using finufft_jll
@@ -133,6 +134,7 @@ const nufft_c_opts = nufft_opts        # for backward compatibility - remove?
 
 """
     finufft_default_opts()
+    finufft_default_opts(dtype=Float32)
 
 Return a [`nufft_opts`](@ref) struct with the default FINUFFT settings. Set up the double precision variant by default.\\
 See: <https://finufft.readthedocs.io/en/latest/usage.html#options>
@@ -158,8 +160,22 @@ function finufft_default_opts(dtype::DataType=Float64)
     return opts
 end
 
+### Error handling
+# Following should match error codes in https://github.com/flatironinstitute/finufft/blob/master/include/defs.h
+const ERR_EPS_TOO_SMALL        = 1
+const ERR_MAXNALLOC            = 2
+const ERR_SPREAD_BOX_SMALL     = 3
+const ERR_SPREAD_PTS_OUT_RANGE = 4
+const ERR_SPREAD_ALLOC         = 5
+const ERR_SPREAD_DIR           = 6
+const ERR_UPSAMPFAC_TOO_SMALL  = 7
+const HORNER_WRONG_BETA        = 8
+const ERR_NDATA_NOTVALID       = 9
+const ERR_TYPE_NOTVALID        = 10
+const ERR_ALLOC                = 11
+const ERR_DIM_NOTVALID         = 12
+const ERR_SPREAD_THREAD_NOTVALID = 13
 
-# Error handling
 struct FINUFFTError <: Exception
     errno::Cint
     msg::String
@@ -174,34 +190,34 @@ function check_ret(ret)
     # https://github.com/flatironinstitute/finufft/blob/master/docs/error.rst
     if ret==0     # no error or warning
         return
-    elseif ret==1
+    elseif ret==ERR_EPS_TOO_SMALL
         msg = "requested tolerance epsilon too small to achieve (warning only)"
-    elseif ret==2
+    elseif ret==ERR_MAXNALLOC
         msg = "attemped to allocate internal array larger than MAX_NF (defined in defs.h)"
-    elseif ret==3
+    elseif ret==ERR_SPREAD_BOX_SMALL
         msg = "spreader: fine grid too small compared to spread (kernel) width"
-    elseif ret==4
+    elseif ret==ERR_SPREAD_PTS_OUT_RANGE
         msg = "spreader: if chkbnds=1, a nonuniform point is out of input range [-3pi,3pi]^d"
-    elseif ret==5
+    elseif ret==ERR_SPREAD_ALLOC
         msg = "spreader: array allocation error"
-    elseif ret==6
+    elseif ret==ERR_SPREAD_DIR
         msg = "spreader: illegal direction (should be 1 or 2)"
-    elseif ret==7
+    elseif ret==ERR_UPSAMPFAC_TOO_SMALL
         msg = "upsampfac too small (should be >1.0)"
-    elseif ret==8
+    elseif ret==HORNER_WRONG_BETA
         msg = "upsampfac not a value with known Horner eval: currently 2.0 or 1.25 only"
-    elseif ret==9
+    elseif ret==ERR_NDATA_NOTVALID
         msg = "ntrans not valid in vectorized interface (should be >= 1)"
-    elseif ret==10
+    elseif ret==ERR_TYPE_NOTVALID
         msg = "invalid transform type, type should be 1, 2, or 3"
-    elseif ret==11
+    elseif ret==ERR_ALLOC
         msg = "general allocation failure"
-    elseif ret==12        
+    elseif ret==ERR_DIM_NOTVALID
         msg = "invalid dimension, should be 1, 2, or 3"
-    elseif ret==13
+    elseif ret==ERR_SPREAD_THREAD_NOTVALID
         msg = "spread_thread option not valid"
     else
-        msg = "error of type unknown to Julia interface. Check FINUFFT documentation"
+        msg = "error of type unknown to Julia interface! Check FINUFFT documentation"
     end
     throw(FINUFFTError(ret, msg))
 end

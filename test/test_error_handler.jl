@@ -17,7 +17,7 @@ using Test
     try
         nufft1d1(xj, cj, iflag, 1e-100, ms)
     catch e
-        @test e.errno == 1          # code should match FINUFFT.jl
+        @test e.errno == FINUFFT.ERR_EPS_TOO_SMALL
     end
 
     # Allocate too much
@@ -27,7 +27,7 @@ using Test
     try 
         nufft1d1(xj, cj, iflag, tol, ms, spread_kerevalmeth=spread_kerevalmeth, upsampfac=upsampfac)
     catch e
-        @test e.errno == 2
+        @test e.errno == FINUFFT.ERR_MAXNALLOC
     end
 
     # Too small upsampfac
@@ -36,7 +36,7 @@ using Test
     try 
         nufft1d1(xj, cj, iflag, tol, ms, spread_kerevalmeth=spread_kerevalmeth, upsampfac=upsampfac)
     catch e
-        @test e.errno == 7
+        @test e.errno == FINUFFT.ERR_UPSAMPFAC_TOO_SMALL
     end
     
     # Wrong beta (ie upsampfac not known for Horner poly eval rule)
@@ -44,7 +44,7 @@ using Test
     try 
         nufft1d1(xj, cj, iflag, tol, ms, upsampfac=upsampfac)
     catch e
-        @test e.errno == 8
+        @test e.errno == FINUFFT.HORNER_WRONG_BETA
     end
     
 end

@@ -87,9 +87,10 @@ Main authors:
 
 Additional authors:
 
-* Alex Barnett (guidance/tweaks)
+* Alex Barnett (guidance/tweaks/docs)
 * Mose Giordano (packaging)
 
 ### To do
 
-- Add more extensive tests, including dumbinputs
+- examples in docstrings
+- more extensive tests, including more "dumb inputs" as in C++ tester
