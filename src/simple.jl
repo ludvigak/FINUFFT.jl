@@ -17,18 +17,18 @@ This computes, to relative precision eps, via a fast algorithm:
               nj
     f(k1) =  SUM c[j] exp(+/-i k1 x(j))  for -ms/2 <= k1 <= (ms-1)/2
              j=1
-  Inputs:
-    xj      locations of nonuniform sources on interval [-3pi,3pi), length nj
-    cj      length-nj complex vector of source strengths. If length(cj)>nj,
+ # Inputs
+  - xj      locations of nonuniform sources on interval [-3pi,3pi), length nj
+  - cj      length-nj complex vector of source strengths. If length(cj)>nj,
             expects a stack of vectors (eg, a nj*ntrans matrix) each of which is
             transformed with the same source locations.
-    iflag   if >=0, uses + sign in exponential, otherwise - sign.
-    eps     relative precision requested (generally between 1e-15 and 1e-1)
-    ms      number of Fourier modes computed, may be even or odd;
+  - iflag   if >=0, uses + sign in exponential, otherwise - sign.
+  - eps     relative precision requested (generally between 1e-15 and 1e-1)
+  - ms      number of Fourier modes computed, may be even or odd;
             in either case, mode range is integers lying in [-ms/2, (ms-1)/2]
-    kwargs  (optional), for more options, see https://finufft.readthedocs.io/en/latest/opts.html
-  Outputs:
-    fk      size-ms complex column vector of Fourier coefficients, or, if
+  - kwargs  (optional), for more options, see https://finufft.readthedocs.io/en/latest/opts.html
+ # Outputs
+  - fk      size-ms complex column vector of Fourier coefficients, or, if
             ntrans>1, a matrix of size (ms,ntrans).
 
 """
@@ -457,7 +457,7 @@ end
               kwargs...
             )
 
-Compute type-1 1D complex nonuniform FFT. Output stored in fk.
+Compute type-1 1D complex nonuniform FFT. Output stored in fk. See `nufft1d1`.
 """
 function nufft1d1!(xj      :: Array{T},
                    cj      :: Array{Complex{T}},
@@ -487,7 +487,7 @@ end
               kwargs...
             )
 
-Compute type-2 1D complex nonuniform FFT. Output stored in cj.
+Compute type-2 1D complex nonuniform FFT. Output stored in cj. See `nufft1d2`.
 """
 function nufft1d2!(xj      :: Array{T},
                    cj      :: Array{Complex{T}},
@@ -517,7 +517,7 @@ end
               kwargs...
              )
 
-Compute type-3 1D complex nonuniform FFT. Output stored in fk.
+Compute type-3 1D complex nonuniform FFT. Output stored in fk. See `nufft1d3`.
 """
 function nufft1d3!(xj      :: Array{T},
                    cj      :: Array{Complex{T}},
@@ -550,7 +550,7 @@ end
               kwargs...
             )
 
-Compute type-1 2D complex nonuniform FFT. Output stored in fk.
+Compute type-1 2D complex nonuniform FFT. Output stored in fk. See `nufft2d1`.
 """
 function nufft2d1!(xj      :: Array{T}, 
                    yj      :: Array{T}, 
@@ -583,7 +583,7 @@ end
               kwargs...
             )
 
-Compute type-2 2D complex nonuniform FFT. Output stored in cj.
+Compute type-2 2D complex nonuniform FFT. Output stored in cj. See `nufft2d2`.
 """
 function nufft2d2!(xj      :: Array{T}, 
                    yj      :: Array{T}, 
@@ -615,7 +615,7 @@ end
               kwargs...
              )
 
-Compute type-3 2D complex nonuniform FFT. Output stored in fk.
+Compute type-3 2D complex nonuniform FFT. Output stored in fk. See `nufft2d3`.
 """
 function nufft2d3!(xj      :: Array{T}, 
                    yj      :: Array{T},
@@ -650,7 +650,7 @@ end
               kwargs...
             )
 
-Compute type-1 3D complex nonuniform FFT. Output stored in fk.
+Compute type-1 3D complex nonuniform FFT. Output stored in fk. See `nufft3d1`.
 """
 function nufft3d1!(xj      :: Array{T}, 
                    yj      :: Array{T}, 
@@ -684,7 +684,7 @@ end
               kwargs...
             )
 
-Compute type-2 3D complex nonuniform FFT. Output stored in cj.
+Compute type-2 3D complex nonuniform FFT. Output stored in cj. See `nufft3d2`.
 """
 function nufft3d2!(xj      :: Array{T}, 
                    yj      :: Array{T},
@@ -719,7 +719,7 @@ end
               kwargs...
              )
 
-Compute type-3 3D complex nonuniform FFT. Output stored in fk.
+Compute type-3 3D complex nonuniform FFT. Output stored in fk. See `nufft3d3`.
 """
 function nufft3d3!(xj      :: Array{T}, 
                    yj      :: Array{T},

@@ -17,20 +17,21 @@ end
 Creates a finufft_makeplan struct in the guru interface to FINUFFT, of
  type 1, 2 or 3, and with given numbers of Fourier modes (unless type 3).
 
-Inputs:
-    type            transform type: 1, 2, or 3
-    n_modes_or_dim  if type is 1 or 2, the number of Fourier modes in each
+ # Inputs
+  -  type            transform type: 1, 2, or 3
+  - n_modes_or_dim  if type is 1 or 2, the number of Fourier modes in each
                     dimension: [ms] in 1D, [ms mt] in 2D, or [ms mt mu] in 3D.
                     Its length sets the dimension, which must be 1, 2 or 3.
                     If type is 3, in contrast, its *value* fixes the dimension
-    iflag   if >=0, uses + sign in exponential, otherwise - sign.
-    eps     relative precision requested (generally between 1e-15 and 1e-1),
+  -  iflag   if >=0, uses + sign in exponential, otherwise - sign.
+  -  eps     relative precision requested (generally between 1e-15 and 1e-1),
             real, need not match type of dtype
-    ntrans          number of transforms to compute simultaneously
-    dtype           Float32 or Float64, plan for single precision or double precision
-    kwargs  (optional), for more options, see https://finufft.readthedocs.io/en/latest/opts.html
-Outputs:
-    plan            finufft_plan struct
+  -  ntrans          number of transforms to compute simultaneously
+  - dtype           Float32 or Float64, plan for single precision or double precision
+  -  kwargs  (optional): for options, see nufft_opts and
+    https://finufft.readthedocs.io/en/latest/opts.html
+ # Returns
+  -  plan            finufft_plan struct
 """
 function finufft_makeplan(type::Integer,
                           n_modes_or_dim::Union{Array{BIGINT},Integer},

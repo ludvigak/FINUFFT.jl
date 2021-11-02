@@ -55,7 +55,7 @@ Options struct passed to the FINUFFT library.
 
 # Fields
 
-Summary only; see FINUFFT documentation for full descriptions.
+This is a summary only; see FINUFFT documentation for full descriptions.
 
     modeord :: Cint
 0: CMCL-style increasing mode ordering (neg to pos), or\\
