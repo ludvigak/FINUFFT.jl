@@ -273,21 +273,26 @@ If one attempts to destroy an already-destroyed plan, 1 is returned
 (see FINUFFT documentation for finufft_destroy).
 """
 function finufft_destroy(plan::finufft_plan{T}) where T <: finufftReal
-    if T==Float64
-        ret = ccall( (:finufft_destroy, libfinufft),
-                     Cint,
-                     (finufft_plan_c,),
-                     plan.plan_ptr
-                     )
+    if plan.plan_ptr!=C_NULL     # this test should not be needed since
+        # ccall should handle C_NULL returning 1, but ...that failed one CI test
+        if T==Float64
+            ret = ccall( (:finufft_destroy, libfinufft),
+                         Cint,
+                         (finufft_plan_c,),
+                         plan.plan_ptr
+                         )
+        else
+            ret = ccall( (:finufftf_destroy, libfinufft),
+                         Cint,
+                         (finufft_plan_c,),
+                         plan.plan_ptr
+                         )
+        end
+        plan.plan_ptr = C_NULL       # signifies destroyed
+        return ret                   # pass out status of the ccall
     else
-        ret = ccall( (:finufftf_destroy, libfinufft),
-                     Cint,
-                     (finufft_plan_c,),
-                     plan.plan_ptr
-                     )
+        return 1                     # signifies plan was already destroyed
     end
-    plan.plan_ptr = C_NULL       # signifies destroyed
-    return ret                   # either 0 success or 1 for already-destroyed
 end
 
 """
