@@ -24,7 +24,7 @@ Older versions of the package are available also for Julia v1.0-v1.2, but the us
 This module now provides the functions `nufft1d1`, `nufft1d2`, ..., `nufft3d3`, `nufft1d1!`, `nufft1d2!`, ..., `nufft3d3!`, that now wrap the
 simple and vectorized interfaces in a unified way,
 as well as
-`finufft_makeplan`, `finufft_setpts`, `finufft_exec`, `finufft_exec!` and `finufft_destroy` that wrap the guru interface.
+`finufft_makeplan`, `finufft_setpts!`, `finufft_exec`, `finufft_exec!` and `finufft_destroy!` that wrap the guru interface.
 This brings the Julia interface up to the standards of the
 FINUFFT's [MATLAB/Octave](https://finufft.readthedocs.io/en/latest/matlab.html)
 and [Python](https://finufft.readthedocs.io/en/latest/python.html) interfaces.

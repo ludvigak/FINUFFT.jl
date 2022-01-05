@@ -67,19 +67,19 @@ function test_nufft(tol::Real, dtype::DataType)
 
                 # guru1d1
                 plan = finufft_makeplan(1,[ms;],1,1,tol,dtype=T)
-                finufft_setpts(plan,x)
+                finufft_setpts!(plan,x)
                 out3 = finufft_exec(plan,c)
-                finufft_destroy(plan)
+                finufft_destroy!(plan)
                 relerr_guru = norm(vec(out3)-vec(ref), Inf) / norm(vec(ref), Inf)
                 @test relerr_guru < errfac*tol
 
                 # guru1d1 vectorized ("many")
                 ntrans = 3         # let's stack 3 transforms at once
                 plan = finufft_makeplan(1,[ms;],1,ntrans,tol,dtype=T)
-                finufft_setpts(plan,x)
+                finufft_setpts!(plan,x)
                 cstack = hcat(c,2*c,3*c);           # change the coeff vectors
                 out4 = finufft_exec(plan,cstack)
-                finufft_destroy(plan)
+                finufft_destroy!(plan)
                 refstack = hcat(ref,2*ref,3*ref);   # ditto
                 relerr_guru_many = norm(vec(out4)-vec(refstack), Inf) / norm(vec(refstack), Inf)
                 @test relerr_guru_many < errfac*tol

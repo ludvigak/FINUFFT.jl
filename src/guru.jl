@@ -123,7 +123,7 @@ function finufft_makeplan(type::Integer,
 end
 
 """
-    finufft_setpts(plan, xj [, yj[, zj[, s[, t[, u]]]]])
+    finufft_setpts!(plan, xj [, yj[, zj[, s[, t[, u]]]]])
 
 Input nonuniform points for general FINUFFT transform(s).
 
@@ -144,13 +144,13 @@ Empty arrays may be passed in the case of
   -  `t`      empty (if dim<2), or vector of y-coords of all frequency targets
   -  `u`      empty (if dim<3), or vector of z-coords of all frequency targets
 """
-function finufft_setpts(plan::finufft_plan{T},
-                        xj::Array{T},
-                        yj::Array{T}=T[],
-                        zj::Array{T}=T[],
-                        s::Array{T}=T[],
-                        t::Array{T}=T[],
-                        u::Array{T}=T[]) where T <: finufftReal
+function finufft_setpts!(plan::finufft_plan{T},
+                         xj::Array{T},
+                         yj::Array{T}=T[],
+                         zj::Array{T}=T[],
+                         s::Array{T}=T[],
+                         t::Array{T}=T[],
+                         u::Array{T}=T[]) where T <: finufftReal
 
     (M, N) = valid_setpts(plan.type, plan.dim, xj, yj, zj, s, t, u)
 
@@ -260,7 +260,7 @@ function finufft_exec(plan::finufft_plan{T},
 end
 
 """
-    status = finufft_destroy(plan::finufft_plan{T}) where T <: finufftReal
+    status = finufft_destroy!(plan::finufft_plan{T}) where T <: finufftReal
 
 This destroys a FINUFFT plan object: it
 deallocates all stored FFTW plans, nonuniform point sorting arrays,
@@ -271,7 +271,7 @@ An integer status code is returned, that is 0 if successful.
 If one attempts to destroy an already-destroyed plan, 1 is returned
 (see FINUFFT documentation for finufft_destroy).
 """
-function finufft_destroy(plan::finufft_plan{T}) where T <: finufftReal
+function finufft_destroy!(plan::finufft_plan{T}) where T <: finufftReal
     if plan.plan_ptr!=C_NULL     # this test should not be needed since
         # ccall should handle C_NULL returning 1, but ...that failed one CI test
         if T==Float64
