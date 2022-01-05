@@ -158,7 +158,6 @@ function finufft_setpts(plan::finufft_plan{T},
     plan.nk = N
 
     if T==Float64
-        T_real = Array{Float64}
         ret = ccall( (:finufft_setpts, libfinufft),
                      Cint,
                      (finufft_plan_c,
@@ -170,10 +169,9 @@ function finufft_setpts(plan::finufft_plan{T},
                       Ref{Cdouble},
                       Ref{Cdouble},
                       Ref{Cdouble}),
-                     plan.plan_ptr,M,T_real(xj),T_real(yj),T_real(zj),N,T_real(s),T_real(t),T_real(u)
+                     plan.plan_ptr, M, xj, yj, zj, N, s, t, u
                      )
     else
-        T_real = Array{Float32}
         ret = ccall( (:finufftf_setpts, libfinufft),
                      Cint,
                      (finufft_plan_c,
@@ -185,9 +183,10 @@ function finufft_setpts(plan::finufft_plan{T},
                       Ref{Cfloat},
                       Ref{Cfloat},
                       Ref{Cfloat}),
-                     plan.plan_ptr,M,T_real(xj),T_real(yj),T_real(zj),N,T_real(s),T_real(t),T_real(u)
+                     plan.plan_ptr, M, xj, yj, zj, N, s, t, u
                      )
     end
+
 
     check_ret(ret)
     return ret
