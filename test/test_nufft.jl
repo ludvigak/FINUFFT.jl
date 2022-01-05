@@ -77,7 +77,7 @@ function test_nufft(tol::Real, dtype::DataType)
                 ntrans = 3         # let's stack 3 transforms at once
                 plan = finufft_makeplan(1,[ms;],1,ntrans,tol,dtype=T)
                 finufft_setpts(plan,x)
-                cstack = vcat(c,2*c,3*c);           # change the coeff vectors
+                cstack = hcat(c,2*c,3*c);           # change the coeff vectors
                 out4 = finufft_exec(plan,cstack)
                 finufft_destroy(plan)
                 refstack = hcat(ref,2*ref,3*ref);   # ditto
