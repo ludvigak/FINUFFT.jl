@@ -10,7 +10,7 @@ using Random
 function test_nufft(tol::Real, dtype::DataType)
     @assert dtype <: FINUFFT.finufftReal
 
-    Random.seed!(1)
+    rng = MersenneTwister(1)
 
     T = dtype    # abbrev; we no longer infer dtype as type of tol
                  # (this would be confusing since tol can be any type)
@@ -21,19 +21,19 @@ function test_nufft(tol::Real, dtype::DataType)
     mu = 14      # modes z
 
     # nonuniform data, using the full allowed input domain [-3pi,3pi)
-    x = Array{T}(3*pi*(2*rand(nj).-1.0))
-    y = Array{T}(3*pi*(2*rand(nj).-1.0))
-    z = Array{T}(3*pi*(2*rand(nj).-1.0))
-    c = rand(Complex{T},nj)
-    s = rand(T,nk)
-    t = rand(T,nk)
-    u = rand(T,nk)
-    f = rand(Complex{T},nk)
+    x = Array{T}(3*pi*(2*rand(rng, nj).-1.0))
+    y = Array{T}(3*pi*(2*rand(rng, nj).-1.0))
+    z = Array{T}(3*pi*(2*rand(rng, nj).-1.0))
+    c = rand(rng, Complex{T},nj)
+    s = rand(rng, T,nk)
+    t = rand(rng, T,nk)
+    u = rand(rng, T,nk)
+    f = rand(rng, Complex{T},nk)
 
     # uniform data
-    F1D = rand(Complex{T}, ms)
-    F2D = rand(Complex{T}, ms, mt)
-    F3D = rand(Complex{T}, ms, mt, mu)
+    F1D = rand(rng, Complex{T}, ms)
+    F2D = rand(rng, Complex{T}, ms, mt)
+    F3D = rand(rng, Complex{T}, ms, mt, mu)
 
     modevec(m) = -floor(m/2):floor((m-1)/2+1)
     k1 = modevec(ms)
@@ -67,19 +67,19 @@ function test_nufft(tol::Real, dtype::DataType)
 
                 # guru1d1
                 plan = finufft_makeplan(1,[ms;],1,1,tol,dtype=T)
-                finufft_setpts(plan,x)
+                finufft_setpts!(plan,x)
                 out3 = finufft_exec(plan,c)
-                finufft_destroy(plan)
+                finufft_destroy!(plan)
                 relerr_guru = norm(vec(out3)-vec(ref), Inf) / norm(vec(ref), Inf)
                 @test relerr_guru < errfac*tol
 
                 # guru1d1 vectorized ("many")
                 ntrans = 3         # let's stack 3 transforms at once
                 plan = finufft_makeplan(1,[ms;],1,ntrans,tol,dtype=T)
-                finufft_setpts(plan,x)
+                finufft_setpts!(plan,x)
                 cstack = hcat(c,2*c,3*c);           # change the coeff vectors
                 out4 = finufft_exec(plan,cstack)
-                finufft_destroy(plan)
+                finufft_destroy!(plan)
                 refstack = hcat(ref,2*ref,3*ref);   # ditto
                 relerr_guru_many = norm(vec(out4)-vec(refstack), Inf) / norm(vec(refstack), Inf)
                 @test relerr_guru_many < errfac*tol

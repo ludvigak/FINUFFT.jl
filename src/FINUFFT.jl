@@ -15,9 +15,9 @@ export nufft_c_opts        # backward-compatibility - remove?
 export finufft_plan
 export finufft_default_opts
 export finufft_makeplan
-export finufft_setpts
+export finufft_setpts!
 export finufft_exec
-export finufft_destroy
+export finufft_destroy!
 export finufft_exec!
 export BIGINT
 export finufftReal

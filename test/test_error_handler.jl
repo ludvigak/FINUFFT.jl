@@ -49,6 +49,6 @@ using Test
 
     # Test immediate destroy and double-destroy, and their status codes...
     p = finufft_makeplan(2,10,+1,1,1e-6);
-    @test finufft_destroy(p)==0   # 0 signifies success.
-    @test finufft_destroy(p)==1   # 1 since already destroyed; watch for crash
+    @test finufft_destroy!(p)==0   # 0 signifies success.
+    @test finufft_destroy!(p)==1   # 1 since already destroyed; watch for crash
 end
