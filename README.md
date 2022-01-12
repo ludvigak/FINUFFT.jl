@@ -14,25 +14,8 @@ FINUFFT.jl requires Julia v1.3 or later, and has been tested up to v1.7.1. From 
 add FINUFFT
 ```
 
-This installs the stable version and its dependencies, including the generic multi-platform precompiled
-binaries [finufft_jll.jl](https://github.com/JuliaBinaryWrappers/finufft_jll.jl). To get the latest version instead do `add FINUFFT#master`, but note it still uses the precompiled binaries.
-
-### Locally compiling binaries (advanced)
-
-You may get quite a lot more performance (in one example 2x speedup), by locally compiling binaries as follows: install [FINUFFT](https://github.com/flatironinstitute/finufft)
-and `cd` to its top directory (which we'll call `YOURFINUFFT`),
-`make test` and check that gives no errors.
-Now start Julia and install the latest interface in develop mode:
-```julia
-pkg> dev https://github.com/ludvigak/FINUFFT.jl
-```
-Open `~/.julia/dev/FINUFFT/src/FINUFFT.jl` and follow instructions there
-to edit it so that `const libfinufft = "YOURFINUFFT/lib/libfinufft.so"`
-Restart Julia, and `pkg> test FINUFFT` to check it worked.
-You may do `pkg> free FINUFFT` and restart to return to the registered package
-with generic binaries. See https://pkgdocs.julialang.org/v1/managing-packages
-
-Older versions of the package are available also for Julia v1.0-v1.2, but the user needs to have a recent version of GCC installed.
+This installs the stable registered version and its dependencies, including our generic multi-platform precompiled
+binaries [finufft_jll.jl](https://github.com/JuliaBinaryWrappers/finufft_jll.jl). See below for how to get more performance via locally-compiled binaries.
 
 ## Usage
 
@@ -84,10 +67,14 @@ nufft1d1!(x, c, 1, tol, out)
 fk_fftord = nufft1d1(x, c, 1, tol, ms, debug=1, modeord=1, nthreads=4)
 ```
 
+The above code may be found in [examples/demo1d1.jl](examples/demo1d1.jl)
+
 ### More examples
 
-See the code [test/test_nufft.jl](test/test_nufft.jl)
-which tests `dtype=Float64` and `dtype=Float32` precisions
+See [examples/time2d1.jl](examples/time2d1.jl)
+
+Finally, the more involved code [test/test_nufft.jl](test/test_nufft.jl)
+tests `dtype=Float64` and `dtype=Float32` precisions
 for all nine transform types.
 The outputs are tested there for mathematical correctness.
 In the 1D type 1 it also tests a vectorized simple, a guru call and
@@ -97,7 +84,31 @@ with examples.
 
 
 
-### Developers
+## Advanced installation and locally compiling binaries
+
+To get the latest version of this interface do `add FINUFFT#master`, but note it still uses the precompiled binaries.
+
+You may get quite a lot more performance (in one example 2x speedup), by locally compiling binaries as follows. This has only been tested on ubuntu linux, so YMMV. First install the source
+[FINUFFT](https://github.com/flatironinstitute/finufft),
+`cd` to its top directory (which we'll call `YOURFINUFFT`),
+`make test` and check that gives no errors. You may need to create a
+`make.inc` for your system, as per its documentation.
+Now start Julia and install the latest interface in develop mode:
+```julia
+pkg> dev https://github.com/ludvigak/FINUFFT.jl
+```
+This should create `~/.julia/dev/FINUFFT/src/FINUFFT.jl` which you should open and follow the simple instructions to set
+`const libfinufft = "YOURFINUFFT/lib/libfinufft.so"`.
+Restart Julia, and `pkg> test FINUFFT` to check it worked.
+You should notice that `julia> include("examples/time2d1.jl")` runs faster
+than before. Proceed by `using FINUFFT` as usual.
+You may do `pkg> free FINUFFT` and restart to return to the registered package
+with generic binaries. Here's [general info about packages](https://pkgdocs.julialang.org/v1/managing-packages).
+
+Older versions of the package are available also for Julia v1.0-v1.2, but the user needs to have a recent version of GCC installed.
+
+
+## Developers of this Julia wrapper
 
 Main authors:
 
@@ -110,7 +121,8 @@ Additional authors:
 * Alex Barnett (guidance/tweaks/docs)
 * Mose Giordano (packaging)
 
-### To do
+### To do (please help)
 
 - populate the docstrings each with a working example
+- add more in `examples/`
 - more extensive tests, including more "dumb inputs" as in C++
