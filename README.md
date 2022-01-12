@@ -71,7 +71,7 @@ The above code may be found in [examples/demo1d1.jl](examples/demo1d1.jl)
 
 ### More examples
 
-See [examples/time2d1.jl](examples/time2d1.jl)
+For a 2D type 1, see [examples/time2d1.jl](examples/time2d1.jl)
 
 Finally, the more involved code [test/test_nufft.jl](test/test_nufft.jl)
 tests `dtype=Float64` and `dtype=Float32` precisions
@@ -101,7 +101,8 @@ This should create `~/.julia/dev/FINUFFT/src/FINUFFT.jl` which you should open a
 `const libfinufft = "YOURFINUFFT/lib/libfinufft.so"`.
 Restart Julia, and `pkg> test FINUFFT` to check it worked.
 You should notice that `julia> include("examples/time2d1.jl")` runs faster
-than before. Proceed by `using FINUFFT` as usual.
+than before (in our Ryzen laptop test, around twice as fast).
+Now proceed by `using FINUFFT` as usual.
 You may do `pkg> free FINUFFT` and restart to return to the registered package
 with generic binaries. Here's [general info about packages](https://pkgdocs.julialang.org/v1/managing-packages).
 
@@ -118,11 +119,11 @@ Main authors:
 
 Additional authors:
 
-* Alex Barnett (guidance/tweaks/docs)
+* Alex Barnett (guidance/tweaks/docs/examples)
 * Mose Giordano (packaging)
 
 ### To do (please help)
 
 - populate the docstrings each with a working example
-- add more in `examples/`
+- add more `examples/` with math tests
 - more extensive tests, including more "dumb inputs" as in C++
