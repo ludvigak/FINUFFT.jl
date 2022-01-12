@@ -97,14 +97,18 @@ Now start Julia and install the latest interface in develop mode:
 ```julia
 pkg> dev https://github.com/ludvigak/FINUFFT.jl
 ```
-This should create `~/.julia/dev/FINUFFT/src/FINUFFT.jl` which you should open and follow the simple instructions to set
-`const libfinufft = "YOURFINUFFT/lib/libfinufft.so"`.
+This should create `~/.julia/dev/FINUFFT/src/FINUFFT.jl` which you should edit,
+following the simple instructions to set
+```
+const libfinufft = "YOURFINUFFT/lib/libfinufft.so"
+```
 Restart Julia, and `pkg> test FINUFFT` to check it worked.
 You should notice that `julia> include("examples/time2d1.jl")` runs faster
-than before (in our Ryzen laptop test, around twice as fast).
+than before (in our Ryzen laptop test, around twice as fast!).
 Now proceed by `using FINUFFT` as usual.
 You may do `pkg> free FINUFFT` and restart to return to the registered package
-with generic binaries. Here's [general info about packages](https://pkgdocs.julialang.org/v1/managing-packages).
+with generic binaries.
+Here's [general info about packages](https://pkgdocs.julialang.org/v1/managing-packages).
 
 Older versions of the package are available also for Julia v1.0-v1.2, but the user needs to have a recent version of GCC installed.
 
