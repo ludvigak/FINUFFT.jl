@@ -22,10 +22,17 @@ export finufft_exec!
 export BIGINT
 export finufftReal
 
-## External dependencies
-using finufft_jll
 
+# By default we depend on our precompiled generic binary package...
+using finufft_jll
 const libfinufft = finufft_jll.libfinufft
+#
+# If instead you want to use your locally-compiled FINUFFT library for more
+# performance, comment out the above two code lines, uncomment the upcoming
+# one, and edit it for the location of your local FINUFFT installation. You
+# then need to use this FINUFFT.jl pkg in dev mode and restart (see README.md):
+#const libfinufft = "/PATH/TO/YOUR/finufft/lib/libfinufft.so"
+
 
 const BIGINT = Int64        # must match that in FINUFFT include/dataTypes.h
 

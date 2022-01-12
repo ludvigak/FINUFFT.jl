@@ -14,10 +14,25 @@ FINUFFT.jl requires Julia v1.3 or later, and has been tested up to v1.7.1. From 
 add FINUFFT
 ```
 
-This installs dependencies, including the generic multi-platform precompiled
-binaries [finufft_jll.jl](https://github.com/JuliaBinaryWrappers/finufft_jll.jl). To get the latest interface version instead do `add FINUFFT#master`, which still uses the precompiled binaries. You may get more performance by locally compiling (instructions to be added).
+This installs the stable version and its dependencies, including the generic multi-platform precompiled
+binaries [finufft_jll.jl](https://github.com/JuliaBinaryWrappers/finufft_jll.jl). To get the latest version instead do `add FINUFFT#master`, but note it still uses the precompiled binaries.
 
-Older versions of the package are available also for Julia v1.0-v1.2, but the user need to have a recent version of GCC installed.
+### Locally compiling binaries (advanced)
+
+You may get quite a lot more performance (in one example 2x speedup), by locally compiling binaries as follows: install [FINUFFT](https://github.com/flatironinstitute/finufft)
+and `cd` to its top directory (which we'll call `YOURFINUFFT`),
+`make test` and check that gives no errors.
+Now start Julia and install the latest interface in develop mode:
+```julia
+pkg> dev https://github.com/ludvigak/FINUFFT.jl
+```
+Open `~/.julia/dev/FINUFFT/src/FINUFFT.jl` and follow instructions there
+to edit it so that `const libfinufft = "YOURFINUFFT/lib/libfinufft.so"`
+Restart Julia, and `pkg> test FINUFFT` to check it worked.
+You may do `pkg> free FINUFFT` and restart to return to the registered package
+with generic binaries. See https://pkgdocs.julialang.org/v1/managing-packages
+
+Older versions of the package are available also for Julia v1.0-v1.2, but the user needs to have a recent version of GCC installed.
 
 ## Usage
 
@@ -79,6 +94,8 @@ In the 1D type 1 it also tests a vectorized simple, a guru call and
 a vectorized guru call.
 The help documentation for each function will also gradually be populated
 with examples.
+
+
 
 ### Developers
 
