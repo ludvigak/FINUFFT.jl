@@ -13,6 +13,18 @@ mutable struct finufft_plan{T}
     nj         :: BIGINT
     nk         :: BIGINT
     plan_ptr   :: finufft_plan_c
+    # Arrays used for keeping references to input data alive.
+    # These should not be modified directly, as it will have no
+    # effect.
+    _xj        :: Array{T}
+    _yj        :: Array{T}
+    _zj        :: Array{T}
+    _s         :: Array{T}
+    _t         :: Array{T}
+    _u         :: Array{T}
+    # Default constructor that does not require input arrays (also for backwards compat)
+    finufft_plan{T}(type, ntrans, dim, ms, mt, mu, nj, nk, plan_ptr) where T =
+        new(type, ntrans, dim, ms, mt, mu, nj, nk, plan_ptr, [], [], [], [], [], [])
 end
 
 """
@@ -157,6 +169,17 @@ function finufft_setpts!(plan::finufft_plan{T},
     plan.nj = M
     plan.nk = N
 
+    # Store references to input arrays in plan struct.
+    # This is important, since Julia garbage collection
+    # will not now about the C library keeping references
+    # to the input arrays.
+    plan._xj = xj
+    plan._yj = yj
+    plan._zj = zj
+    plan._s  = s
+    plan._t  = t
+    plan._u  = u
+
     if T==Float64
         ret = ccall( (:finufft_setpts, libfinufft),
                      Cint,
@@ -272,6 +295,13 @@ If one attempts to destroy an already-destroyed plan, 1 is returned
 (see FINUFFT documentation for finufft_destroy).
 """
 function finufft_destroy!(plan::finufft_plan{T}) where T <: finufftReal
+    # Remove references to input arrays
+    plan._xj = T[]
+    plan._yj = T[]
+    plan._zj = T[]
+    plan._s  = T[]
+    plan._t  = T[]
+    plan._u  = T[]
     if plan.plan_ptr!=C_NULL     # this test should not be needed since
         # ccall should handle C_NULL returning 1, but ...that failed one CI test
         if T==Float64
