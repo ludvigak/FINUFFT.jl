@@ -171,7 +171,7 @@ function finufft_setpts!(plan::finufft_plan{T},
 
     # Store references to input arrays in plan struct.
     # This is important, since Julia garbage collection
-    # will not now about the C library keeping references
+    # will not know about the C library keeping references
     # to the input arrays.
     plan._xj = xj
     plan._yj = yj
