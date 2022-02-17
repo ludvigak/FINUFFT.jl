@@ -1,7 +1,7 @@
 name = "FINUFFT"
 uuid = "d8beea63-0952-562e-9c6a-8e8ef7364055"
 author = "Ludvig af Klinteberg <ludvigak@kth.se>"
-version = "3.0.0"
+version = "3.0.1"
 
 [deps]
 finufft_jll = "c41cd5a2-72a3-5203-9076-a500b088fc82"
