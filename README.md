@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/ludvigak/FINUFFT.jl/branch/master/graph/badge.svg?token=Tkx7kma18J)](https://codecov.io/gh/ludvigak/FINUFFT.jl)
 [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://ludvigak.github.io/FINUFFT.jl/latest/)
 
-This is a full-featured Julia interface to [FINUFFT](https://github.com/flatironinstitute/finufft), which is a lightweight and fast parallel nonuniform fast Fourier transform (NUFFT) library released by the Flatiron Institute. This interface stands at v3.0.1, and it uses FINUFFT version 2.0.4 (note that the interface version number is distinct from the version of the wrapped binary FINUFFT library).
+This is a full-featured Julia interface to [FINUFFT](https://github.com/flatironinstitute/finufft), which is a lightweight and fast parallel nonuniform fast Fourier transform (NUFFT) library released by the Flatiron Institute. This interface stands at v3.0.2, and it uses FINUFFT version 2.1.0 (note that the interface version number is distinct from the version of the wrapped binary FINUFFT library).
 
 ## Installation
 
