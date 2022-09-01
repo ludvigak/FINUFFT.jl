@@ -200,6 +200,8 @@ function check_ret(ret)
         return
     elseif ret==ERR_EPS_TOO_SMALL
         msg = "requested tolerance epsilon too small to achieve (warning only)"
+        @warn msg
+        return 
     elseif ret==ERR_MAXNALLOC
         msg = "attemped to allocate internal array larger than MAX_NF (defined in defs.h)"
     elseif ret==ERR_SPREAD_BOX_SMALL

@@ -13,12 +13,8 @@ using Test
 
     @info("Testing error handling")
 
-    # Tolerance too small
-    try
-        nufft1d1(xj, cj, iflag, 1e-100, ms)
-    catch e
-        @test e.errno == FINUFFT.ERR_EPS_TOO_SMALL
-    end
+    # Tolerance too small (should only warn)
+    nufft1d1(xj, cj, iflag, 1e-100, ms)
 
     # Allocate too much
     opts = finufft_default_opts()
