@@ -308,6 +308,7 @@ end
 function checkkwdtype(dtype::DataType; kwargs...)
     for (key, value) in kwargs
         if String(key)=="dtype"
+            @warn "Explicitly passing the dtype argument is discouraged and will be deprecated."
             @assert  value == dtype
         end
     end
