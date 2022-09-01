@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/ludvigak/FINUFFT.jl/branch/master/graph/badge.svg?token=Tkx7kma18J)](https://codecov.io/gh/ludvigak/FINUFFT.jl)
 [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://ludvigak.github.io/FINUFFT.jl/latest/)
 
-This is a full-featured Julia interface to [FINUFFT](https://github.com/flatironinstitute/finufft), which is a lightweight and fast parallel nonuniform fast Fourier transform (NUFFT) library released by the Flatiron Institute. This interface stands at v3.0.2, and it uses FINUFFT version 2.1.0 (note that the interface version number is distinct from the version of the wrapped binary FINUFFT library).
+This is a full-featured Julia interface to [FINUFFT](https://github.com/flatironinstitute/finufft), which is a lightweight and fast parallel nonuniform fast Fourier transform (NUFFT) library released by the Flatiron Institute. This interface stands at v3.x, and it uses FINUFFT version 2.1.0 (note that the interface version number is distinct from the version of the wrapped binary FINUFFT library).
 
 ## Installation
 
@@ -38,7 +38,7 @@ An auto-generated reference for all provided Julia functions is [here](https://l
 * Function calls mimic the C/C++ interface, with the exception that you don't need to pass the dimensions of any arrays in the argument (they are inferred using `size()`).
 * A vectorized call (performing multiple transforms, each with different coefficient vectors but the same set of nonuniform points) can now be performed using the same functions as the single-transform interface, detected from the size of the input arrays.
 * Both 64-bit and 32-bit precision calls are now supported using a single
-set of function names, switched by a `dtype` keyword argument for clarity.
+set of function names. Which precision to use is inferred from the type of the input arrays, except for in the guru interface where the `dtype` argument is required for `finufft_makeplan`. (NOTE: The use of the `dtype` argument in the simple interface is deprecated as of v3.1.0)
 * The functions named `nufftDdN` return the output array.
 * In contrast, the functions named `nufftDdN!` take the output array as an argument. This needs to be preallocated with the correct size.
 * Likewise, in the guru interface, `finufft_exec` returns the output array,
