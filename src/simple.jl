@@ -38,10 +38,8 @@ function nufft1d1(xj::Array{T},
                   eps::Real,
                   ms::Integer;
                   kwargs...) where T <: finufftReal
-    valid_setpts(1,1,xj)
     ntrans = valid_ntr(xj,cj)
     fk = Array{Complex{T}}(undef, ms, ntrans)
-    checkkwdtype(T; kwargs...)
     nufft1d1!(xj, cj, iflag, eps, fk; kwargs...,dtype=T)
     return fk
 end
@@ -90,10 +88,8 @@ function nufft2d1(xj      :: Array{T},
                   ms      :: Integer,
                   mt      :: Integer;
                   kwargs...) where T <: finufftReal
-    valid_setpts(1,2,xj,yj)
     ntrans = valid_ntr(xj,cj)
     fk = Array{Complex{T}}(undef, ms, mt, ntrans)
-    checkkwdtype(T; kwargs...)
     nufft2d1!(xj, yj, cj, iflag, eps, fk;kwargs...,dtype=T)
     return fk
 end
@@ -148,10 +144,8 @@ function nufft3d1(xj      :: Array{T},
                   mt      :: Integer,
                   mu      :: Integer;
                   kwargs...)  where T <: finufftReal
-    valid_setpts(1,3,xj,yj,zj)
     ntrans = valid_ntr(xj,cj)
     fk = Array{Complex{T}}(undef, ms, mt, mu, ntrans)
-    checkkwdtype(T; kwargs...)
     nufft3d1!(xj, yj, zj, cj, iflag, eps, fk;kwargs...,dtype=T)
     return fk
 end
@@ -194,7 +188,6 @@ function nufft1d2(xj      :: Array{T},
     (nj, nk) = valid_setpts(2,1,xj)
     (ms, ntrans) = get_nmodes_from_fk(1,fk)
     cj = Array{Complex{T}}(undef, nj, ntrans)
-    checkkwdtype(T; kwargs...)
     nufft1d2!(xj, cj, iflag, eps, fk;kwargs...,dtype=T)
     return cj
 end
@@ -239,7 +232,6 @@ function nufft2d2(xj      :: Array{T},
     (nj, nk) = valid_setpts(2,2,xj,yj)
     (ms, mt, ntrans) = get_nmodes_from_fk(2,fk)
     cj = Array{Complex{T}}(undef, nj, ntrans)
-    checkkwdtype(T; kwargs...)
     nufft2d2!(xj, yj, cj, iflag, eps, fk;kwargs...,dtype=T)
     return cj
 end
@@ -287,7 +279,6 @@ function nufft3d2(xj      :: Array{T},
     (nj, nk) = valid_setpts(2,3,xj,yj,zj)
     (ms, mt, mu, ntrans) = get_nmodes_from_fk(3,fk)
     cj = Array{Complex{T}}(undef, nj, ntrans)
-    checkkwdtype(T; kwargs...)
     nufft3d2!(xj, yj, zj, cj, iflag, eps, fk;kwargs...,dtype=T)
     return cj
 end
@@ -381,7 +372,6 @@ function nufft2d3(xj      :: Array{T},
     (nj, nk) = valid_setpts(3,2,xj,yj,T[],sk,tk)
     ntrans = valid_ntr(xj,cj)
     fk = Array{Complex{T}}(undef, nk, ntrans)
-    checkkwdtype(T; kwargs...)
     nufft2d3!(xj, yj, cj, iflag, eps, sk, tk, fk;kwargs...,dtype=T)
     return fk
 end
@@ -434,7 +424,6 @@ function nufft3d3(xj      :: Array{T},
     (nj, nk) = valid_setpts(3,3,xj,yj,zj,sk,tk,uk)
     ntrans = valid_ntr(xj,cj)
     fk = Array{Complex{T}}(undef, nk, ntrans)
-    checkkwdtype(T; kwargs...)
     nufft3d3!(xj, yj, zj, cj, iflag, eps, sk, tk, uk, fk;kwargs...,dtype=T)
     return fk
 end
