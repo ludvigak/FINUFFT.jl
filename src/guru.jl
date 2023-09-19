@@ -163,11 +163,11 @@ Empty arrays may be passed in the case of
 """
 function finufft_setpts!(plan::finufft_plan{T},
                          xj::Array{T},
-                         yj::Array{T}=T[],
-                         zj::Array{T}=T[],
-                         s::Array{T}=T[],
-                         t::Array{T}=T[],
-                         u::Array{T}=T[]) where T <: finufftReal
+                         yj::Array{T}=plan._yj,
+                         zj::Array{T}=plan._zj,
+                         s::Array{T}=plan._s,
+                         t::Array{T}=plan._t,
+                         u::Array{T}=plan._u) where T <: finufftReal
 
     (M, N) = valid_setpts(plan.type, plan.dim, xj, yj, zj, s, t, u)
 
