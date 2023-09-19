@@ -1,7 +1,7 @@
 ### Guru Interfaces
 
 # abbreviated name for the type for C pointer used in plan struct
-finufft_plan_c = Ptr{Cvoid}
+const finufft_plan_c = Ptr{Cvoid}
 
 mutable struct finufft_plan{T}
     type       :: Cint
@@ -24,7 +24,7 @@ mutable struct finufft_plan{T}
     _u         :: Array{T}
     # Default constructor that does not require input arrays (also for backwards compat)
     finufft_plan{T}(type, ntrans, dim, ms, mt, mu, nj, nk, plan_ptr) where T =
-        new(type, ntrans, dim, ms, mt, mu, nj, nk, plan_ptr, [], [], [], [], [], [])
+        new(type, ntrans, dim, ms, mt, mu, nj, nk, plan_ptr, T[], T[], T[], T[], T[], T[])
 end
 
 """
@@ -70,13 +70,18 @@ julia> p = finufft_makeplan(3,2,+1,1,1e-4,dtype=Float32,nthreads=4);
 creates a plan for a 2D type 3 Float32 transform with tolerance 1e-4,
 to use 4 threads.
 """
-function finufft_makeplan(type::Integer,
+function finufft_makeplan(type::Integer, args...;
+                          dtype::Type{DTYPE}=Float64,
+                          kwargs...) where {DTYPE}
+    finufft_makeplan(DTYPE, type, args...; kwargs...)
+end
+
+function finufft_makeplan(::Type{dtype}, type::Integer,
                           n_modes_or_dim::Union{Array{BIGINT},Integer},
                           iflag::Integer,
                           ntrans::Integer,
                           eps::Real;
-                          dtype=Float64,
-                          kwargs...)
+                          kwargs...) where {dtype}
 # see https://stackoverflow.com/questions/40140699/the-proper-way-to-declare-c-void-pointers-in-julia for how to declare c-void pointers in julia
 #   one can also use Array/Vector for cvoid pointer, Array and Ref both work
 #   plan_p = Array{finufft_plan_c}(undef,1)
