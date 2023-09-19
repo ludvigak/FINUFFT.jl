@@ -16,12 +16,12 @@ mutable struct finufft_plan{T}
     # Arrays used for keeping references to input data alive.
     # These should not be modified directly, as it will have no
     # effect.
-    _xj        :: Array{T}
-    _yj        :: Array{T}
-    _zj        :: Array{T}
-    _s         :: Array{T}
-    _t         :: Array{T}
-    _u         :: Array{T}
+    _xj        :: Vector{T}
+    _yj        :: Vector{T}
+    _zj        :: Vector{T}
+    _s         :: Vector{T}
+    _t         :: Vector{T}
+    _u         :: Vector{T}
     # Default constructor that does not require input arrays (also for backwards compat)
     finufft_plan{T}(type, ntrans, dim, ms, mt, mu, nj, nk, plan_ptr) where T =
         new(type, ntrans, dim, ms, mt, mu, nj, nk, plan_ptr, T[], T[], T[], T[], T[], T[])
@@ -178,12 +178,12 @@ function finufft_setpts!(plan::finufft_plan{T},
     # This is important, since Julia garbage collection
     # will not know about the C library keeping references
     # to the input arrays.
-    plan._xj = xj
-    plan._yj = yj
-    plan._zj = zj
-    plan._s  = s
-    plan._t  = t
-    plan._u  = u
+    plan._xj = vec(xj)
+    plan._yj = vec(yj)
+    plan._zj = vec(zj)
+    plan._s  = vec(s)
+    plan._t  = vec(t)
+    plan._u  = vec(u)
 
     if T==Float64
         ret = ccall( (:finufft_setpts, libfinufft),
