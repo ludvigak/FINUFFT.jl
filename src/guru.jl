@@ -343,10 +343,7 @@ function finufft_exec!(plan::finufft_plan{T},
     type = plan.type
     ntrans = plan.ntrans
     dim = plan.dim
-    n_modes = Array{BIGINT}(undef,3)
-    n_modes[1] = plan.ms
-    n_modes[2] = plan.mt
-    n_modes[3] = plan.mu
+    n_modes = (plan.ms, plan.mt, plan.mu)
     if type==1
         if dim==1
             if ntrans==1
