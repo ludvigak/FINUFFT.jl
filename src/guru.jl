@@ -70,10 +70,8 @@ julia> p = finufft_makeplan(3,2,+1,1,1e-4,dtype=Float32,nthreads=4);
 creates a plan for a 2D type 3 Float32 transform with tolerance 1e-4,
 to use 4 threads.
 """
-function finufft_makeplan(type::Integer, args...;
-                          dtype::Type{DTYPE}=Float64,
-                          kwargs...) where {DTYPE}
-    finufft_makeplan(DTYPE, type, args...; kwargs...)
+function finufft_makeplan(type::Integer, args...; dtype=Float64, kwargs...)
+    finufft_makeplan(dtype, type, args...; kwargs...)
 end
 
 function finufft_makeplan(::Type{dtype}, type::Integer,
