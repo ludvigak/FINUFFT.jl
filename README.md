@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/ludvigak/FINUFFT.jl/branch/master/graph/badge.svg?token=Tkx7kma18J)](https://codecov.io/gh/ludvigak/FINUFFT.jl)
 [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://ludvigak.github.io/FINUFFT.jl/latest/)
 
-This is a full-featured Julia interface to [FINUFFT](https://github.com/flatironinstitute/finufft), which is a lightweight and fast parallel nonuniform fast Fourier transform (NUFFT) library released by the Flatiron Institute. This interface stands at v3.x, and it uses FINUFFT version 2.1.0 (note that the interface version number is distinct from the version of the wrapped binary FINUFFT library).
+This is a full-featured Julia interface to [FINUFFT](https://github.com/flatironinstitute/finufft), which is a lightweight and fast parallel nonuniform fast Fourier transform (NUFFT) library released by the Flatiron Institute. This interface stands at v3.x, and it uses FINUFFT version 2.2.0 (note that the interface version number is distinct from the version of the wrapped binary FINUFFT library).
 
 ## Installation
 
@@ -31,9 +31,6 @@ The underlying C++ routines that are called have full documentation
 [here](https://finufft.readthedocs.io/en/latest/c.html).
 
 An auto-generated reference for all provided Julia functions is [here](https://ludvigak.github.io/FINUFFT.jl/latest/).
-
-> **Warning:** On 10/28/21 (v2.1.0) and 1/5/22 (v3.0.0), the interface has changed (improved) significantly,
-> breaking some backward compatibility, as follows. Please also read the documentation.
 
 * Function calls mimic the C/C++ interface, with the exception that you don't need to pass the dimensions of any arrays in the argument (they are inferred using `size()`).
 * A vectorized call (performing multiple transforms, each with different coefficient vectors but the same set of nonuniform points) can now be performed using the same functions as the single-transform interface, detected from the size of the input arrays.
