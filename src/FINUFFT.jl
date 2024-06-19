@@ -170,19 +170,26 @@ end
 ### Error handling
 
 # Following should match error codes in https://github.com/flatironinstitute/finufft/blob/master/include/defs.h
-const ERR_EPS_TOO_SMALL        = 1
-const ERR_MAXNALLOC            = 2
-const ERR_SPREAD_BOX_SMALL     = 3
-const ERR_SPREAD_PTS_OUT_RANGE = 4
-const ERR_SPREAD_ALLOC         = 5
-const ERR_SPREAD_DIR           = 6
-const ERR_UPSAMPFAC_TOO_SMALL  = 7
-const HORNER_WRONG_BETA        = 8
-const ERR_NDATA_NOTVALID       = 9
-const ERR_TYPE_NOTVALID        = 10
-const ERR_ALLOC                = 11
-const ERR_DIM_NOTVALID         = 12
+const ERR_EPS_TOO_SMALL          = 1
+const ERR_MAXNALLOC              = 2
+const ERR_SPREAD_BOX_SMALL       = 3
+const ERR_SPREAD_PTS_OUT_RANGE   = 4 # DEPRECATED
+const ERR_SPREAD_ALLOC           = 5
+const ERR_SPREAD_DIR             = 6
+const ERR_UPSAMPFAC_TOO_SMALL    = 7
+const HORNER_WRONG_BETA          = 8
+const ERR_NDATA_NOTVALID         = 9
+const ERR_TYPE_NOTVALID          = 10
+const ERR_ALLOC                  = 11
+const ERR_DIM_NOTVALID           = 12
 const ERR_SPREAD_THREAD_NOTVALID = 13
+const ERR_NDATA_NOTVALID         = 14
+const ERR_CUDA_FAILURE           = 15
+const ERR_PLAN_NOTVALID          = 16
+const ERR_METHOD_NOTVALID        = 17
+const ERR_BINSIZE_NOTVALID       = 18
+const ERR_INSUFFICIENT_SHMEM     = 19
+const ERR_NUM_NU_PTS_INVALID     = 20
 
 struct FINUFFTError <: Exception
     errno::Cint
@@ -226,6 +233,20 @@ function check_ret(ret)
         msg = "invalid dimension, should be 1, 2, or 3"
     elseif ret==ERR_SPREAD_THREAD_NOTVALID
         msg = "spread_thread option not valid"
+    elseif ret==ERR_NDATA_NOTVALID
+        msg = "invalid mode array (more than ~2^31 modes, dimension with 0 modes, etc)"
+    elseif ret==ERR_CUDA_FAILURE
+        msg = "CUDA failure (failure to call any cuda function/kernel, malloc/memset, etc))"
+    elseif ret==ERR_PLAN_NOTVALID
+        msg = "attempt to destroy an uninitialized plan"
+    elseif ret==ERR_METHOD_NOTVALID
+        msg = "invalid spread/interp method for dim (attempt to blockgather in 1D, e.g.)"
+    elseif ret==ERR_BINSIZE_NOTVALID
+        msg = "size of bins for subprob/blockgather invalid"
+    elseif ret==ERR_INSUFFICIENT_SHMEM
+        msg = "GPU shmem too small for subprob/blockgather parameters"
+    elseif ret==ERR_NUM_NU_PTS_INVALID
+        msg = "invalid number of nonuniform points: nj or nk negative, or too big (see defs.h)"
     else
         msg = "error of type unknown to Julia interface! Check FINUFFT documentation"
     end
