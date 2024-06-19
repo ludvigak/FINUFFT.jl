@@ -169,16 +169,17 @@ end
 
 ### Error handling
 
-# Following should match error codes in https://github.com/flatironinstitute/finufft/blob/master/include/defs.h
-const ERR_EPS_TOO_SMALL          = 1
+# Following should match error codes in https://github.com/flatironinstitute/finufft/blob/master/include/finufft_errors.h
+
+const WARN_EPS_TOO_SMALL         = 1
 const ERR_MAXNALLOC              = 2
 const ERR_SPREAD_BOX_SMALL       = 3
 const ERR_SPREAD_PTS_OUT_RANGE   = 4 # DEPRECATED
 const ERR_SPREAD_ALLOC           = 5
 const ERR_SPREAD_DIR             = 6
 const ERR_UPSAMPFAC_TOO_SMALL    = 7
-const HORNER_WRONG_BETA          = 8
-const ERR_NDATA_NOTVALID         = 9
+const ERR_HORNER_WRONG_BETA      = 8
+const ERR_NTRANS_NOTVALID        = 9
 const ERR_TYPE_NOTVALID          = 10
 const ERR_ALLOC                  = 11
 const ERR_DIM_NOTVALID           = 12
@@ -205,34 +206,34 @@ function check_ret(ret)
     # https://github.com/flatironinstitute/finufft/blob/master/docs/error.rst
     if ret==0     # no error or warning
         return
-    elseif ret==ERR_EPS_TOO_SMALL
+    elseif ret==WARN_EPS_TOO_SMALL
         msg = "requested tolerance epsilon too small to achieve (warning only)"
         @warn msg
-        return 
+        return
     elseif ret==ERR_MAXNALLOC
-        msg = "attemped to allocate internal array larger than MAX_NF (defined in defs.h)"
+        msg = "stopped due to needing internal array size >MAX_NF (defined in defs.h)"
     elseif ret==ERR_SPREAD_BOX_SMALL
         msg = "spreader: fine grid too small compared to spread (kernel) width"
     elseif ret==ERR_SPREAD_PTS_OUT_RANGE
-        msg = "spreader: if chkbnds=1, a nonuniform point is out of input range [-3pi,3pi]^d"
+        msg = "spreader: [DEPRECATED]"
     elseif ret==ERR_SPREAD_ALLOC
         msg = "spreader: array allocation error"
     elseif ret==ERR_SPREAD_DIR
         msg = "spreader: illegal direction (should be 1 or 2)"
     elseif ret==ERR_UPSAMPFAC_TOO_SMALL
         msg = "upsampfac too small (should be >1.0)"
-    elseif ret==HORNER_WRONG_BETA
-        msg = "upsampfac not a value with known Horner eval: currently 2.0 or 1.25 only"
-    elseif ret==ERR_NDATA_NOTVALID
-        msg = "ntrans not valid in vectorized interface (should be >= 1)"
+    elseif ret==ERR_HORNER_WRONG_BETA
+        msg = "upsampfac not a value with known Horner poly eval rule (currently 2.0 or 1.25 only)"
+    elseif ret==ERR_NTRANS_NOTVALID
+        msg = "ntrans not valid in \"many\" (vectorized) or guru interface (should be >= 1)"
     elseif ret==ERR_TYPE_NOTVALID
-        msg = "invalid transform type, type should be 1, 2, or 3"
+        msg = "transform type invalid"
     elseif ret==ERR_ALLOC
-        msg = "general allocation failure"
+        msg = "general internal allocation failure"
     elseif ret==ERR_DIM_NOTVALID
-        msg = "invalid dimension, should be 1, 2, or 3"
+        msg = "dimension invalid"
     elseif ret==ERR_SPREAD_THREAD_NOTVALID
-        msg = "spread_thread option not valid"
+        msg = "spread_thread option invalid"
     elseif ret==ERR_NDATA_NOTVALID
         msg = "invalid mode array (more than ~2^31 modes, dimension with 0 modes, etc)"
     elseif ret==ERR_CUDA_FAILURE
