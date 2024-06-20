@@ -22,6 +22,11 @@ export finufft_exec!
 export BIGINT
 export finufftReal
 
+export cufinufft_makeplan
+export cufinufft_destroy!
+export cufinufft_setpts!
+export cufinufft_exec
+export cufinufft_exec!
 
 # By default we depend on our precompiled generic binary package...
 using finufft_jll
@@ -33,11 +38,30 @@ const libfinufft = finufft_jll.libfinufft
 # then need to use this FINUFFT.jl pkg in dev mode and restart (see README.md):
 #const libfinufft = "/PATH/TO/YOUR/finufft/lib/libfinufft.so"
 
+# CUDA setup
+# cuFINUFFT is only available on some platforms, so things should break
+# if this is not the case.
+using CUDA
+using cufinufft_jll # This artifact has lazy loading
+# Keep track of whether we can run CUDA or not
+const USE_CUDA = Ref{Union{Nothing, Bool}}(nothing)
+function check_cuda()
+    if isnothing(USE_CUDA[])
+        USE_CUDA[] = CUDA.functional()
+    end
+    if USE_CUDA[]==false
+        throw("CUDA functionality is not available")
+    end
+end
 
-const BIGINT = Int64        # must match that in FINUFFT include/dataTypes.h
+
+## Setup types
+const BIGINT = Int64        # must match that in FINUFFT include/finufft/defs.h
 
 # our allowed real array types...
 const finufftReal = Union{Float64,Float32}
+
+include("cufinufft_types.jl")
 
 ## FINUFFT opts struct, must bytewise match that in include/nufft_opts.h
 """
@@ -260,12 +284,12 @@ end
 ### validate sizes of inputs for setpts
 function valid_setpts(type::Integer,
                       dim::Integer,
-                      x::Array{T},
-                      y::Array{T}=T[],
-                      z::Array{T}=T[],
-                      s::Array{T}=T[],
-                      t::Array{T}=T[],
-                      u::Array{T}=T[]) where T <: finufftReal
+                      x::AbstractArray{T},
+                      y::AbstractArray{T}=T[],
+                      z::AbstractArray{T}=T[],
+                      s::AbstractArray{T}=T[],
+                      t::AbstractArray{T}=T[],
+                      u::AbstractArray{T}=T[]) where T <: finufftReal
     nj = length(x)
     if type==3
         nk = length(s)
@@ -313,7 +337,7 @@ function get_nmodes_from_fk(dim::Integer,
 end
 
 ### kwargs opt set
-function setkwopts!(opts::nufft_opts; kwargs...)
+function setkwopts!(opts::Union{nufft_opts,cufinufft_opts}; kwargs...)
     dtype = Float64
     for (key, value) in kwargs
         if hasproperty(opts, key::Symbol)
@@ -340,8 +364,9 @@ end
 
 
 # Finally, bring in the main user-facing interfaces...
-        
+ 
 include("guru.jl")
 include("simple.jl")
+include("cufinufft.jl")
 
 end # module

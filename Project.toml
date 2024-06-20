@@ -4,6 +4,8 @@ author = "Ludvig af Klinteberg <ludvigak@kth.se>"
 version = "3.1.1"
 
 [deps]
+CUDA = "052768ef-5323-5732-b1bb-66c8b64840ba"
+cufinufft_jll = "d94e68af-94a2-5465-a03a-ccb69bb7181e"
 finufft_jll = "c41cd5a2-72a3-5203-9076-a500b088fc82"
 
 [compat]
