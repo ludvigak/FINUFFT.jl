@@ -1,3 +1,8 @@
+# Bonus test that checks type stability and allocations
+#
+# Requires JET to be installed, which is currently (jun -24) deemed too experimental to be
+# used as a dependency
+
 using FINUFFT
 using Test
 using JET: JET, @test_opt
