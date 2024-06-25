@@ -1,4 +1,8 @@
+"""
+    p = cufinufft_default_opts()
 
+Return a [`FINUFFT.cufinufft_opts`](@ref) struct with the default settings.
+"""
 function cufinufft_default_opts()
     check_cuda()
     opts = cufinufft_opts()
@@ -11,13 +15,36 @@ function cufinufft_default_opts()
 end
 
 """
-    cufinufft_makeplan
+    cufinufft_makeplan(type::Integer,
+                       n_modes_or_dim::Union{Array{Int64},Integer},
+                       iflag::Integer,
+                       ntrans::Integer,
+                       eps::Real;
+                       dtype=Float64,
+                       kwargs...) -> plan::cufinufft_plan{dtype}
+
+Create a `cufinufft_plan` object. See `finufft_makeplan` for arguments.
+
+ - `kwargs` (optional): Options set in [`FINUFFT.cufinufft_opts`](@ref).
+
 """
-function cufinufft_makeplan(type::Integer, args...; dtype=Float64, kwargs...)
-    cufinufft_makeplan(dtype, type, args...; kwargs...)
+function cufinufft_makeplan(type::Integer,
+                            n_modes_or_dim::Union{Array{Int64},Integer},
+                            iflag::Integer,
+                            ntrans::Integer,
+                            eps::Real;
+                            dtype=Float64,
+                            kwargs...)
+    _cufinufft_makeplan(dtype, type, n_modes_or_dim, iflag, ntrans, eps; kwargs...)
 end
 
-function cufinufft_makeplan(::Type{dtype}, type::Integer,
+"""
+    _cufinufft_makeplan
+
+Type-stable internal version of cufinufft_makeplan
+"""
+function _cufinufft_makeplan(::Type{dtype},
+                            type::Integer,
                             n_modes_or_dim::Union{Array{Int64},Integer},
                             iflag::Integer,
                             ntrans::Integer,
@@ -81,6 +108,11 @@ function cufinufft_makeplan(::Type{dtype}, type::Integer,
     return plan
 end
 
+"""
+    cufinufft_destroy!(plan::cufinufft_plan)
+
+Destroy a `cufinufft_plan` object, deallocating all memory used.
+"""
 function cufinufft_destroy!(plan::cufinufft_plan{T}) where T <: finufftReal
     check_cuda()
     # Remove references to input arrays
@@ -109,6 +141,13 @@ function cufinufft_destroy!(plan::cufinufft_plan{T}) where T <: finufftReal
     end
 end
 
+"""
+    cufinufft_setpts!(plan, xj [, yj[, zj[, s[, t[, u]]]]])
+
+Input nonuniform points. See `finufft_setpts!` for arguments.
+
+Points can be either `CUDA.CuArray`'s on device or `Array`'s on host. The latter will be automatically copied to device before being passed to cuFINUFFT.
+"""
 function cufinufft_setpts!(plan::cufinufft_plan{T},
                            x::Array{T},
                            y::Array{T}=T[],
@@ -179,9 +218,21 @@ function cufinufft_setpts!(plan::cufinufft_plan{T},
     check_ret(ret)
     return ret
 end
+"""
+    cufinufft_exec(plan::cufinufft_plan{T}, 
+                   input :: Array{Complex{T}} or CUDA.CuArray{Complex{T}}
+                   ) -> Array{Complex{T}} or CUDA.CuArray{Complex{T}}
+                   where T :: Float32 or Float64
 
+Execute cuFINFFT plan and return output in a newly allocated array.
+
+`output` type will match that of `input`:
+- If `input` is `CUDA.CuArray` on device, then `output` is allocated on device.
+- If `input` is `Array` on host, then it is copied to device before computation and `output` is copied to host after computation.
+"""
 function cufinufft_exec(plan::cufinufft_plan{T},
-                        input_h::Array{Complex{T}}) where T <: finufftReal
+                        input_h::Array{Complex{T}}
+                        ) :: Array{Complex{T}} where T <: finufftReal
     # If called with host memory, return host memory
     input_d = CuArray(input_h)
     output_d = cufinufft_exec(plan, input_d)
@@ -190,7 +241,7 @@ function cufinufft_exec(plan::cufinufft_plan{T},
 end
 
 function cufinufft_exec(plan::cufinufft_plan{T},
-                        input::CuArray{Complex{T}}) where T <: finufftReal
+                        input::CuArray{Complex{T}}) :: CuArray{Complex{T}} where T <: finufftReal
     ret = 0
     type = plan.type
     ntrans = plan.ntrans
@@ -220,6 +271,15 @@ function cufinufft_exec(plan::cufinufft_plan{T},
     return output
 end
 
+"""
+    cufinufft_exec!(plan::cufinufft_plan{T},
+                    input::CUDA.CuArray{Complex{T}},
+                    output::CUDA.CuArray{Complex{T}}
+                    ) 
+                    where T :: Float32 or Float64
+
+Execute cuFINUFFT transform(s) with preallocated arrays on device.
+"""
 function cufinufft_exec!(plan::cufinufft_plan{T},
                          input::CuArray{Complex{T}},
                          output::CuArray{Complex{T}}) where T <: finufftReal

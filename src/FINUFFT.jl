@@ -22,6 +22,7 @@ export finufft_exec!
 export BIGINT
 export finufftReal
 
+export cufinufft_plan
 export cufinufft_makeplan
 export cufinufft_destroy!
 export cufinufft_setpts!
@@ -346,7 +347,7 @@ function setkwopts!(opts::Union{nufft_opts,cufinufft_opts}; kwargs...)
             @assert value <: finufftReal
             dtype = value
         else
-            @warn "nufft_opts does not have attribute " * String(key)
+            @warn string(typeof(opts)) * " does not have attribute " * String(key)
         end
     end
     return dtype

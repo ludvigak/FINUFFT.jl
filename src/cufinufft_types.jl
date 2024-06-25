@@ -24,7 +24,7 @@ mutable struct cufinufft_plan{T}
         new(type, ntrans, dim, ms, mt, mu, nj, nk, plan_ptr, T[], T[], T[], T[], T[], T[])
 end
 
-# This mus match definition in
+# This must match definition in
 # finufft/include/cufinufft_opts.h
 mutable struct cufinufft_opts
     upsampfac            :: Cdouble # upsampling ratio sigma, only 2.0 (standard) is implemented

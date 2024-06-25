@@ -29,12 +29,12 @@ end
 
 """
     finufft_makeplan(type::Integer,
-                          n_modes_or_dim::Union{Array{Int64},Integer},
-                          iflag::Integer,
-                          ntrans::Integer,
-                          eps::Real;
-                          dtype=Float64,
-                          kwargs...)
+                     n_modes_or_dim::Union{Array{Int64},Integer},
+                     iflag::Integer,
+                     ntrans::Integer,
+                     eps::Real;
+                     dtype=Float64,
+                     kwargs...) -> plan::finufft_plan{dtype}
 
 Creates a `finufft_plan` object for the guru interface to FINUFFT, of
  type 1, 2 or 3, and with given numbers of Fourier modes (unless type 3).
@@ -339,8 +339,8 @@ end
 
 """
     finufft_exec!(plan::finufft_plan{T},
-                      input::Array{Complex{T}},
-                      output::Array{Complex{T}}) where T <: finufftReal
+                  input::Array{Complex{T}},
+                  output::Array{Complex{T}}) where T <: finufftReal
 
 Execute single or many-vector FINUFFT transforms in a plan, with output written
 to preallocated array. See `finufft_exec` for arguments.
