@@ -38,7 +38,6 @@ function nufft1d1(xj::Array{T},
                   eps::Real,
                   ms::Integer;
                   kwargs...) where T <: finufftReal
-    valid_setpts(1,1,xj)
     ntrans = valid_ntr(xj,cj)
     fk = Array{Complex{T}}(undef, ms, ntrans)
     checkkwdtype(T; kwargs...)
@@ -90,7 +89,6 @@ function nufft2d1(xj      :: Array{T},
                   ms      :: Integer,
                   mt      :: Integer;
                   kwargs...) where T <: finufftReal
-    valid_setpts(1,2,xj,yj)
     ntrans = valid_ntr(xj,cj)
     fk = Array{Complex{T}}(undef, ms, mt, ntrans)
     checkkwdtype(T; kwargs...)
@@ -148,7 +146,6 @@ function nufft3d1(xj      :: Array{T},
                   mt      :: Integer,
                   mu      :: Integer;
                   kwargs...)  where T <: finufftReal
-    valid_setpts(1,3,xj,yj,zj)
     ntrans = valid_ntr(xj,cj)
     fk = Array{Complex{T}}(undef, ms, mt, mu, ntrans)
     checkkwdtype(T; kwargs...)
