@@ -70,16 +70,26 @@ julia> p = finufft_makeplan(3,2,+1,1,1e-4,dtype=Float32,nthreads=4);
 creates a plan for a 2D type 3 Float32 transform with tolerance 1e-4,
 to use 4 threads.
 """
-function finufft_makeplan(type::Integer, args...; dtype=Float64, kwargs...)
-    finufft_makeplan(dtype, type, args...; kwargs...)
-end
-
-function finufft_makeplan(::Type{dtype}, type::Integer,
+function finufft_makeplan(type::Integer,
                           n_modes_or_dim::Union{Array{BIGINT},Integer},
                           iflag::Integer,
                           ntrans::Integer,
                           eps::Real;
-                          kwargs...) where {dtype}
+                          dtype=Float64, kwargs...)
+    _finufft_makeplan(dtype, type, n_modes_or_dim, iflag, ntrans, eps; kwargs...)
+end
+
+"""
+    _finufft_makeplan
+
+Type-stable internal version of finufft_makeplan
+"""
+function _finufft_makeplan(::Type{dtype}, type::Integer,
+                           n_modes_or_dim::Union{Array{BIGINT},Integer},
+                           iflag::Integer,
+                           ntrans::Integer,
+                           eps::Real;
+                           kwargs...) where {dtype}
 # see https://stackoverflow.com/questions/40140699/the-proper-way-to-declare-c-void-pointers-in-julia for how to declare c-void pointers in julia
 #   one can also use Array/Vector for cvoid pointer, Array and Ref both work
 #   plan_p = Array{finufft_plan_c}(undef,1)
