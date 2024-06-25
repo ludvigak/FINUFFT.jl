@@ -1,3 +1,12 @@
+# cuFINUFFT interface
+
+export cufinufft_plan
+export cufinufft_makeplan
+export cufinufft_destroy!
+export cufinufft_setpts!
+export cufinufft_exec
+export cufinufft_exec!
+
 using cufinufft_jll
 
 # Keep track of whether we can run CUDA or not

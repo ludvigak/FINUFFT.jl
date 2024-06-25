@@ -24,13 +24,6 @@ export finufft_exec!
 export BIGINT
 export finufftReal
 
-export cufinufft_plan
-export cufinufft_makeplan
-export cufinufft_destroy!
-export cufinufft_setpts!
-export cufinufft_exec
-export cufinufft_exec!
-
 # By default we depend on our precompiled generic binary package...
 using finufft_jll
 const libfinufft = finufft_jll.libfinufft
@@ -50,6 +43,7 @@ include("helpers.jl")
 include("guru.jl")
 include("simple.jl")
 
+# Only load cuFINUFFT interface if CUDA is present (via `using CUDA`) and functional
 function __init__()
     @require CUDA="052768ef-5323-5732-b1bb-66c8b64840ba" begin
         using .CUDA
