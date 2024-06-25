@@ -1,3 +1,16 @@
+using cufinufft_jll
+
+# Keep track of whether we can run CUDA or not
+const USE_CUDA = Ref{Union{Nothing, Bool}}(nothing)
+function check_cuda()
+    if isnothing(USE_CUDA[])
+        USE_CUDA[] = CUDA.functional()
+    end
+    if USE_CUDA[]==false
+        throw("CUDA functionality is not available")
+    end
+end
+
 """
     p = cufinufft_default_opts()
 
@@ -12,6 +25,32 @@ function cufinufft_default_opts()
            opts
            )
     return opts
+end
+
+const cufinufft_plan_c = Ptr{Cvoid}
+
+mutable struct cufinufft_plan{T}
+    type       :: Cint
+    ntrans     :: Cint
+    dim        :: Cint
+    ms         :: Int64
+    mt         :: Int64
+    mu         :: Int64
+    nj         :: Int64
+    nk         :: Int64
+    plan_ptr   :: cufinufft_plan_c
+    # Arrays used for keeping references to input data alive.
+    # These should not be modified directly, as it will have no
+    # effect.
+    _x_d       :: CuVector{T}
+    _y_d       :: CuVector{T}
+    _z_d       :: CuVector{T}
+    _s_d       :: CuVector{T}
+    _t_d       :: CuVector{T}
+    _u_d       :: CuVector{T}
+    # Default constructor that does not require input arrays
+    cufinufft_plan{T}(type, ntrans, dim, ms, mt, mu, nj, nk, plan_ptr) where T <: finufftReal =
+        new(type, ntrans, dim, ms, mt, mu, nj, nk, plan_ptr, T[], T[], T[], T[], T[], T[])
 end
 
 """

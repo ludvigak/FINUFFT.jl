@@ -1,5 +1,33 @@
 ### Guru Interfaces
 
+"""
+    p = finufft_default_opts()
+    p = finufft_default_opts(dtype=Float32)
+
+Return a [`nufft_opts`](@ref) struct with the default FINUFFT settings. Set up the double precision variant by default.\\
+See: <https://finufft.readthedocs.io/en/latest/usage.html#options>
+"""
+function finufft_default_opts(dtype::DataType=Float64)
+    opts = nufft_opts{dtype}()
+
+    if dtype==Float64
+        ccall( (:finufft_default_opts, libfinufft),
+               Nothing,
+               (Ref{nufft_opts},),
+               opts
+               )
+
+    else
+        ccall( (:finufftf_default_opts, libfinufft),
+               Nothing,
+               (Ref{nufft_opts},),
+               opts
+               )
+    end
+
+    return opts
+end
+
 # abbreviated name for the type for C pointer used in plan struct
 const finufft_plan_c = Ptr{Cvoid}
 

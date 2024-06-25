@@ -7,3 +7,4 @@ end
 @testset "cuFINUFFT" begin
     include("test_cuda.jl")
 end
+;

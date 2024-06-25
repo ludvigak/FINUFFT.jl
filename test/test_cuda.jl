@@ -10,10 +10,11 @@ using Random
 # run a test at requested tolerance tol, floating-point precision dtype...
 function test_cuda(tol::Real, dtype::DataType)
     @assert dtype <: FINUFFT.finufftReal
-    if !CUDA.functional()
-        @warn "CUDA not available, skipping cuFINUFFT tests"
-        return
-    end
+
+    # Warning test
+    cuopt = FINUFFT.cufinufft_default_opts()
+    @test_nowarn FINUFFT.setkwopts!(cuopt, modeord=1)
+    @test_warn "FINUFFT.cufinufft_opts does not have attribute foo" FINUFFT.setkwopts!(cuopt, foo=1)
 
     rng = MersenneTwister(1)
 
@@ -200,8 +201,12 @@ function test_cuda(tol::Real, dtype::DataType)
         end
     end
 end
+
 # Main: do the tests
-# 1st arg is tolerance (no longer used to infer dtype), 2nd is dtype...
-test_cuda(1e-14, Float64)
-test_cuda(1e-4, Float32)
+if !CUDA.functional()
+    @warn "CUDA not available, skipping cuFINUFFT tests"
+else
+    test_cuda(1e-14, Float64)
+    test_cuda(1e-4, Float32)
+end
 ;

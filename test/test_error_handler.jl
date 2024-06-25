@@ -52,9 +52,5 @@ using Test
     @test_nowarn FINUFFT.setkwopts!(opt, modeord=1)
     @test_warn "nufft_opts{Float64} does not have attribute foo" FINUFFT.setkwopts!(opt, foo=1)
 
-    cuopt = FINUFFT.cufinufft_default_opts()
-    @test_nowarn FINUFFT.setkwopts!(cuopt, modeord=1)
-    @test_warn "FINUFFT.cufinufft_opts does not have attribute foo" FINUFFT.setkwopts!(cuopt, foo=1)
-
     @info("Error handling testing done")
 end
