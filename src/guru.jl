@@ -1,7 +1,7 @@
 ### Guru Interfaces
 
 # abbreviated name for the type for C pointer used in plan struct
-finufft_plan_c = Ptr{Cvoid}
+const finufft_plan_c = Ptr{Cvoid}
 
 mutable struct finufft_plan{T}
     type       :: Cint
@@ -16,15 +16,15 @@ mutable struct finufft_plan{T}
     # Arrays used for keeping references to input data alive.
     # These should not be modified directly, as it will have no
     # effect.
-    _xj        :: Array{T}
-    _yj        :: Array{T}
-    _zj        :: Array{T}
-    _s         :: Array{T}
-    _t         :: Array{T}
-    _u         :: Array{T}
+    _xj        :: Vector{T}
+    _yj        :: Vector{T}
+    _zj        :: Vector{T}
+    _s         :: Vector{T}
+    _t         :: Vector{T}
+    _u         :: Vector{T}
     # Default constructor that does not require input arrays (also for backwards compat)
     finufft_plan{T}(type, ntrans, dim, ms, mt, mu, nj, nk, plan_ptr) where T =
-        new(type, ntrans, dim, ms, mt, mu, nj, nk, plan_ptr, [], [], [], [], [], [])
+        new(type, ntrans, dim, ms, mt, mu, nj, nk, plan_ptr, T[], T[], T[], T[], T[], T[])
 end
 
 """
@@ -75,8 +75,21 @@ function finufft_makeplan(type::Integer,
                           iflag::Integer,
                           ntrans::Integer,
                           eps::Real;
-                          dtype=Float64,
-                          kwargs...)
+                          dtype=Float64, kwargs...)
+    _finufft_makeplan(dtype, type, n_modes_or_dim, iflag, ntrans, eps; kwargs...)
+end
+
+"""
+    _finufft_makeplan
+
+Type-stable internal version of finufft_makeplan
+"""
+function _finufft_makeplan(::Type{dtype}, type::Integer,
+                           n_modes_or_dim::Union{Array{BIGINT},Integer},
+                           iflag::Integer,
+                           ntrans::Integer,
+                           eps::Real;
+                           kwargs...) where {dtype}
 # see https://stackoverflow.com/questions/40140699/the-proper-way-to-declare-c-void-pointers-in-julia for how to declare c-void pointers in julia
 #   one can also use Array/Vector for cvoid pointer, Array and Ref both work
 #   plan_p = Array{finufft_plan_c}(undef,1)
@@ -158,11 +171,11 @@ Empty arrays may be passed in the case of
 """
 function finufft_setpts!(plan::finufft_plan{T},
                          xj::Array{T},
-                         yj::Array{T}=T[],
-                         zj::Array{T}=T[],
-                         s::Array{T}=T[],
-                         t::Array{T}=T[],
-                         u::Array{T}=T[]) where T <: finufftReal
+                         yj::Array{T}=plan._yj,
+                         zj::Array{T}=plan._zj,
+                         s::Array{T}=plan._s,
+                         t::Array{T}=plan._t,
+                         u::Array{T}=plan._u) where T <: finufftReal
 
     (M, N) = valid_setpts(plan.type, plan.dim, xj, yj, zj, s, t, u)
 
@@ -173,12 +186,12 @@ function finufft_setpts!(plan::finufft_plan{T},
     # This is important, since Julia garbage collection
     # will not know about the C library keeping references
     # to the input arrays.
-    plan._xj = xj
-    plan._yj = yj
-    plan._zj = zj
-    plan._s  = s
-    plan._t  = t
-    plan._u  = u
+    plan._xj = vec(xj)
+    plan._yj = vec(yj)
+    plan._zj = vec(zj)
+    plan._s  = vec(s)
+    plan._t  = vec(t)
+    plan._u  = vec(u)
 
     if T==Float64
         ret = ccall( (:finufft_setpts, libfinufft),
@@ -338,10 +351,7 @@ function finufft_exec!(plan::finufft_plan{T},
     type = plan.type
     ntrans = plan.ntrans
     dim = plan.dim
-    n_modes = Array{BIGINT}(undef,3)
-    n_modes[1] = plan.ms
-    n_modes[2] = plan.mt
-    n_modes[3] = plan.mu
+    n_modes = (plan.ms, plan.mt, plan.mu)
     if type==1
         if dim==1
             if ntrans==1
