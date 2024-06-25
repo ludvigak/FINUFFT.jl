@@ -40,7 +40,7 @@ using Test
     try 
         nufft1d1(xj, cj, iflag, tol, ms, upsampfac=upsampfac)
     catch e
-        @test e.errno == FINUFFT.HORNER_WRONG_BETA
+        @test e.errno == FINUFFT.ERR_HORNER_WRONG_BETA
     end
 
     # Test immediate destroy and double-destroy, and their status codes...
