@@ -13,8 +13,8 @@ function test_cuda(tol::Real, dtype::DataType)
 
     # Warning test
     cuopt = FINUFFT.cufinufft_default_opts()
-    @test_nowarn FINUFFT.setkwopts!(cuopt, modeord=1)
-    @test_warn "FINUFFT.cufinufft_opts does not have attribute foo" FINUFFT.setkwopts!(cuopt, foo=1)
+    @test_logs FINUFFT.setkwopts!(cuopt, modeord=1)
+    @test_logs (:warn, "FINUFFT.cufinufft_opts does not have attribute foo") FINUFFT.setkwopts!(cuopt, foo=1)
 
     rng = MersenneTwister(1)
 

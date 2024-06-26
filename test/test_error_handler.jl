@@ -1,3 +1,4 @@
+using Logging
 using FINUFFT
 using Test
 
@@ -9,12 +10,12 @@ using Test
     tol = 1e-15
     ms = 10
 
-    @test_nowarn nufft1d1(xj, cj, iflag, tol, ms) # This should pass
+    @test_logs nufft1d1(xj, cj, iflag, tol, ms) # Should not warn
 
     @info("Testing error handling")
 
     # Tolerance too small (should only warn)
-    @test_warn "epsilon too small" nufft1d1(xj, cj, iflag, 1e-100, ms)
+    @test_logs (:warn, "requested tolerance epsilon too small to achieve (warning only)") nufft1d1(xj, cj, iflag, 1e-100, ms)
 
     # Allocate too much
     opts = finufft_default_opts()
@@ -49,8 +50,8 @@ using Test
     @test finufft_destroy!(p)==1   # 1 since already destroyed; watch for crash
 
     opt = finufft_default_opts(Float64)
-    @test_nowarn FINUFFT.setkwopts!(opt, modeord=1)
-    @test_warn "nufft_opts{Float64} does not have attribute foo" FINUFFT.setkwopts!(opt, foo=1)
+    @test_logs FINUFFT.setkwopts!(opt, modeord=1)
+    @test_logs (:warn, "nufft_opts{Float64} does not have attribute foo") FINUFFT.setkwopts!(opt, foo=1)
 
     @info("Error handling testing done")
 end
