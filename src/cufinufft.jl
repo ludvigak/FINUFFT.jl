@@ -11,10 +11,24 @@ using cufinufft_jll
 
 # Keep track of whether we can run CUDA or not
 const USE_CUDA = Ref{Union{Nothing, Bool}}(nothing)
-function check_cuda()
+
+function determine_cuda_status()
     if isnothing(USE_CUDA[])
-        USE_CUDA[] = CUDA.functional()
+        # Determine CUDA status
+        status = true
+        if !CUDA.functional()
+            status = false
+            @warn "CUDA installation is not functional"
+        end
+        if !cufinufft_jll.is_available()
+            status = false
+            @warn "cuFINUFFT binary is not available on this platform"
+        end
+        USE_CUDA[] = status
     end
+end
+
+function check_cuda()
     if USE_CUDA[]==false
         throw("CUDA functionality is not available")
     end

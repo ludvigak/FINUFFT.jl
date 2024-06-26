@@ -47,9 +47,8 @@ include("simple.jl")
 function __init__()
     @require CUDA="052768ef-5323-5732-b1bb-66c8b64840ba" begin
         using .CUDA
-        if CUDA.functional()
-            include("cufinufft.jl")
-        end
+        include("cufinufft.jl")
+        determine_cuda_status()
     end
 end
 

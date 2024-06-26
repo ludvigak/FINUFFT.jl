@@ -205,6 +205,8 @@ end
 # Main: do the tests
 if !CUDA.functional()
     @warn "CUDA not available, skipping cuFINUFFT tests"
+elseif !FINUFFT.cufinufft_jll.is_available()
+    @warn "cuFINUFFT not available, skipping cuFINUFFT tests"
 else
     test_cuda(1e-14, Float64)
     test_cuda(1e-4, Float32)
