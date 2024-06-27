@@ -34,8 +34,8 @@ function valid_setpts(type::Integer,
 end
 
 ### validate number of transforms
-function valid_ntr(x::Array{T},
-                   c::Array{Complex{T}}) where T <: finufftReal
+function valid_ntr(x::AbstractArray{T},
+                   c::AbstractArray{Complex{T}}) where T <: finufftReal
     ntrans = Cint(length(c) / length(x))
     @assert ntrans*length(x) == length(c)
     return ntrans
@@ -43,7 +43,7 @@ end
 
 ### infer number of modes from fk array
 function get_nmodes_from_fk(dim::Integer,
-                            fk::Array{Complex{T}}) where T <: finufftReal
+                            fk::AbstractArray{Complex{T}}) where T <: finufftReal
     ndim = ndims(fk)
     @assert dim==1 || dim==2 || dim==3
     @assert ndim==dim || ndim==dim+1
