@@ -1,5 +1,33 @@
 ### Guru Interfaces
 
+"""
+    p = finufft_default_opts()
+    p = finufft_default_opts(dtype=Float32)
+
+Return a [`nufft_opts`](@ref) struct with the default FINUFFT settings. Set up the double precision variant by default.\\
+See: <https://finufft.readthedocs.io/en/latest/usage.html#options>
+"""
+function finufft_default_opts(dtype::DataType=Float64)
+    opts = nufft_opts{dtype}()
+
+    if dtype==Float64
+        ccall( (:finufft_default_opts, libfinufft),
+               Nothing,
+               (Ref{nufft_opts},),
+               opts
+               )
+
+    else
+        ccall( (:finufftf_default_opts, libfinufft),
+               Nothing,
+               (Ref{nufft_opts},),
+               opts
+               )
+    end
+
+    return opts
+end
+
 # abbreviated name for the type for C pointer used in plan struct
 const finufft_plan_c = Ptr{Cvoid}
 
@@ -29,12 +57,12 @@ end
 
 """
     finufft_makeplan(type::Integer,
-                          n_modes_or_dim::Union{Array{Int64},Integer},
-                          iflag::Integer,
-                          ntrans::Integer,
-                          eps::Real;
-                          dtype=Float64,
-                          kwargs...)
+                     n_modes_or_dim::Union{Array{Int64},Integer},
+                     iflag::Integer,
+                     ntrans::Integer,
+                     eps::Real;
+                     dtype=Float64,
+                     kwargs...) -> plan::finufft_plan{dtype}
 
 Creates a `finufft_plan` object for the guru interface to FINUFFT, of
  type 1, 2 or 3, and with given numbers of Fourier modes (unless type 3).
@@ -339,8 +367,8 @@ end
 
 """
     finufft_exec!(plan::finufft_plan{T},
-                      input::Array{Complex{T}},
-                      output::Array{Complex{T}}) where T <: finufftReal
+                  input::Array{Complex{T}},
+                  output::Array{Complex{T}}) where T <: finufftReal
 
 Execute single or many-vector FINUFFT transforms in a plan, with output written
 to preallocated array. See `finufft_exec` for arguments.
