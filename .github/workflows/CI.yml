@@ -41,3 +41,6 @@ jobs:
           file: lcov.info
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false 
+          ignore:
+            - "src/cufinufft.jl"
+            - "src/cufinufft_simple.jl"
