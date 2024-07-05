@@ -109,6 +109,31 @@ const nufft_c_opts = nufft_opts        # for backward compatibility - remove?
 #
 # This must match definition in
 # finufft/include/cufinufft_opts.h
+"""
+    mutable struct cufinufft_opts
+        upsampfac            :: Cdouble # upsampling ratio sigma, only 2.0 (standard) is implemented
+        # following options are for gpu #
+        gpu_method           :: Cint # 1: nonuniform-pts driven, 2: shared mem (SM)
+        gpu_sort             :: Cint # when NU-pts driven: 0: no sort (GM), 1: sort (GM-sort)
+        gpu_binsizex         :: Cint # used for 2D, 3D subproblem method
+        gpu_binsizey         :: Cint
+        gpu_binsizez         :: Cint
+        gpu_obinsizex        :: Cint # used for 3D spread block gather method
+        gpu_obinsizey        :: Cint
+        gpu_obinsizez        :: Cint
+        gpu_maxsubprobsize   :: Cint
+        gpu_kerevalmeth      :: Cint # 0: direct exp(sqrt()), 1: Horner ppval
+        gpu_spreadinterponly :: Cint # 0: NUFFT, 1: spread or interpolation only
+        gpu_maxbatchsize     :: Cint
+        # multi-gpu support #
+        gpu_device_id        :: Cint
+        gpu_stream           :: Ptr{Cvoid}
+        modeord              :: Cint # (type 1,2 only): 0 CMCL-style increasing mode order
+                                     #                  1 FFT-style mode order
+    end
+
+Options struct passed to cuFINUFFT, see C documentation.
+"""
 mutable struct cufinufft_opts
     upsampfac            :: Cdouble # upsampling ratio sigma, only 2.0 (standard) is implemented
 
