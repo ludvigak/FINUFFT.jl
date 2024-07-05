@@ -7,3 +7,4 @@ deps/downloads
 deps/usr
 deps/src
 Manifest.toml
+*~
