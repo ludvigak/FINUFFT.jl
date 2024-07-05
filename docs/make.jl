@@ -1,5 +1,5 @@
 using Documenter
-using FINUFFT
+using CUDA, FINUFFT
 
 makedocs(sitename="FINUFFT.jl")
 
