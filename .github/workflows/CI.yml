@@ -17,10 +17,10 @@ jobs:
           - windows-latest
         arch:
           - x64
-          - arm64
-        exclude:
-          - os: windows-latest
+        include:
+          - os: macOS-latest
             arch: arm64
+            version: 1.10
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
