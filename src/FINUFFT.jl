@@ -50,8 +50,8 @@ include("simple.jl")
 function __init__()
 
     # quick and dirty: make fftw thread safe
-    ccall((:fftw_make_planner_thread_safe, libfftw3), Cvoid, (Cvoid,), Ref(nothing))
-    ccall((:fftwf_make_planner_thread_safe, libfftw3f), Cvoid, (Cvoid,), Ref(nothing))
+    ccall((:fftw_make_planner_thread_safe, libfftw3), Cvoid, ())
+    ccall((:fftwf_make_planner_thread_safe, libfftw3f), Cvoid, ())
 
     @require CUDA="052768ef-5323-5732-b1bb-66c8b64840ba" begin
         using .CUDA
