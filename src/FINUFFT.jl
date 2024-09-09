@@ -27,6 +27,7 @@ export finufftReal
 # By default we depend on our precompiled generic binary package...
 using finufft_jll
 const libfinufft = finufft_jll.libfinufft
+# part of the thread-safety workaround
 using FFTW_jll
 const libfftw3 = FFTW_jll.libfftw3
 const libfftw3f = FFTW_jll.libfftw3f
@@ -50,6 +51,7 @@ include("simple.jl")
 function __init__()
 
     # quick and dirty: make fftw thread safe
+    # get rid of this workaround as soon as https://github.com/flatironinstitute/finufft/pull/548 has been merged and deployed to finufft_jll
     ccall((:fftw_make_planner_thread_safe, libfftw3), Cvoid, ())
     ccall((:fftwf_make_planner_thread_safe, libfftw3f), Cvoid, ())
 
