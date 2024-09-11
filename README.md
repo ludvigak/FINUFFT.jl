@@ -4,11 +4,11 @@
 [![codecov](https://codecov.io/gh/ludvigak/FINUFFT.jl/branch/master/graph/badge.svg?token=Tkx7kma18J)](https://codecov.io/gh/ludvigak/FINUFFT.jl)
 [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://ludvigak.github.io/FINUFFT.jl/latest/)
 
-This is a full-featured Julia interface to [FINUFFT](https://github.com/flatironinstitute/finufft), which is a lightweight and fast parallel nonuniform fast Fourier transform (NUFFT) library released by the Flatiron Institute, and its GPU version cuFINUFFT. This interface stands at v3.x, and it uses FINUFFT version 2.2.0 (note that the interface version number is distinct from the version of the wrapped binary FINUFFT library).
+This is a full-featured Julia interface to [FINUFFT](https://github.com/flatironinstitute/finufft), which is a lightweight and fast parallel nonuniform fast Fourier transform (NUFFT) library released by the Flatiron Institute, and its GPU version cuFINUFFT. This interface stands at v3.x, and it uses FINUFFT version 2.3.0 (note that the interface version number is distinct from the version of the wrapped binary FINUFFT library).
 
 ## Installation
 
-FINUFFT.jl requires Julia v1.3 or later, and has been tested up to v1.9. From the Pkg REPL mode (hit `]` in REPL to enter), run
+FINUFFT.jl requires Julia v1.6 or later, and has been tested up to v1.10. From the Pkg REPL mode (hit `]` in REPL to enter), run
 
 ```julia
 add FINUFFT
@@ -18,7 +18,7 @@ This installs the stable registered version and its dependencies, including our 
 
 * [finufft_jll.jl](https://github.com/JuliaBinaryWrappers/finufft_jll.jl), which contains the CPU routines and has microarchitecture-specific builds (including `avx512`) for better performance.
 
-* [cufinufft_jll.jl](https://github.com/JuliaBinaryWrappers/cufinufft_jll.jl), which contains the GPU routines (cuFINUFFT). This is only available for x86 GNU Linux, and is built for CUDA versions up to 12.5.
+* [cufinufft_jll.jl](https://github.com/JuliaBinaryWrappers/cufinufft_jll.jl), which contains the GPU routines (cuFINUFFT). This is only available for x86 GNU Linux, and is built for CUDA versions up to 12.6.
 
 To access the GPU interface, CUDA.jl must be installed through `add CUDA`
 

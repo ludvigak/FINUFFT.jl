@@ -27,6 +27,10 @@ export finufftReal
 # By default we depend on our precompiled generic binary package...
 using finufft_jll
 const libfinufft = finufft_jll.libfinufft
+# part of the thread-safety workaround
+using FFTW_jll
+const libfftw3 = FFTW_jll.libfftw3
+const libfftw3f = FFTW_jll.libfftw3f
 #
 # If instead you want to use your locally-compiled FINUFFT library for more
 # performance, comment out the above two code lines, uncomment the upcoming
@@ -45,6 +49,12 @@ include("simple.jl")
 
 # Only load cuFINUFFT interface if CUDA is present (via `using CUDA`) and functional
 function __init__()
+
+    # quick and dirty: make fftw thread safe
+    # get rid of this workaround as soon as https://github.com/flatironinstitute/finufft/pull/548 has been merged and deployed to finufft_jll
+    ccall((:fftw_make_planner_thread_safe, libfftw3), Cvoid, ())
+    ccall((:fftwf_make_planner_thread_safe, libfftw3f), Cvoid, ())
+
     @require CUDA="052768ef-5323-5732-b1bb-66c8b64840ba" begin
         using .CUDA
         include("cufinufft.jl")
