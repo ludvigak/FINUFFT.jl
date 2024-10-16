@@ -8,7 +8,7 @@ This is a full-featured Julia interface to [FINUFFT](https://github.com/flatiron
 
 ## Installation
 
-FINUFFT.jl requires Julia v1.6 or later, and has been tested up to v1.10. From the Pkg REPL mode (hit `]` in REPL to enter), run
+FINUFFT.jl requires Julia v1.6 or later, and has been tested up to v1.11. From the Pkg REPL mode (hit `]` in REPL to enter), run
 
 ```julia
 add FINUFFT
@@ -105,7 +105,7 @@ see [examples/time2d1.jl](examples/time2d1.jl)
 
 Finally, the more involved codes [test/test_nufft.jl](test/test_nufft.jl) 
 and [test/test_cuda.jl](test/test_cuda.jl)
-tests `dtype=Float64` and `dtype=Float32` precisions for all supported transform types, and can be used as references.
+test `dtype=Float64` and `dtype=Float32` precisions for all supported transform types, and can be used as references.
 The outputs are tested there for mathematical correctness.
 In the 1D type 1 it also tests a vectorized simple, a guru call and
 a vectorized guru call.

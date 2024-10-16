@@ -130,6 +130,7 @@ const nufft_c_opts = nufft_opts        # for backward compatibility - remove?
         gpu_stream           :: Ptr{Cvoid}
         modeord              :: Cint # (type 1,2 only): 0 CMCL-style increasing mode order
                                      #                  1 FFT-style mode order
+        debug                :: Cint # 0: no debug, 1: debug
     end
 
 Options struct passed to cuFINUFFT, see C documentation.
@@ -162,6 +163,8 @@ mutable struct cufinufft_opts
     gpu_stream           :: Ptr{Cvoid}
 
     modeord              :: Cint # (type 1,2 only): 0 CMCL-style increasing mode order
-                                 #                  1 FFT-style mode order
+    #                  1 FFT-style mode order
+
+    debug                :: Cint # 0: no debug, 1: debug
     cufinufft_opts() = new()
 end
