@@ -141,7 +141,7 @@ function test_cuda(tol::Real, dtype::DataType)
                         ref[k] += c[j] * exp(1im*s[k]*x[j])
                     end
                 end
-                nufft1d3!(x_d,c_d,1,tol,s_d,out_d, debug=1, gpu_method=1) # FIXME
+                nufft1d3!(x_d,c_d,1,tol,s_d,out_d)
                 relerr_1d3 = norm(vec(Array(out_d))-vec(ref), Inf) / norm(vec(ref), Inf)
                 @test relerr_1d3 < errfac*tol
             end
@@ -205,7 +205,7 @@ function test_cuda(tol::Real, dtype::DataType)
                         ref[k] += c[j] * exp(1im*(s[k]*x[j]+t[k]*y[j]))
                     end
                 end
-                nufft2d3!(x_d,y_d,c_d,1,tol,s_d,t_d,out_d, debug=1, gpu_method=1) # FIXME
+                nufft2d3!(x_d,y_d,c_d,1,tol,s_d,t_d,out_d)
                 relerr_2d3 = norm(vec(Array(out_d))-vec(ref), Inf) / norm(vec(ref), Inf)
                 @test relerr_2d3 < errfac*tol
             end
@@ -272,7 +272,7 @@ function test_cuda(tol::Real, dtype::DataType)
                         ref[k] += c[j] * exp(1im*(s[k]*x[j]+t[k]*y[j]+u[k]*z[j]))
                     end
                 end
-                nufft3d3!(x_d,y_d,z_d,c_d,1,tol,s_d,t_d,u_d,out_d, debug=1, gpu_method=1) # FIXME
+                nufft3d3!(x_d,y_d,z_d,c_d,1,tol,s_d,t_d,u_d,out_d)
                 relerr_3d3 = norm(vec(Array(out_d))-vec(ref), Inf) / norm(vec(ref), Inf)
                 @test relerr_3d3 < errfac*tol
             end
