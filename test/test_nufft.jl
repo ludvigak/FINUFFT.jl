@@ -165,7 +165,7 @@ function test_nufft(tol::Real, dtype::DataType)
                 @test reldiff < errdifffac*tol
             end
 
-            @testset "3D3" begin
+            @testset "2D3" begin
                 # 2D3
                 out = zeros(Complex{T},nk)
                 ref = zeros(Complex{T},nk)

@@ -122,7 +122,6 @@ function _cufinufft_makeplan(::Type{dtype},
 
     n_modes = ones(Int64,3)
     if type==3
-        throw("Type 3 not implemented yet")
         @assert ndims(n_modes_or_dim) == 0
         dim = n_modes_or_dim
     else
@@ -130,7 +129,7 @@ function _cufinufft_makeplan(::Type{dtype},
         dim = length(n_modes_or_dim)
         n_modes[1:dim] .= n_modes_or_dim
     end
-    
+
     if dtype==Float64
         tol = Float64(eps)
         ret = ccall( (:cufinufft_makeplan, libcufinufft),
@@ -412,6 +411,30 @@ function cufinufft_exec!(plan::cufinufft_plan{T},
                           CuRef{ComplexF32},
                           CuRef{ComplexF32}),
                          plan.plan_ptr,output,input
+                         )
+        end
+    elseif type==3
+        nk = plan.nk
+        if ntrans==1
+            @assert size(output)==(nk,ntrans) || size(output)==(nk,)
+        else
+            @assert size(output)==(nk,ntrans)
+        end
+        if T==Float64
+            ret = ccall( (:cufinufft_execute, libcufinufft),
+                         Cint,
+                         (cufinufft_plan_c,
+                          CuRef{ComplexF64},
+                          CuRef{ComplexF64}),
+                         plan.plan_ptr,input,output
+                         )
+        else
+            ret = ccall( (:cufinufftf_execute, libcufinufft),
+                         Cint,
+                         (cufinufft_plan_c,
+                          CuRef{ComplexF32},
+                          CuRef{ComplexF32}),
+                         plan.plan_ptr,input,output
                          )
         end
     else
