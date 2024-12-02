@@ -4,11 +4,11 @@
 [![codecov](https://codecov.io/gh/ludvigak/FINUFFT.jl/branch/master/graph/badge.svg?token=Tkx7kma18J)](https://codecov.io/gh/ludvigak/FINUFFT.jl)
 [![](https://img.shields.io/badge/docs-latest-blue.svg)](https://ludvigak.github.io/FINUFFT.jl/latest/)
 
-This is a full-featured Julia interface to [FINUFFT](https://github.com/flatironinstitute/finufft), which is a lightweight and fast parallel nonuniform fast Fourier transform (NUFFT) library released by the Flatiron Institute, and its GPU version cuFINUFFT. This interface stands at v3.x, and it uses FINUFFT version 2.3.0 (note that the interface version number is distinct from the version of the wrapped binary FINUFFT library).
+This is a full-featured Julia interface to [FINUFFT](https://github.com/flatironinstitute/finufft), which is a lightweight and fast parallel nonuniform fast Fourier transform (NUFFT) library released by the Flatiron Institute, and its GPU version cuFINUFFT. This interface stands at v3.x, and it uses FINUFFT version 2.3.1 (note that the interface version number is distinct from the version of the wrapped binary FINUFFT library).
 
 ## Installation
 
-FINUFFT.jl requires Julia v1.6 or later, and has been tested up to v1.10. From the Pkg REPL mode (hit `]` in REPL to enter), run
+FINUFFT.jl requires Julia v1.6 or later, and has been tested up to v1.11. From the Pkg REPL mode (hit `]` in REPL to enter), run
 
 ```julia
 add FINUFFT
@@ -105,7 +105,7 @@ see [examples/time2d1.jl](examples/time2d1.jl)
 
 Finally, the more involved codes [test/test_nufft.jl](test/test_nufft.jl) 
 and [test/test_cuda.jl](test/test_cuda.jl)
-tests `dtype=Float64` and `dtype=Float32` precisions for all supported transform types, and can be used as references.
+test `dtype=Float64` and `dtype=Float32` precisions for all supported transform types, and can be used as references.
 The outputs are tested there for mathematical correctness.
 In the 1D type 1 it also tests a vectorized simple, a guru call and
 a vectorized guru call.
