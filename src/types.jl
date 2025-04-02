@@ -1,14 +1,14 @@
 ## Setup types
-const BIGINT = Int64        # must match that in FINUFFT include/finufft/defs.h
+const BIGINT = Int64        # must match that in FINUFFT include/finufft.h
 
 # our allowed real array types...
 const finufftReal = Union{Float64,Float32}
 
-## FINUFFT opts struct, must bytewise match that in include/nufft_opts.h
+## FINUFFT opts struct, must bytewise match that in include/finufft_opts.h
 """
-    mutable struct nufft_opts    
+    mutable struct nufft_opts
         modeord            :: Cint
-        chkbnds            :: Cint
+        spreadinterponly   :: Cint
         debug              :: Cint
         spread_debug       :: Cint
         showwarn           :: Cint
@@ -22,6 +22,9 @@ const finufftReal = Union{Float64,Float32}
         maxbatchsize       :: Cint
         spread_nthr_atomic :: Cint
         spread_max_sp_size :: Cint
+        fftw_lock_fun      :: Ptr{Cvoid}
+        fftw_unlock_fun    :: Ptr{Cvoid}
+        fftw_lock_data     :: Ptr{Cvoid}
     end
 
 Options struct passed to the FINUFFT library.
@@ -34,55 +37,68 @@ This is a summary only; see FINUFFT documentation for full descriptions.
 0: CMCL-style increasing mode ordering (neg to pos), or\\
 1: FFT-style mode ordering (affects type-1,2 only)
 
-    chkbnds :: Cint
-0: don't check if input NU pts in [-3pi,3pi], 1: do
+    spreadinterponly :: Cint
+(type 1,2 only) \\
+0: do actual NUFFT \\
+1: only spread (if type 1) or interpolate (type 2) \\
 
     debug :: Cint
-0: silent, 1: text basic timing output
+0 silent, 1 some timing/debug, or 2 more
 
     spread_debug :: Cint
-passed to spread_opts, 0 (no text) 1 (some) or 2 (lots)
+spreader: 0 silent, 1 some timing/debug, or 2 tonnes
 
     showwarn :: Cint
-Whether to print warnings to stderr. 0: silent, 1: print warnings
-    
+0 don't print warnings to stderr, 1 do
+
     nthreads :: Cint
-How many threads FINUFFT should use, or 0 (use max available in OMP)
+number of threads to use, or 0 uses all available
 
     fftw :: Cint
-0:`FFTW_ESTIMATE`, or 1:`FFTW_MEASURE` (slow plan but faster FFTs)
+plan flags to FFTW (FFTW_ESTIMATE=64, FFTW_MEASURE=0,...)
 
     spread_sort :: Cint
-passed to spread_opts, 0 (don't sort) 1 (do) or 2 (heuristic)
+spreader: 0 don't sort, 1 do, or 2 heuristic choice
 
     spread_kerevalmeth :: Cint
-passed to spread_opts, 0: exp(sqrt()), 1: Horner ppval (faster)
+spreader: 0 exp(sqrt()), 1 Horner piecewise poly (faster)
 
     spread_kerpad :: Cint
-passed to spread_opts, 0: don't pad to mult of 4, 1: do
+(exp(sqrt()) only): 0 don't pad kernel to 4n, 1 do
 
     upsampfac :: Cdouble
-upsampling ratio sigma: 2.0 (standard), or 1.25 (small FFT), or\\
-0.0 (auto).
+upsampling ratio sigma: 2.0 std, 1.25 small FFT, 0.0 auto
 
     spread_thread :: Cint
-(for ntrans>1 only)\\
-0: auto choice,\\
-1: sequential multithreaded,\\
-2: parallel singlethreaded spread.
+(vectorized ntr>1 only)\\
+0: auto\\
+1: seq multithreaded\\
+2: parallel single-thread spread
 
     maxbatchsize :: Cint
-(for ntrans>1 only). max blocking size for vectorized, 0 for auto-set
+(vectorized ntr>1 only): max transform batch, 0 auto
 
     spread_nthr_atomic :: Cint
 if >=0, threads above which spreader OMP critical goes atomic
 
     spread_max_sp_size :: Cint
-if >0, overrides spreader (dir=1 only) max subproblem size
+if >0, overrides spreader (dir=1) max subproblem size
+
+    fftw_lock_fun      :: Ptr{Cvoid}
+Function ptr that locks the FFTW planner \\
+C signature: `void (*fftw_lock_fun)(void *)`
+
+    fftw_unlock_fun    :: Ptr{Cvoid}
+Function ptr that unlocks the FFTW planner \\
+C signature: `void (*fftw_unlock_fun)(void *)`
+
+    fftw_lock_data     :: Ptr{Cvoid}
+Data to pass to the lock functions (e.g. a mutex) \\
+C signature: `void *fftw_lock_data`
 """
-mutable struct nufft_opts{T}    
+mutable struct nufft_opts{T}
     modeord            :: Cint
-    chkbnds            :: Cint
+    spreadinterponly   :: Cint
     debug              :: Cint
     spread_debug       :: Cint
     showwarn           :: Cint
@@ -96,9 +112,12 @@ mutable struct nufft_opts{T}
     maxbatchsize       :: Cint
     spread_nthr_atomic :: Cint
     spread_max_sp_size :: Cint
+    fftw_lock_fun      :: Ptr{Cvoid}
+    fftw_unlock_fun    :: Ptr{Cvoid}
+    fftw_lock_data     :: Ptr{Cvoid}
     nufft_opts{T}() where T <: finufftReal = new{T}()
 end
-# The above must match include/nufft_opts.h in FINUFFT.
+# The above must match include/finufft_opts.h in FINUFFT.
 # Note that nufft_opts happens to be the same for Float32 vs Float64 types.
 # This is as in FINUFFT. It may not always hold in the future.
 
