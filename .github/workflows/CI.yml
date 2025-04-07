@@ -1,6 +1,10 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+  pull_request
 
 # needed to allow julia-actions/cache to delete old caches that it has created
 permissions:
@@ -15,9 +19,8 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          - '1.6'
+          - 'lts'
           - '1'
-#          - 'nightly'
         os:
           - ubuntu-latest
           - macOS-latest
