@@ -60,6 +60,35 @@ function nufft1d2!(xj      :: CuArray{T},
     cufinufft_destroy!(plan)
 end
 
+"""
+    nufft1d3!(xj      :: CuArray{Float64} or CuArray{Float32}, 
+              cj      :: CuArray{ComplexF64} or CuArray{ComplexF32}, 
+              iflag   :: Integer, 
+              eps     :: Real,
+              sk      :: CuArray{Float64} or CuArray{Float32},
+              fk      :: CuArray{ComplexF64} or CuArray{ComplexF32};
+              kwargs...
+             )
+
+CUDA version.
+"""
+function nufft1d3!(xj      :: CuArray{T},
+                   cj      :: CuArray{Complex{T}},
+                   iflag   :: Integer, 
+                   eps     :: Real,
+                   sk      :: CuArray{T},
+                   fk      :: CuArray{Complex{T}};
+                   kwargs...) where T <: finufftReal
+    (nj, nk) = valid_setpts(3,1,xj,T[],T[],sk)
+    ntrans = valid_ntr(xj,cj)
+
+    checkkwdtype(T; kwargs...)
+    plan = _cufinufft_makeplan(T,3,1,iflag,ntrans,eps;kwargs...)
+    cufinufft_setpts!(plan,xj,CuVector{T}(),CuVector{T}(),sk)
+    cufinufft_exec!(plan,cj,fk)
+    cufinufft_destroy!(plan)
+end
+
 ## 2D
 
 """
@@ -122,6 +151,40 @@ function nufft2d2!(xj      :: CuArray{T},
     cufinufft_exec!(plan,fk,cj)
     cufinufft_destroy!(plan)
 end
+
+"""
+    nufft2d3!(xj      :: CuArray{Float64} or CuArray{Float32}, 
+              yj      :: CuArray{Float64} or CuArray{Float32},
+              cj      :: CuArray{ComplexF64} or CuArray{ComplexF32}, 
+              iflag   :: Integer, 
+              eps     :: Real,
+              sk      :: CuArray{Float64} or CuArray{Float32},
+              tk      :: CuArray{Float64} or CuArray{Float32},
+              fk      :: CuArray{ComplexF64} or CuArray{ComplexF32};
+              kwargs...
+             )
+
+CUDA version.
+"""
+function nufft2d3!(xj      :: CuArray{T}, 
+                   yj      :: CuArray{T},
+                   cj      :: CuArray{Complex{T}}, 
+                   iflag   :: Integer, 
+                   eps     :: Real,
+                   sk      :: CuArray{T},
+                   tk      :: CuArray{T},
+                   fk      :: CuArray{Complex{T}};
+                   kwargs...) where T <: finufftReal
+    (nj, nk) = valid_setpts(3,2,xj,yj,T[],sk,tk)
+    ntrans = valid_ntr(xj,cj)
+
+    checkkwdtype(T; kwargs...)
+    plan = _cufinufft_makeplan(T,3,2,iflag,ntrans,eps;kwargs...)
+    cufinufft_setpts!(plan,xj,yj,CuVector{T}(),sk,tk)
+    cufinufft_exec!(plan,cj,fk)
+    cufinufft_destroy!(plan)
+end
+
 
 ## 3D
 
@@ -188,3 +251,41 @@ function nufft3d2!(xj      :: CuArray{T},
     cufinufft_exec!(plan,fk,cj)
     cufinufft_destroy!(plan)
 end
+
+"""
+    nufft3d3!(xj      :: CuArray{Float64} or CuArray{Float32}, 
+              yj      :: CuArray{Float64} or CuArray{Float32},
+              zj      :: CuArray{Float64} or CuArray{Float32},
+              cj      :: CuArray{ComplexF64} or CuArray{ComplexF32}, 
+              iflag   :: Integer, 
+              eps     :: Real,
+              sk      :: CuArray{Float64} or CuArray{Float32},
+              tk      :: CuArray{Float64} or CuArray{Float32},
+              uk      :: CuArray{Float64} or CuArray{Float32},
+              fk      :: CuArray{ComplexF64} or CuArray{ComplexF32};
+              kwargs...
+             )
+
+CUDA version.
+"""
+function nufft3d3!(xj      :: CuArray{T},
+                   yj      :: CuArray{T},
+                   zj      :: CuArray{T},
+                   cj      :: CuArray{Complex{T}},
+                   iflag   :: Integer,
+                   eps     :: Real,
+                   sk      :: CuArray{T},
+                   tk      :: CuArray{T},
+                   uk      :: CuArray{T},
+                   fk      :: CuArray{Complex{T}};
+                   kwargs...) where T <: finufftReal
+    (nj, nk) = valid_setpts(3,3,xj,yj,zj,sk,tk,uk)
+    ntrans = valid_ntr(xj,cj)
+
+    checkkwdtype(T; kwargs...)
+    plan = _cufinufft_makeplan(T,3,3,iflag,ntrans,eps;kwargs...)
+    cufinufft_setpts!(plan,xj,yj,zj,sk,tk,uk)
+    cufinufft_exec!(plan,cj,fk)
+    cufinufft_destroy!(plan)
+end
+

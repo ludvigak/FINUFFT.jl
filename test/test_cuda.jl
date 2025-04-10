@@ -50,6 +50,9 @@ function test_cuda(tol::Real, dtype::DataType)
     y_d = CuArray(y)
     z_d = CuArray(z)
     c_d = CuArray(c)
+    s_d = CuArray(s)
+    t_d = CuArray(t)
+    u_d = CuArray(u)
     F1D_d = CuArray(F1D)
     F2D_d = CuArray(F2D)
     F3D_d = CuArray(F3D)
@@ -128,6 +131,21 @@ function test_cuda(tol::Real, dtype::DataType)
                 relerr_1d2_guru = norm(vec(out2)-vec(ref), Inf) / norm(vec(ref), Inf)
                 @test relerr_1d2_guru < errfac*tol
             end
+
+            # 1D3
+            @testset "1D3" begin
+                out_d = CUDA.zeros(Complex{T},nk)
+                ref = zeros(Complex{T},nk)
+                for k=1:nk
+                    for j=1:nj
+                        ref[k] += c[j] * exp(1im*s[k]*x[j])
+                    end
+                end
+                nufft1d3!(x_d,c_d,1,tol,s_d,out_d)
+                relerr_1d3 = norm(vec(Array(out_d))-vec(ref), Inf) / norm(vec(ref), Inf)
+                @test relerr_1d3 < errfac*tol
+            end
+
         end
 
         ## 2D
@@ -176,6 +194,20 @@ function test_cuda(tol::Real, dtype::DataType)
                 cufinufft_destroy!(plan)
                 relerr_2d2_guru = norm(vec(out2)-vec(ref), Inf) / norm(vec(ref), Inf)
                 @test relerr_2d2_guru < errfac*tol
+            end
+
+            @testset "2D3" begin
+                # 2D3
+                out_d = CUDA.zeros(Complex{T},nk)
+                ref = zeros(Complex{T},nk)
+                for k=1:nk
+                    for j=1:nj
+                        ref[k] += c[j] * exp(1im*(s[k]*x[j]+t[k]*y[j]))
+                    end
+                end
+                nufft2d3!(x_d,y_d,c_d,1,tol,s_d,t_d,out_d)
+                relerr_2d3 = norm(vec(Array(out_d))-vec(ref), Inf) / norm(vec(ref), Inf)
+                @test relerr_2d3 < errfac*tol
             end
         end
 
@@ -231,6 +263,19 @@ function test_cuda(tol::Real, dtype::DataType)
                 @test relerr_3d2_guru < errfac*tol
             end
 
+            @testset "3D3" begin
+                # 3D3
+                out_d = CUDA.zeros(Complex{T},nk)
+                ref = zeros(Complex{T},nk)
+                for k=1:nk
+                    for j=1:nj
+                        ref[k] += c[j] * exp(1im*(s[k]*x[j]+t[k]*y[j]+u[k]*z[j]))
+                    end
+                end
+                nufft3d3!(x_d,y_d,z_d,c_d,1,tol,s_d,t_d,u_d,out_d)
+                relerr_3d3 = norm(vec(Array(out_d))-vec(ref), Inf) / norm(vec(ref), Inf)
+                @test relerr_3d3 < errfac*tol
+            end
         end
     end
 end
