@@ -1,4 +1,3 @@
-export cufinufft_plan
 export cufinufft_makeplan
 export cufinufft_destroy!
 export cufinufft_setpts!
