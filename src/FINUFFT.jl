@@ -1,8 +1,6 @@
 __precompile__()
 module FINUFFT
 
-using Requires
-
 ## Export
 export nufft1d1, nufft1d2, nufft1d3
 export nufft2d1, nufft2d2, nufft2d3
@@ -47,6 +45,15 @@ include("helpers.jl")
 include("guru.jl")
 include("simple.jl")
 
+# We need these definitions to be defined here
+include("cufinufft_definitions.jl")
+
+# TODO once < 1.9 is no longer supported, remove this workaround
+if !isdefined(Base, :get_extension)
+using Requires
+end
+
+
 # Only load cuFINUFFT interface if CUDA is present (via `using CUDA`) and functional
 function __init__()
 
@@ -55,11 +62,11 @@ function __init__()
     ccall((:fftw_make_planner_thread_safe, libfftw3), Cvoid, ())
     ccall((:fftwf_make_planner_thread_safe, libfftw3f), Cvoid, ())
 
-    @require CUDA="052768ef-5323-5732-b1bb-66c8b64840ba" begin
-        using .CUDA
-        include("cufinufft.jl")
-        include("cufinufft_simple.jl")
-        determine_cuda_status()
+    # TODO once < 1.9 is no longer supported, remove this workaround
+    @static if !isdefined(Base, :get_extension)
+        @require CUDA="052768ef-5323-5732-b1bb-66c8b64840ba" begin
+            include("../ext/CUFINUFFT/CUFINUFFTExt.jl")
+        end
     end
 end
 
