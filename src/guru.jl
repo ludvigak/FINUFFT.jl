@@ -1,5 +1,13 @@
 ### Guru Interfaces
 
+# The types of arrays that we can deal with
+InputArray{T} = Union{Array{T}, SubArray{T}} where T
+
+# How we make sure that they are contiguous
+iscontiguous(A::SubArray) = Base.iscontiguous(A)
+iscontiguous(A::DenseArray) = true
+
+
 """
     p = finufft_default_opts()
     p = finufft_default_opts(dtype=Float32)
@@ -44,12 +52,12 @@ mutable struct finufft_plan{T}
     # Arrays used for keeping references to input data alive.
     # These should not be modified directly, as it will have no
     # effect.
-    _xj        :: Vector{T}
-    _yj        :: Vector{T}
-    _zj        :: Vector{T}
-    _s         :: Vector{T}
-    _t         :: Vector{T}
-    _u         :: Vector{T}
+    _xj        :: AbstractVector{T}
+    _yj        :: AbstractVector{T}
+    _zj        :: AbstractVector{T}
+    _s         :: AbstractVector{T}
+    _t         :: AbstractVector{T}
+    _u         :: AbstractVector{T}
     # Default constructor that does not require input arrays (also for backwards compat)
     finufft_plan{T}(type, ntrans, dim, ms, mt, mu, nj, nk, plan_ptr) where T =
         new(type, ntrans, dim, ms, mt, mu, nj, nk, plan_ptr, T[], T[], T[], T[], T[], T[])
@@ -188,22 +196,32 @@ Empty arrays may be passed in the case of
  reindexing of points, and for type 3 the spreading and FFTs are planned.
  These nonuniform points may then be used for multiple transforms.
 
- # Inputs
+ # Input
   -  `plan`   a `finufft_plan` object for one/many general nonuniform FFTs
-  -  `xj` Array{Float32} or Array{Float64}, vector of x-coords of all nonuniform points
+  -  `xj`     vector of x-coords of all nonuniform points
   -  `yj`     empty (if dim<2), or vector of y-coords of all nonuniform points
--  `zj`     empty (if dim<3), or vector of z-coords of all nonuniform points
- -   `s`      vector of x-coords of all nonuniform frequency targets
+  -  `zj`     empty (if dim<3), or vector of z-coords of all nonuniform points
+  -  `s`      vector of x-coords of all nonuniform frequency targets
   -  `t`      empty (if dim<2), or vector of y-coords of all frequency targets
   -  `u`      empty (if dim<3), or vector of z-coords of all frequency targets
+
+Vectors must be `Array{T}` or contiguous `SubArray{T}` (view), where `T` is `Float32` or `Float64`.
 """
 function finufft_setpts!(plan::finufft_plan{T},
-                         xj::Array{T},
-                         yj::Array{T}=plan._yj,
-                         zj::Array{T}=plan._zj,
-                         s::Array{T}=plan._s,
-                         t::Array{T}=plan._t,
-                         u::Array{T}=plan._u) where T <: finufftReal
+                         xj::InputArray{T},
+                         yj::InputArray{T}=plan._yj,
+                         zj::InputArray{T}=plan._zj,
+                         s::InputArray{T}=plan._s,
+                         t::InputArray{T}=plan._t,
+                         u::InputArray{T}=plan._u) where T <: finufftReal
+
+    @assert iscontiguous(xj)
+    @assert iscontiguous(yj)
+    @assert iscontiguous(zj)
+    @assert iscontiguous(s)
+    @assert iscontiguous(t)
+    @assert iscontiguous(u)
+
 
     (M, N) = valid_setpts(plan.type, plan.dim, xj, yj, zj, s, t, u)
 
@@ -258,39 +276,39 @@ end
 
 """
     output::Array{Complex{T}} = finufft_exec(plan::finufft_plan{T},
-                      input::Array{Complex{T}}) where T <: finufftReal
+                      input::FINUFFT.InputArray{Complex{T}}) where T <: finufftReal
 
 Execute single or many-vector FINUFFT transforms in a plan.
 
   output = finufft_exec(plan, input)
 
-  For `plan` a previously created `finufft_plan` object also containing all
-  needed nonuniform point coordinates, do a single (or if `ntrans>1` in the
-  plan stage, multiple) NUFFT transform(s), with the strengths or Fourier
-  coefficient inputs vector(s) from `input`. The result of the transform(s)
-  is returned as a (possibly multidimensional) array.
+  For `plan` a previously created `finufft_plan` object also containing all needed
+  nonuniform point coordinates, do a single (or if `ntrans>1` in the plan stage, multiple)
+  NUFFT transform(s), with the strengths or Fourier coefficient inputs vector(s) from
+  `input`. The result of the transform(s) is returned as a (possibly multidimensional)
+  array.
 
  # Inputs
-    - `plan`     `finufft_plan` object, already planned and containing
-    nonuniform points.
-    - `input`    strengths (types 1 or 3) or Fourier coefficients (type 2)
-              vector, matrix, or array of appropriate size. For type 1 and 3,
-              this is either a length-M vector (where M is the length of `xj`),
-              or an `(M,ntrans)` matrix when `ntrans>1`. For type 2, in 1D this is size `(ms,)`, in 2D size `(ms,mt)`, or in 3D size `(ms,mt,mu)`, or
-              each of these with an extra last dimension `ntrans` if `ntrans>1`.
+    - `plan`    `finufft_plan` object, already planned and containing nonuniform points.
+    - `input`   strengths (types 1 or 3) or Fourier coefficients (type 2) vector, matrix,
+                or array of appropriate size. For type 1 and 3, this is either a length-M
+                vector (where M is the length of `xj`), or an `(M,ntrans)` matrix when
+                `ntrans>1`. For type 2, in 1D this is size `(ms,)`, in 2D size `(ms,mt)`,
+                or in 3D size `(ms,mt,mu)`, or each of these with an extra last dimension
+                `ntrans` if `ntrans>1`.
+                Must be contiguous.
 # Output
-     `output`   vector of output strengths at targets (types 2 or 3), or array
-              of Fourier coefficients (type 1), or, if `ntrans>1`, a stack of
-              such vectors or arrays, of appropriate size.
-              Specifically, if `ntrans=1`, for type 1, in 1D
-              this is size `(ms,)`, in 2D size
-              `(ms,mt)`, or in 3D size `(ms,mt,mu)`; for types 2 and 3
-              it is a column vector of length `M` (the length of `xj` in type 2),
-              or `nk` (the length of `s` in type 3). If `ntrans>1` it is a stack
-              of such objects, ie, it has an extra last dimension `ntrans`.
+     `output`   vector of output strengths at targets (types 2 or 3), or array of Fourier
+                coefficients (type 1), or, if `ntrans>1`, a stack of such vectors or
+                arrays, of appropriate size.  Specifically, if `ntrans=1`, for type 1, in
+                1D this is size `(ms,)`, in 2D size `(ms,mt)`, or in 3D size `(ms,mt,mu)`;
+                for types 2 and 3 it is a column vector of length `M` (the length of `xj`
+                in type 2), or `nk` (the length of `s` in type 3). If `ntrans>1` it is a
+                stack of such objects, ie, it has an extra last dimension `ntrans`.
 """
 function finufft_exec(plan::finufft_plan{T},
-                      input::Array{Complex{T}}) where T <: finufftReal
+                      input::InputArray{Complex{T}}
+                      ) where T <: finufftReal
     ret = 0
     type = plan.type
     ntrans = plan.ntrans
@@ -367,15 +385,20 @@ end
 
 """
     finufft_exec!(plan::finufft_plan{T},
-                  input::Array{Complex{T}},
-                  output::Array{Complex{T}}) where T <: finufftReal
+                  input::FINUFFT.InputArray{Complex{T}},
+                  output::FINUFFT.InputArray{Complex{T}}) where T <: finufftReal
 
 Execute single or many-vector FINUFFT transforms in a plan, with output written
 to preallocated array. See `finufft_exec` for arguments.
+
+`input` and `output` must be contiguous arrays.
 """
 function finufft_exec!(plan::finufft_plan{T},
-                      input::Array{Complex{T}},
-                      output::Array{Complex{T}}) where T <: finufftReal
+                       input::InputArray{Complex{T}},
+                       output::InputArray{Complex{T}},
+                       ) where T <: finufftReal
+    @assert iscontiguous(input)
+    @assert iscontiguous(output)
     type = plan.type
     ntrans = plan.ntrans
     dim = plan.dim

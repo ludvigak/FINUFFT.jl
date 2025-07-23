@@ -73,6 +73,26 @@ function test_nufft(tol::Real, dtype::DataType)
                 relerr_guru = norm(vec(out3)-vec(ref), Inf) / norm(vec(ref), Inf)
                 @test relerr_guru < errfac*tol
 
+                # guru1d1 with views
+                @testset "Views" begin
+                    X = zeros(T, nj, nj)
+                    X[:, 1] = x
+                    C = zeros(Complex{T}, nj, nj)
+                    C[:, 1] = c
+                    OUT = zeros(Complex{T}, ms, ms)
+                    plan = finufft_makeplan(1,[ms;],1,1,tol,dtype=T)
+                    # Run with views
+                    finufft_setpts!(plan, view(X, :, 1))
+                    finufft_exec!(plan, view(C, :, 1), view(OUT, :, 1))
+                    # Assert that non-contiguous views fail
+                    @test_throws AssertionError finufft_setpts!(plan, view(X, 1, :))
+                    @test_throws AssertionError finufft_exec!(plan, view(C, :, 1), view(OUT, 1, :))
+                    @test_throws AssertionError finufft_exec!(plan, view(C, 1, :), view(OUT, :, 1))
+                    finufft_destroy!(plan)
+                    relerr_guru_view = norm(vec(OUT[:, 1])-vec(ref), Inf) / norm(vec(ref), Inf)
+                    @test relerr_guru_view < errfac*tol
+                end
+
                 # guru1d1 vectorized ("many")
                 ntrans = 3         # let's stack 3 transforms at once
                 plan = finufft_makeplan(1,[ms;],1,ntrans,tol,dtype=T)
@@ -165,7 +185,7 @@ function test_nufft(tol::Real, dtype::DataType)
                 @test reldiff < errdifffac*tol
             end
 
-            @testset "3D3" begin
+            @testset "2D3" begin
                 # 2D3
                 out = zeros(Complex{T},nk)
                 ref = zeros(Complex{T},nk)

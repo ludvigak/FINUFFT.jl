@@ -22,6 +22,9 @@ const ERR_METHOD_NOTVALID        = 17
 const ERR_BINSIZE_NOTVALID       = 18
 const ERR_INSUFFICIENT_SHMEM     = 19
 const ERR_NUM_NU_PTS_INVALID     = 20
+const ERR_INVALID_ARGUMENT       = 21
+const ERR_LOCK_FUNS_INVALID      = 22
+const ERR_NTHREADS_NOTVALID      = 23
 
 struct FINUFFTError <: Exception
     errno::Cint
@@ -79,6 +82,10 @@ function check_ret(ret)
         msg = "GPU shmem too small for subprob/blockgather parameters"
     elseif ret==ERR_NUM_NU_PTS_INVALID
         msg = "invalid number of nonuniform points: nj or nk negative, or too big (see defs.h)"
+    elseif ret==FINUFFT_ERR_INVALID_ARGUMENT
+        msg == "invalid argument"
+    elseif ret==FINUFFT_ERR_NTHREADS_NOTVALID
+        msg = "nthreads not valid"
     else
         msg = "error of type unknown to Julia interface! Check FINUFFT documentation"
     end
