@@ -45,7 +45,6 @@ function FINUFFT.cufinufft_default_opts()
     return opts
 end
 
-const cufinufft_plan_c = Ptr{Cvoid}
 
 # Define the default constructor here so that CUDA is already loaded
 cufinufft_plan{T}(type, ntrans, dim, ms, mt, mu, nj, nk, plan_ptr) where T <: finufftReal =

@@ -2,10 +2,10 @@ module CUFINUFFTExt
 
 if isdefined(Base, :get_extension)
     using FINUFFT
-    using FINUFFT: cufinufft_plan
+    using FINUFFT: cufinufft_plan, cufinufft_plan_c
 else
     using ..FINUFFT
-    using ..FINUFFT: cufinufft_plan
+    using ..FINUFFT: cufinufft_plan, cufinufft_plan_c
 end
 using CUDA
 

@@ -6,6 +6,7 @@ export cufinufft_exec!
 
 # We define the plan here so that we can dispatch on it in other packages
 # Because CUDA may not be loaded when this file is included we set the arrays as abstract
+const cufinufft_plan_c = Ptr{Cvoid}
 mutable struct cufinufft_plan{T, V<:AbstractVector{T}}
     type       :: Cint
     ntrans     :: Cint
