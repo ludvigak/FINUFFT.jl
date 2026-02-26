@@ -1,4 +1,4 @@
-# the main tester for FINUFFT.jl
+# the main tester for FINUFFT.jl 
 
 using FINUFFT
 
@@ -73,6 +73,17 @@ function test_nufft(tol::Real, dtype::DataType)
                 relerr_guru = norm(vec(out3)-vec(ref), Inf) / norm(vec(ref), Inf)
                 @test relerr_guru < errfac*tol
 
+                # guru1d1 with different inner dimensions
+                @testset "Different inner dimensions" begin
+                    cl = reshape(c, div(nj, 2), 2)
+                    plan = finufft_makeplan(1,[ms;],1,1,tol,dtype=T)
+                    finufft_setpts!(plan, x)
+                    out4 = finufft_exec(plan, cl)
+                    finufft_destroy!(plan)
+                    relerr_guru_inner = norm(vec(out4)-vec(ref), Inf) / norm(vec(ref), Inf)
+                    @test relerr_guru_inner < errfac*tol
+                end
+
                 # guru1d1 with views
                 @testset "Views" begin
                     X = zeros(T, nj, nj)
@@ -84,10 +95,12 @@ function test_nufft(tol::Real, dtype::DataType)
                     # Run with views
                     finufft_setpts!(plan, view(X, :, 1))
                     finufft_exec!(plan, view(C, :, 1), view(OUT, :, 1))
+
                     # Assert that non-contiguous views fail
                     @test_throws AssertionError finufft_setpts!(plan, view(X, 1, :))
                     @test_throws AssertionError finufft_exec!(plan, view(C, :, 1), view(OUT, 1, :))
                     @test_throws AssertionError finufft_exec!(plan, view(C, 1, :), view(OUT, :, 1))
+
                     finufft_destroy!(plan)
                     relerr_guru_view = norm(vec(OUT[:, 1])-vec(ref), Inf) / norm(vec(ref), Inf)
                     @test relerr_guru_view < errfac*tol
