@@ -132,9 +132,9 @@ const nufft_c_opts = nufft_opts        # for backward compatibility - remove?
     mutable struct cufinufft_opts
         upsampfac            :: Cdouble # upsampling ratio sigma, only 2.0 (standard) is implemented
         # following options are for gpu #
-        gpu_method           :: Cint # 1: nonuniform-pts driven, 2: shared mem (SM)
+        gpu_method           :: Cint # 1: nonuniform-pts driven, 2: shared mem (SM), 3: output driven (OD)
         gpu_sort             :: Cint # when NU-pts driven: 0: no sort (GM), 1: sort (GM-sort)
-        gpu_binsizex         :: Cint # used for 2D, 3D subproblem method
+        gpu_binsizex         :: Cint # used for 2D, 3D subproblem method and Output Driven
         gpu_binsizey         :: Cint
         gpu_binsizez         :: Cint
         gpu_obinsizex        :: Cint # used for 3D spread block gather method
@@ -149,6 +149,7 @@ const nufft_c_opts = nufft_opts        # for backward compatibility - remove?
         gpu_stream           :: Ptr{Cvoid}
         modeord              :: Cint # (type 1,2 only): 0 CMCL-style increasing mode order
                                      #                  1 FFT-style mode order
+        gpu_np               :: Cint # min batch_size for Output Driven
         debug                :: Cint # 0: no debug, 1: debug
     end
 
@@ -158,10 +159,10 @@ mutable struct cufinufft_opts
     upsampfac            :: Cdouble # upsampling ratio sigma, only 2.0 (standard) is implemented
 
     # following options are for gpu #
-    gpu_method           :: Cint # 1: nonuniform-pts driven, 2: shared mem (SM)
+    gpu_method           :: Cint # 1: nonuniform-pts driven, 2: shared mem (SM), 3: output driven (OD)
     gpu_sort             :: Cint # when NU-pts driven: 0: no sort (GM), 1: sort (GM-sort)
 
-    gpu_binsizex         :: Cint # used for 2D, 3D subproblem method
+    gpu_binsizex         :: Cint # used for 2D, 3D subproblem method and Output Driven
     gpu_binsizey         :: Cint
     gpu_binsizez         :: Cint
 
@@ -182,7 +183,9 @@ mutable struct cufinufft_opts
     gpu_stream           :: Ptr{Cvoid}
 
     modeord              :: Cint # (type 1,2 only): 0 CMCL-style increasing mode order
-    #                  1 FFT-style mode order
+                                 #                  1 FFT-style mode order
+
+    gpu_np               :: Cint # min batch_size for Output Driven
 
     debug                :: Cint # 0: no debug, 1: debug
     cufinufft_opts() = new()
