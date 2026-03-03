@@ -3,8 +3,8 @@
 ## Type-1
 
 """
-    nufft1d1(xj      :: Array{Float64} or Array{Float32}, 
-             cj      :: Array{ComplexF64} or Array{ComplexF32}, 
+    nufft1d1(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+             cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
              iflag   :: Integer, 
              eps     :: Real,
              ms      :: Integer;
@@ -32,8 +32,8 @@ This computes, to relative precision eps, via a fast algorithm:
             `ntrans>1`, matrix of size `(ms,ntrans)`.
 
 """
-function nufft1d1(xj::Array{T},
-                  cj::Array{Complex{T}},
+function nufft1d1(xj::InputArray{T},
+                  cj::InputArray{Complex{T}},
                   iflag::Integer,
                   eps::Real,
                   ms::Integer;
@@ -46,9 +46,9 @@ function nufft1d1(xj::Array{T},
 end
 
 """
-    nufft2d1(xj      :: Array{Float64} or Array{Float32}
-             yj      :: Array{Float64} or Array{Float32}, 
-             cj      :: Array{ComplexF64} or Array{ComplexF32}, 
+    nufft2d1(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}
+             yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+             cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
              iflag   :: Integer, 
              eps     :: Real,
              ms      :: Integer,
@@ -81,9 +81,9 @@ This computes, to relative precision eps, via a fast algorithm:
             (ordering given by opts.modeord in each dimension; `ms` fast, `mt` slow),
             or, if `ntrans>1`, a array of size `(ms,mt,ntrans)`.
 """
-function nufft2d1(xj      :: Array{T},
-                  yj      :: Array{T},
-                  cj      :: Array{Complex{T}},
+function nufft2d1(xj      :: InputArray{T},
+                  yj      :: InputArray{T},
+                  cj      :: InputArray{Complex{T}},
                   iflag   :: Integer, 
                   eps     :: Real,
                   ms      :: Integer,
@@ -97,10 +97,10 @@ function nufft2d1(xj      :: Array{T},
 end
 
 """
-    nufft3d1(xj      :: Array{Float64} or Array{Float32}, 
-             yj      :: Array{Float64} or Array{Float32}, 
-             zj      :: Array{Float64} or Array{Float32}, 
-             cj      :: Array{ComplexF64} or Array{ComplexF32}, 
+    nufft3d1(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+             yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+             zj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+             cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
              iflag   :: Integer, 
              eps     :: Real,
              ms      :: Integer,
@@ -136,10 +136,10 @@ This computes, to relative precision eps, via a fast algorithm:
             (ordering given by opts.modeord in each dimension; `ms` fastest, `mu`
             slowest), or, if `ntrans>1`, a 4D array of size `(ms,mt,mu,ntrans)`.
 """
-function nufft3d1(xj      :: Array{T},
-                  yj      :: Array{T},
-                  zj      :: Array{T},
-                  cj      :: Array{Complex{T}},
+function nufft3d1(xj      :: InputArray{T},
+                  yj      :: InputArray{T},
+                  zj      :: InputArray{T},
+                  cj      :: InputArray{Complex{T}},
                   iflag   :: Integer, 
                   eps     :: Real,
                   ms      :: Integer,
@@ -157,10 +157,10 @@ end
 ## Type-2
 
 """
-    nufft1d2(xj      :: Array{Float64} or Array{Float32}, 
+    nufft1d2(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
              iflag   :: Integer, 
              eps     :: Real,
-             fk      :: Array{ComplexF64} or Array{ComplexF32};
+             fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
              kwargs...
             ) -> Array{ComplexF64}
 
@@ -183,10 +183,10 @@ This computes, to relative precision eps, via a fast algorithm:
   - complex `(nj,)` vector c of answers at targets, or,
            if `ntrans>1`, matrix of size `(nj,ntrans)`.
 """
-function nufft1d2(xj      :: Array{T},
+function nufft1d2(xj      :: InputArray{T},
                   iflag   :: Integer,
                   eps     :: Real,
-                  fk      :: Array{Complex{T}};
+                  fk      :: InputArray{Complex{T}};
                   kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(2,1,xj)
     (ms, ntrans) = get_nmodes_from_fk(1,fk)
@@ -197,11 +197,11 @@ function nufft1d2(xj      :: Array{T},
 end
 
 """
-    nufft2d2(xj      :: Array{Float64} or Array{Float32}, 
-             yj      :: Array{Float64} or Array{Float32}, 
+    nufft2d2(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+             yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
              iflag   :: Integer, 
              eps     :: Real,
-             fk      :: Array{ComplexF64} or Array{ComplexF32};
+             fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
              kwargs...
             ) -> Array{ComplexF64}
 
@@ -227,11 +227,11 @@ This computes, to relative precision eps, via a fast algorithm:
             if `ntrans>1`, matrix of size `(nj,ntrans)`.
 
 """
-function nufft2d2(xj      :: Array{T},
-                  yj      :: Array{T},
+function nufft2d2(xj      :: InputArray{T},
+                  yj      :: InputArray{T},
                   iflag   :: Integer,
                   eps     :: Real,
-                  fk      :: Array{Complex{T}};
+                  fk      :: InputArray{Complex{T}};
                   kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(2,2,xj,yj)
     (ms, mt, ntrans) = get_nmodes_from_fk(2,fk)
@@ -242,12 +242,12 @@ function nufft2d2(xj      :: Array{T},
 end
 
 """
-    nufft3d2(xj      :: Array{Float64} or Array{Float32}, 
-             yj      :: Array{Float64} or Array{Float32}, 
-             zj      :: Array{Float64} or Array{Float32}, 
+    nufft3d2(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+             yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+             zj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
              iflag   :: Integer, 
              eps     :: Real,
-             fk      :: Array{ComplexF64} or Array{ComplexF32};
+             fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
              kwargs...
             ) -> Array{ComplexF64}
 
@@ -274,12 +274,12 @@ This computes, to relative precision eps, via a fast algorithm:
    - complex vector c of size `(nj,)` giving answers at targets, or,
              if `ntrans>1`, matrix of size `(nj,ntrans)`.
 """
-function nufft3d2(xj      :: Array{T},
-                  yj      :: Array{T},
-                  zj      :: Array{T},
+function nufft3d2(xj      :: InputArray{T},
+                  yj      :: InputArray{T},
+                  zj      :: InputArray{T},
                   iflag   :: Integer, 
                   eps     :: Real,
-                  fk      :: Array{Complex{T}};
+                  fk      :: InputArray{Complex{T}};
                   kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(2,3,xj,yj,zj)
     (ms, mt, mu, ntrans) = get_nmodes_from_fk(3,fk)
@@ -293,11 +293,11 @@ end
 ## Type-3
 
 """
-    nufft1d3(xj      :: Array{Float64} or Array{Float32}, 
-             cj      :: Array{ComplexF64} or Array{ComplexF32}, 
+    nufft1d3(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+             cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
              iflag   :: Integer, 
              eps     :: Real,
-             sk      :: Array{Float64} or Array{Float32};
+             sk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32};
              kwargs...
             ) -> Array{ComplexF64}
 
@@ -321,11 +321,11 @@ This computes, to relative precision eps, via a fast algorithm:
   - complex vector f size '(nk,)` of values at targets, or, if `ntrans>1`,
              a matrix of size `(nk,ntrans)`
 """
-function nufft1d3(xj      :: Array{T},
-                  cj      :: Array{Complex{T}},
+function nufft1d3(xj      :: InputArray{T},
+                  cj      :: InputArray{Complex{T}},
                   iflag   :: Integer, 
                   eps     :: Real,
-                  sk      :: Array{T};
+                  sk      :: InputArray{T};
                   kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(3,1,xj,T[],T[],sk)
     ntrans = valid_ntr(xj,cj)
@@ -336,13 +336,13 @@ function nufft1d3(xj      :: Array{T},
 end
 
 """
-    nufft2d3(xj      :: Array{Float64} or Array{Float32}, 
-             yj      :: Array{Float64} or Array{Float32},
-             cj      :: Array{ComplexF64} or Array{ComplexF32}, 
+    nufft2d3(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+             yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
+             cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
              iflag   :: Integer, 
              eps     :: Real,
-             sk      :: Array{Float64} or Array{Float32},
-             tk      :: Array{Float64} or Array{Float32};
+             sk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
+             tk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32};
              kwargs...
             ) -> Array{ComplexF64}
 
@@ -367,13 +367,13 @@ This computes, to relative precision eps, via a fast algorithm:
   - complex vector size `(nk,)` of values at targets, or, if `ntrans>1`,
              a matrix of size `(nk,ntrans)`
 """
-function nufft2d3(xj      :: Array{T},
-                  yj      :: Array{T}, 
-                  cj      :: Array{Complex{T}}, 
+function nufft2d3(xj      :: InputArray{T},
+                  yj      :: InputArray{T}, 
+                  cj      :: InputArray{Complex{T}}, 
                   iflag   :: Integer, 
                   eps     :: Real,
-                  sk      :: Array{T},
-                  tk      :: Array{T};
+                  sk      :: InputArray{T},
+                  tk      :: InputArray{T};
                   kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(3,2,xj,yj,T[],sk,tk)
     ntrans = valid_ntr(xj,cj)
@@ -384,15 +384,15 @@ function nufft2d3(xj      :: Array{T},
 end
 
 """
-    nufft3d3(xj      :: Array{Float64} or Array{Float32}, 
-             yj      :: Array{Float64} or Array{Float32},
-             zj      :: Array{Float64} or Array{Float32},
-             cj      :: Array{ComplexF64} or Array{ComplexF32}, 
+    nufft3d3(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+             yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
+             zj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
+             cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
              iflag   :: Integer, 
              eps     :: Real,
-             sk      :: Array{Float64} or Array{Float32},
-             tk      :: Array{Float64} or Array{Float32},
-             uk      :: Array{Float64} or Array{Float32};
+             sk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
+             tk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
+             uk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32};
              kwargs...
             ) -> Array{ComplexF64}
 
@@ -418,15 +418,15 @@ This computes, to relative precision eps, via a fast algorithm:
   - size `(nk,)` complex vector f values at targets, or, if `ntrans>1`,
              a matrix of size `(nk,ntrans)`
 """
-function nufft3d3(xj      :: Array{T},
-                  yj      :: Array{T},
-                  zj      :: Array{T},                   
-                  cj      :: Array{Complex{T}}, 
+function nufft3d3(xj      :: InputArray{T},
+                  yj      :: InputArray{T},
+                  zj      :: InputArray{T},                   
+                  cj      :: InputArray{Complex{T}}, 
                   iflag   :: Integer, 
                   eps     :: Real,
-                  sk      :: Array{T},
-                  tk      :: Array{T},
-                  uk      :: Array{T};
+                  sk      :: InputArray{T},
+                  tk      :: InputArray{T},
+                  uk      :: InputArray{T};
                   kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(3,3,xj,yj,zj,sk,tk,uk)
     ntrans = valid_ntr(xj,cj)
@@ -442,21 +442,21 @@ end
 ## 1D
 
 """
-    nufft1d1!(xj      :: Array{Float64} or Array{Float32}, 
-              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
+    nufft1d1!(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+              cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
               iflag   :: Integer, 
               eps     :: Real,
-              fk      :: Array{ComplexF64} or Array{ComplexF32};
+              fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
               kwargs...
             )
 
 Compute type-1 1D complex nonuniform FFT. Output written to `fk`. See `nufft1d1`.
 """
-function nufft1d1!(xj      :: Array{T},
-                   cj      :: Array{Complex{T}},
+function nufft1d1!(xj      :: InputArray{T},
+                   cj      :: InputArray{Complex{T}},
                    iflag   :: Integer, 
                    eps     :: Real,
-                   fk      :: Array{Complex{T}};
+                   fk      :: InputArray{Complex{T}};
                    kwargs...) where T <: finufftReal
     valid_setpts(1,1,xj)
     ntrans = valid_ntr(xj,cj)
@@ -472,21 +472,21 @@ end
 
 
 """
-    nufft1d2!(xj      :: Array{Float64} or Array{Float32}, 
-              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
+    nufft1d2!(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+              cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
               iflag   :: Integer, 
               eps     :: Real,
-              fk      :: Array{ComplexF64} or Array{ComplexF32};
+              fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
               kwargs...
             )
 
 Compute type-2 1D complex nonuniform FFT. Output written to `cj`. See `nufft1d2`.
 """
-function nufft1d2!(xj      :: Array{T},
-                   cj      :: Array{Complex{T}},
+function nufft1d2!(xj      :: InputArray{T},
+                   cj      :: InputArray{Complex{T}},
                    iflag   :: Integer, 
                    eps     :: Real,
-                   fk      :: Array{Complex{T}};
+                   fk      :: InputArray{Complex{T}};
                    kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(2,1,xj)
     (ms, ntrans) = get_nmodes_from_fk(1,fk)
@@ -501,23 +501,23 @@ end
 
 
 """
-    nufft1d3!(xj      :: Array{Float64} or Array{Float32}, 
-              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
+    nufft1d3!(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+              cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
               iflag   :: Integer, 
               eps     :: Real,
-              sk      :: Array{Float64} or Array{Float32},
-              fk      :: Array{ComplexF64} or Array{ComplexF32};
+              sk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
+              fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
               kwargs...
              )
 
 Compute type-3 1D complex nonuniform FFT. Output written to `fk`. See `nufft1d3`.
 """
-function nufft1d3!(xj      :: Array{T},
-                   cj      :: Array{Complex{T}},
+function nufft1d3!(xj      :: InputArray{T},
+                   cj      :: InputArray{Complex{T}},
                    iflag   :: Integer, 
                    eps     :: Real,
-                   sk      :: Array{T},
-                   fk      :: Array{Complex{T}};
+                   sk      :: InputArray{T},
+                   fk      :: InputArray{Complex{T}};
                    kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(3,1,xj,T[],T[],sk)
     ntrans = valid_ntr(xj,cj)
@@ -534,23 +534,23 @@ end
 ## 2D
 
 """
-    nufft2d1!(xj      :: Array{Float64} or Array{Float32}, 
-              yj      :: Array{Float64} or Array{Float32}, 
-              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
+    nufft2d1!(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+              yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+              cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
               iflag   :: Integer, 
               eps     :: Real,
-              fk      :: Array{ComplexF64} or Array{ComplexF32};
+              fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
               kwargs...
             )
 
 Compute type-1 2D complex nonuniform FFT. Output written to `fk`. See `nufft2d1`.
 """
-function nufft2d1!(xj      :: Array{T}, 
-                   yj      :: Array{T}, 
-                   cj      :: Array{Complex{T}}, 
+function nufft2d1!(xj      :: InputArray{T}, 
+                   yj      :: InputArray{T}, 
+                   cj      :: InputArray{Complex{T}}, 
                    iflag   :: Integer, 
                    eps     :: Real,
-                   fk      :: Array{Complex{T}};
+                   fk      :: InputArray{Complex{T}};
                    kwargs...) where T <: finufftReal
     valid_setpts(1,2,xj,yj)
     ntrans = valid_ntr(xj,cj)
@@ -567,23 +567,23 @@ end
 
 
 """
-    nufft2d2!(xj      :: Array{Float64} or Array{Float32}, 
-              yj      :: Array{Float64} or Array{Float32}, 
-              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
+    nufft2d2!(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+              yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+              cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
               iflag   :: Integer, 
               eps     :: Real,
-              fk      :: Array{ComplexF64} or Array{ComplexF32};
+              fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
               kwargs...
             )
 
 Compute type-2 2D complex nonuniform FFT. Output written to `cj`. See `nufft2d2`.
 """
-function nufft2d2!(xj      :: Array{T}, 
-                   yj      :: Array{T}, 
-                   cj      :: Array{Complex{T}}, 
+function nufft2d2!(xj      :: InputArray{T}, 
+                   yj      :: InputArray{T}, 
+                   cj      :: InputArray{Complex{T}}, 
                    iflag   :: Integer, 
                    eps     :: Real,
-                   fk      :: Array{Complex{T}};
+                   fk      :: InputArray{Complex{T}};
                    kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(1,2,xj,yj)
     (ms, mt, ntrans) = get_nmodes_from_fk(2,fk)
@@ -597,27 +597,27 @@ function nufft2d2!(xj      :: Array{T},
 end
 
 """
-    nufft2d3!(xj      :: Array{Float64} or Array{Float32}, 
-              yj      :: Array{Float64} or Array{Float32},
-              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
+    nufft2d3!(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+              yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
+              cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
               iflag   :: Integer, 
               eps     :: Real,
-              sk      :: Array{Float64} or Array{Float32},
-              tk      :: Array{Float64} or Array{Float32},
-              fk      :: Array{ComplexF64} or Array{ComplexF32};
+              sk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
+              tk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
+              fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
               kwargs...
              )
 
 Compute type-3 2D complex nonuniform FFT. Output written to 'fk'. See `nufft2d3`.
 """
-function nufft2d3!(xj      :: Array{T}, 
-                   yj      :: Array{T},
-                   cj      :: Array{Complex{T}}, 
+function nufft2d3!(xj      :: InputArray{T}, 
+                   yj      :: InputArray{T},
+                   cj      :: InputArray{Complex{T}}, 
                    iflag   :: Integer, 
                    eps     :: Real,
-                   sk      :: Array{T},
-                   tk      :: Array{T},
-                   fk      :: Array{Complex{T}};
+                   sk      :: InputArray{T},
+                   tk      :: InputArray{T},
+                   fk      :: InputArray{Complex{T}};
                    kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(3,2,xj,yj,T[],sk,tk)
     ntrans = valid_ntr(xj,cj)
@@ -633,25 +633,25 @@ end
 ## 3D
 
 """
-    nufft3d1!(xj      :: Array{Float64} or Array{Float32}, 
-              yj      :: Array{Float64} or Array{Float32}, 
-              zj      :: Array{Float64} or Array{Float32}, 
-              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
+    nufft3d1!(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+              yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+              zj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+              cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
               iflag   :: Integer, 
               eps     :: Real,
-              fk      :: Array{ComplexF64} or Array{ComplexF32};
+              fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
               kwargs...
             )
 
 Compute type-1 3D complex nonuniform FFT. Output written to `fk`. See `nufft3d1`.
 """
-function nufft3d1!(xj      :: Array{T}, 
-                   yj      :: Array{T}, 
-                   zj      :: Array{T}, 
-                   cj      :: Array{Complex{T}}, 
+function nufft3d1!(xj      :: InputArray{T}, 
+                   yj      :: InputArray{T}, 
+                   zj      :: InputArray{T}, 
+                   cj      :: InputArray{Complex{T}}, 
                    iflag   :: Integer, 
                    eps     :: Real,
-                   fk      :: Array{Complex{T}};
+                   fk      :: InputArray{Complex{T}};
                    kwargs...) where T <: finufftReal
     valid_setpts(1,3,xj,yj,zj)
     ntrans = valid_ntr(xj,cj)
@@ -667,25 +667,25 @@ function nufft3d1!(xj      :: Array{T},
 end
 
 """
-    nufft3d2!(xj      :: Array{Float64} or Array{Float32}, 
-              yj      :: Array{Float64} or Array{Float32}, 
-              zj      :: Array{Float64} or Array{Float32}, 
-              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
+    nufft3d2!(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+              yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+              zj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+              cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
               iflag   :: Integer, 
               eps     :: Real,
-              fk      :: Array{ComplexF64} or Array{ComplexF32};
+              fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
               kwargs...
             )
 
 Compute type-2 3D complex nonuniform FFT. Output written to `cj`. See `nufft3d2`.
 """
-function nufft3d2!(xj      :: Array{T}, 
-                   yj      :: Array{T},
-                   zj      :: Array{T},                    
-                   cj      :: Array{Complex{T}}, 
+function nufft3d2!(xj      :: InputArray{T}, 
+                   yj      :: InputArray{T},
+                   zj      :: InputArray{T},                    
+                   cj      :: InputArray{Complex{T}}, 
                    iflag   :: Integer, 
                    eps     :: Real,
-                   fk      :: Array{Complex{T}};
+                   fk      :: InputArray{Complex{T}};
                    kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(2,3,xj,yj,zj)
     (ms, mt, mu, ntrans) = get_nmodes_from_fk(3,fk)
@@ -699,31 +699,31 @@ function nufft3d2!(xj      :: Array{T},
 end
 
 """
-    nufft3d3!(xj      :: Array{Float64} or Array{Float32}, 
-              yj      :: Array{Float64} or Array{Float32},
-              zj      :: Array{Float64} or Array{Float32},
-              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
+    nufft3d3!(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+              yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
+              zj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
+              cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
               iflag   :: Integer, 
               eps     :: Real,
-              sk      :: Array{Float64} or Array{Float32},
-              tk      :: Array{Float64} or Array{Float32},
-              uk      :: Array{Float64} or Array{Float32},
-              fk      :: Array{ComplexF64} or Array{ComplexF32};
+              sk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
+              tk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
+              uk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
+              fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
               kwargs...
              )
 
 Compute type-3 3D complex nonuniform FFT. Output written to `fk`. See `nufft3d3`.
 """
-function nufft3d3!(xj      :: Array{T}, 
-                   yj      :: Array{T},
-                   zj      :: Array{T},                   
-                   cj      :: Array{Complex{T}}, 
+function nufft3d3!(xj      :: InputArray{T}, 
+                   yj      :: InputArray{T},
+                   zj      :: InputArray{T},                   
+                   cj      :: InputArray{Complex{T}}, 
                    iflag   :: Integer, 
                    eps     :: Real,
-                   sk      :: Array{T},
-                   tk      :: Array{T},
-                   uk      :: Array{T},
-                   fk      :: Array{Complex{T}};
+                   sk      :: InputArray{T},
+                   tk      :: InputArray{T},
+                   uk      :: InputArray{T},
+                   fk      :: InputArray{Complex{T}};
                    kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(3,3,xj,yj,zj,sk,tk,uk)
     ntrans = valid_ntr(xj,cj)

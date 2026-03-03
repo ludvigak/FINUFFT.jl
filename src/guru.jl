@@ -1,13 +1,5 @@
 ### Guru Interfaces
 
-# The types of arrays that we can deal with
-InputArray{T} = Union{Array{T}, SubArray{T}} where T
-
-# How we make sure that they are contiguous
-iscontiguous(A::SubArray) = Base.iscontiguous(A)
-iscontiguous(A::DenseArray) = true
-
-
 """
     p = finufft_default_opts()
     p = finufft_default_opts(dtype=Float32)
