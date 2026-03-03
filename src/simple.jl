@@ -3,8 +3,8 @@
 ## Type-1
 
 """
-    nufft1d1(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-             cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
+    nufft1d1(xj      :: Array{Float64} or Array{Float32}, 
+             cj      :: Array{ComplexF64} or Array{ComplexF32}, 
              iflag   :: Integer, 
              eps     :: Real,
              ms      :: Integer;
@@ -18,6 +18,7 @@ This computes, to relative precision eps, via a fast algorithm:
     f(k1) =  SUM c[j] exp(+/-i k1 x(j))  for -ms/2 <= k1 <= (ms-1)/2
              j=1
  # Inputs
+  All array arguments accept `Array` or contiguous array views (`SubArray`).
   - `xj`      locations of nonuniform sources on interval [-3pi,3pi), length nj
   - `cj`      length-nj complex vector of source strengths. If length(cj)>nj,
             expects a stack of vectors (eg, a nj*ntrans matrix) each of which is
@@ -46,9 +47,9 @@ function nufft1d1(xj::InputArray{T},
 end
 
 """
-    nufft2d1(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}
-             yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-             cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
+    nufft2d1(xj      :: Array{Float64} or Array{Float32}
+             yj      :: Array{Float64} or Array{Float32}, 
+             cj      :: Array{ComplexF64} or Array{ComplexF32}, 
              iflag   :: Integer, 
              eps     :: Real,
              ms      :: Integer,
@@ -66,6 +67,7 @@ This computes, to relative precision eps, via a fast algorithm:
     for -ms/2 <= k1 <= (ms-1)/2,  -mt/2 <= k2 <= (mt-1)/2.
 
  # Inputs
+  All array arguments accept `Array` or contiguous array views (`SubArray`).
   -  `xj`,`yj`   coordinates of nonuniform sources on the square [-3pi,3pi)^2,
             each a length-nj vector
   -  `cj`      length-nj complex vector of source strengths. If length(cj)>nj,
@@ -97,10 +99,10 @@ function nufft2d1(xj      :: InputArray{T},
 end
 
 """
-    nufft3d1(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-             yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-             zj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-             cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
+    nufft3d1(xj      :: Array{Float64} or Array{Float32}, 
+             yj      :: Array{Float64} or Array{Float32}, 
+             zj      :: Array{Float64} or Array{Float32}, 
+             cj      :: Array{ComplexF64} or Array{ComplexF32}, 
              iflag   :: Integer, 
              eps     :: Real,
              ms      :: Integer,
@@ -120,6 +122,7 @@ This computes, to relative precision eps, via a fast algorithm:
         -mu/2 <= k3 <= (mu-1)/2.
 
  # Inputs
+  All array arguments accept `Array` or contiguous array views (`SubArray`).
  -   `xj`,`yj`,`zj` coordinates of nonuniform sources on the cube [-3pi,3pi)^3,
              each a length-nj vector
  -   `cj`       length-nj complex vector of source strengths. If length(cj)>nj,
@@ -157,10 +160,10 @@ end
 ## Type-2
 
 """
-    nufft1d2(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+    nufft1d2(xj      :: Array{Float64} or Array{Float32}, 
              iflag   :: Integer, 
              eps     :: Real,
-             fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
+             fk      :: Array{ComplexF64} or Array{ComplexF32};
              kwargs...
             ) -> Array{ComplexF64}
 
@@ -172,6 +175,7 @@ This computes, to relative precision eps, via a fast algorithm:
      where sum is over -ms/2 <= k1 <= (ms-1)/2.
 
  # Input
+  All array arguments accept `Array` or contiguous array views (`SubArray`).
   -  `xj`      location of nonuniform targets on interval [-3pi,3pi), length nj
    - `fk`      complex Fourier coefficients. If a vector, length sets `ms`
             (with mode ordering given by opts.modeord). If a matrix, each
@@ -197,11 +201,11 @@ function nufft1d2(xj      :: InputArray{T},
 end
 
 """
-    nufft2d2(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-             yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+    nufft2d2(xj      :: Array{Float64} or Array{Float32}, 
+             yj      :: Array{Float64} or Array{Float32}, 
              iflag   :: Integer, 
              eps     :: Real,
-             fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
+             fk      :: Array{ComplexF64} or Array{ComplexF32};
              kwargs...
             ) -> Array{ComplexF64}
 
@@ -213,6 +217,7 @@ This computes, to relative precision eps, via a fast algorithm:
      where sum is over -ms/2 <= k1 <= (ms-1)/2, -mt/2 <= k2 <= (mt-1)/2,
 
  # Inputs
+  All array arguments accept `Array` or contiguous array views (`SubArray`).
    -  `xj`,`yj`   coordinates of nonuniform targets on the square [-3pi,3pi)^2,
             each a vector of length nj
   -  `fk`      complex Fourier coefficient matrix, whose size determines (ms,mt).
@@ -242,12 +247,12 @@ function nufft2d2(xj      :: InputArray{T},
 end
 
 """
-    nufft3d2(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-             yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-             zj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
+    nufft3d2(xj      :: Array{Float64} or Array{Float32}, 
+             yj      :: Array{Float64} or Array{Float32}, 
+             zj      :: Array{Float64} or Array{Float32}, 
              iflag   :: Integer, 
              eps     :: Real,
-             fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
+             fk      :: Array{ComplexF64} or Array{ComplexF32};
              kwargs...
             ) -> Array{ComplexF64}
 
@@ -261,6 +266,7 @@ This computes, to relative precision eps, via a fast algorithm:
                       -mu/2 <= k3 <= (mu-1)/2.
 
  # Inputs
+  All array arguments accept `Array` or contiguous array views (`SubArray`).
   -  `xj`,`yj`,`zj` coordinates of nonuniform targets on the cube [-3pi,3pi)^3,
              each a vector of length nj
   -  `fk`       complex Fourier coefficient array, whose size sets `(ms,mt,mu)`.
@@ -293,11 +299,11 @@ end
 ## Type-3
 
 """
-    nufft1d3(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-             cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
+    nufft1d3(xj      :: Array{Float64} or Array{Float32}, 
+             cj      :: Array{ComplexF64} or Array{ComplexF32}, 
              iflag   :: Integer, 
              eps     :: Real,
-             sk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32};
+             sk      :: Array{Float64} or Array{Float32};
              kwargs...
             ) -> Array{ComplexF64}
 
@@ -309,6 +315,7 @@ This computes, to relative precision eps, via a fast algorithm:
              j=1
 
  # Inputs
+  All array arguments accept `Array` or contiguous array views (`SubArray`).
  -   `xj`       locations of nonuniform sources on R (real line), length-nj vector.
  -   `cj`       length-nj complex vector of source strengths. If length(cj)>nj,
              expects a size `(nj,ntrans)` matrix each column of which is
@@ -336,13 +343,13 @@ function nufft1d3(xj      :: InputArray{T},
 end
 
 """
-    nufft2d3(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-             yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
-             cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
+    nufft2d3(xj      :: Array{Float64} or Array{Float32}, 
+             yj      :: Array{Float64} or Array{Float32},
+             cj      :: Array{ComplexF64} or Array{ComplexF32}, 
              iflag   :: Integer, 
              eps     :: Real,
-             sk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
-             tk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32};
+             sk      :: Array{Float64} or Array{Float32},
+             tk      :: Array{Float64} or Array{Float32};
              kwargs...
             ) -> Array{ComplexF64}
 
@@ -354,6 +361,7 @@ This computes, to relative precision eps, via a fast algorithm:
              j=1
 
  # Inputs
+  All array arguments accept `Array` or contiguous array views (`SubArray`).
   -  `xj`,`yj`    coordinates of nonuniform sources in R^2, each a length-nj vector.
    - `cj`    complex vector `(nj,)` of source strengths. If length(cj)>nj,
              expects a `(nj,ntrans)` matrix, each column of which is
@@ -384,15 +392,15 @@ function nufft2d3(xj      :: InputArray{T},
 end
 
 """
-    nufft3d3(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-             yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
-             zj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
-             cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
+    nufft3d3(xj      :: Array{Float64} or Array{Float32}, 
+             yj      :: Array{Float64} or Array{Float32},
+             zj      :: Array{Float64} or Array{Float32},
+             cj      :: Array{ComplexF64} or Array{ComplexF32}, 
              iflag   :: Integer, 
              eps     :: Real,
-             sk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
-             tk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
-             uk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32};
+             sk      :: Array{Float64} or Array{Float32},
+             tk      :: Array{Float64} or Array{Float32},
+             uk      :: Array{Float64} or Array{Float32};
              kwargs...
             ) -> Array{ComplexF64}
 
@@ -405,6 +413,7 @@ This computes, to relative precision eps, via a fast algorithm:
                              for k = 1, ..., nk
 
  # Inputs
+  All array arguments accept `Array` or contiguous array views (`SubArray`).
   -  `xj`,`yj`,`zj` coordinates of nonuniform sources in R^3, each a length-nj vector.
  -   `cj`     complex `(nj,)` vector of source strengths. If length(cj)>nj,
              expects a '(nj,ntrans)' matrix, each column of which is
@@ -442,11 +451,11 @@ end
 ## 1D
 
 """
-    nufft1d1!(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-              cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
+    nufft1d1!(xj      :: Array{Float64} or Array{Float32}, 
+              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
               iflag   :: Integer, 
               eps     :: Real,
-              fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
+              fk      :: Array{ComplexF64} or Array{ComplexF32};
               kwargs...
             )
 
@@ -472,11 +481,11 @@ end
 
 
 """
-    nufft1d2!(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-              cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
+    nufft1d2!(xj      :: Array{Float64} or Array{Float32}, 
+              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
               iflag   :: Integer, 
               eps     :: Real,
-              fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
+              fk      :: Array{ComplexF64} or Array{ComplexF32};
               kwargs...
             )
 
@@ -501,12 +510,12 @@ end
 
 
 """
-    nufft1d3!(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-              cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
+    nufft1d3!(xj      :: Array{Float64} or Array{Float32}, 
+              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
               iflag   :: Integer, 
               eps     :: Real,
-              sk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
-              fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
+              sk      :: Array{Float64} or Array{Float32},
+              fk      :: Array{ComplexF64} or Array{ComplexF32};
               kwargs...
              )
 
@@ -534,12 +543,12 @@ end
 ## 2D
 
 """
-    nufft2d1!(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-              yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-              cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
+    nufft2d1!(xj      :: Array{Float64} or Array{Float32}, 
+              yj      :: Array{Float64} or Array{Float32}, 
+              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
               iflag   :: Integer, 
               eps     :: Real,
-              fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
+              fk      :: Array{ComplexF64} or Array{ComplexF32};
               kwargs...
             )
 
@@ -567,12 +576,12 @@ end
 
 
 """
-    nufft2d2!(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-              yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-              cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
+    nufft2d2!(xj      :: Array{Float64} or Array{Float32}, 
+              yj      :: Array{Float64} or Array{Float32}, 
+              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
               iflag   :: Integer, 
               eps     :: Real,
-              fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
+              fk      :: Array{ComplexF64} or Array{ComplexF32};
               kwargs...
             )
 
@@ -597,14 +606,14 @@ function nufft2d2!(xj      :: InputArray{T},
 end
 
 """
-    nufft2d3!(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-              yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
-              cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
+    nufft2d3!(xj      :: Array{Float64} or Array{Float32}, 
+              yj      :: Array{Float64} or Array{Float32},
+              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
               iflag   :: Integer, 
               eps     :: Real,
-              sk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
-              tk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
-              fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
+              sk      :: Array{Float64} or Array{Float32},
+              tk      :: Array{Float64} or Array{Float32},
+              fk      :: Array{ComplexF64} or Array{ComplexF32};
               kwargs...
              )
 
@@ -633,13 +642,13 @@ end
 ## 3D
 
 """
-    nufft3d1!(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-              yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-              zj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-              cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
+    nufft3d1!(xj      :: Array{Float64} or Array{Float32}, 
+              yj      :: Array{Float64} or Array{Float32}, 
+              zj      :: Array{Float64} or Array{Float32}, 
+              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
               iflag   :: Integer, 
               eps     :: Real,
-              fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
+              fk      :: Array{ComplexF64} or Array{ComplexF32};
               kwargs...
             )
 
@@ -667,13 +676,13 @@ function nufft3d1!(xj      :: InputArray{T},
 end
 
 """
-    nufft3d2!(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-              yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-              zj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-              cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
+    nufft3d2!(xj      :: Array{Float64} or Array{Float32}, 
+              yj      :: Array{Float64} or Array{Float32}, 
+              zj      :: Array{Float64} or Array{Float32}, 
+              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
               iflag   :: Integer, 
               eps     :: Real,
-              fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
+              fk      :: Array{ComplexF64} or Array{ComplexF32};
               kwargs...
             )
 
@@ -699,16 +708,16 @@ function nufft3d2!(xj      :: InputArray{T},
 end
 
 """
-    nufft3d3!(xj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32}, 
-              yj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
-              zj      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
-              cj      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32}, 
+    nufft3d3!(xj      :: Array{Float64} or Array{Float32}, 
+              yj      :: Array{Float64} or Array{Float32},
+              zj      :: Array{Float64} or Array{Float32},
+              cj      :: Array{ComplexF64} or Array{ComplexF32}, 
               iflag   :: Integer, 
               eps     :: Real,
-              sk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
-              tk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
-              uk      :: FINUFFT.InputArray{Float64} or FINUFFT.InputArray{Float32},
-              fk      :: FINUFFT.InputArray{ComplexF64} or FINUFFT.InputArray{ComplexF32};
+              sk      :: Array{Float64} or Array{Float32},
+              tk      :: Array{Float64} or Array{Float32},
+              uk      :: Array{Float64} or Array{Float32},
+              fk      :: Array{ComplexF64} or Array{ComplexF32};
               kwargs...
              )
 
