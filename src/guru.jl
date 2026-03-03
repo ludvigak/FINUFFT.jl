@@ -33,6 +33,13 @@ function finufft_default_opts(dtype::DataType=Float64)
                )
     end
 
+    # Wire the Julia-managed lock into FINUFFT so it can protect FFTW planner calls without relying on fftw_make_planner_thread_safe.
+    lock_c = @cfunction(x -> lock(unsafe_pointer_to_objref(x)), Cvoid, (Ptr{Cvoid},))
+    unlock_c = @cfunction(x -> unlock(unsafe_pointer_to_objref(x)), Cvoid, (Ptr{Cvoid},))
+    opts.fftw_lock_fun = lock_c
+    opts.fftw_unlock_fun = unlock_c
+    opts.fftw_lock_data = pointer_from_objref(finufftlock[])
+
     return opts
 end
 
@@ -133,13 +140,6 @@ function _finufft_makeplan(::Type{dtype}, type::Integer,
 
     opts = finufft_default_opts(dtype)
     setkwopts!(opts;kwargs...)
-
-    # Wire the Julia-managed lock into FINUFFT so it can protect FFTW planner calls without relying on fftw_make_planner_thread_safe.
-    lock_c = @cfunction(x -> lock(unsafe_pointer_to_objref(x)), Cvoid, (Ptr{Cvoid},))
-    unlock_c = @cfunction(x -> unlock(unsafe_pointer_to_objref(x)), Cvoid, (Ptr{Cvoid},))
-    opts.fftw_lock_fun = lock_c
-    opts.fftw_unlock_fun = unlock_c
-    opts.fftw_lock_data = pointer_from_objref(finufftlock[])
 
     n_modes = ones(BIGINT,3)
     if type==3
