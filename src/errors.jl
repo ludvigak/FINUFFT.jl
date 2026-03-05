@@ -82,9 +82,9 @@ function check_ret(ret)
         msg = "GPU shmem too small for subprob/blockgather parameters"
     elseif ret==ERR_NUM_NU_PTS_INVALID
         msg = "invalid number of nonuniform points: nj or nk negative, or too big (see defs.h)"
-    elseif ret==FINUFFT_ERR_INVALID_ARGUMENT
+    elseif ret==ERR_INVALID_ARGUMENT
         msg == "invalid argument"
-    elseif ret==FINUFFT_ERR_NTHREADS_NOTVALID
+    elseif ret==ERR_NTHREADS_NOTVALID
         msg = "nthreads not valid"
     else
         msg = "error of type unknown to Julia interface! Check FINUFFT documentation"
