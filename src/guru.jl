@@ -33,6 +33,13 @@ function finufft_default_opts(dtype::DataType=Float64)
                )
     end
 
+    # Wire the Julia-managed lock into FINUFFT so it can protect FFTW planner calls without relying on fftw_make_planner_thread_safe.
+    lock_c = @cfunction(x -> lock(unsafe_pointer_to_objref(x)), Cvoid, (Ptr{Cvoid},))
+    unlock_c = @cfunction(x -> unlock(unsafe_pointer_to_objref(x)), Cvoid, (Ptr{Cvoid},))
+    opts.fftw_lock_fun = lock_c
+    opts.fftw_unlock_fun = unlock_c
+    opts.fftw_lock_data = pointer_from_objref(finufftlock[])
+
     return opts
 end
 
@@ -405,23 +412,11 @@ function finufft_exec!(plan::finufft_plan{T},
     n_modes = (plan.ms, plan.mt, plan.mu)
     if type==1
         if dim==1
-            if ntrans==1
-                @assert size(output)==(n_modes[1],) || size(output)==(n_modes[1],ntrans)
-            else
-                @assert size(output)==(n_modes[1],ntrans)
-            end
-        elseif dim==2
-            if ntrans==1
-                @assert size(output)==(n_modes[1],n_modes[2]) || size(output)==(n_modes[1],n_modes[2],ntrans)
-            else
-                @assert size(output)==(n_modes[1],n_modes[2],ntrans)
-            end
-        elseif dim==3
-            if ntrans==1
-                @assert size(output)==(n_modes[1],n_modes[2],n_modes[3]) || size(output)==(n_modes[1],n_modes[2],n_modes[3],ntrans)
-            else
-                @assert size(output)==(n_modes[1],n_modes[2],n_modes[3],ntrans)
-            end
+            @assert length(output) == n_modes[1] * ntrans
+        elseif dim == 2
+            @assert length(output) == n_modes[1] * n_modes[2] * ntrans
+        elseif dim == 3
+            @assert length(output) == n_modes[1] * n_modes[2] * n_modes[3] * ntrans
         else
             ret = ERR_DIM_NOTVALID
             check_ret(ret)
@@ -445,11 +440,7 @@ function finufft_exec!(plan::finufft_plan{T},
         end
     elseif type==2
         nj = plan.nj
-        if ntrans==1
-            @assert size(output)==(nj,ntrans) || size(output)==(nj,)
-        else
-            @assert size(output)==(nj,ntrans)
-        end
+        @assert length(output) == nj * ntrans
         if T==Float64
             ret = ccall( (:finufft_execute, libfinufft),
                          Cint,
@@ -469,11 +460,7 @@ function finufft_exec!(plan::finufft_plan{T},
         end
     elseif type==3
         nk = plan.nk
-        if ntrans==1
-            @assert size(output)==(nk,ntrans) || size(output)==(nk,)
-        else
-            @assert size(output)==(nk,ntrans)
-        end
+        @assert length(output) == nk * ntrans
         if T==Float64
             ret = ccall( (:finufft_execute, libfinufft),
                          Cint,
