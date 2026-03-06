@@ -8,7 +8,7 @@ This is a full-featured Julia interface to [FINUFFT](https://github.com/flatiron
 
 ## Installation
 
-FINUFFT.jl requires Julia v1.6 or later, and has been tested up to v1.12. From the Pkg REPL mode (hit `]` in REPL to enter), run
+FINUFFT.jl requires Julia v1.9 or later, and has been tested up to v1.12. From the Pkg REPL mode (hit `]` in REPL to enter), run
 
 ```julia
 add FINUFFT
