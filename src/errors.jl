@@ -2,29 +2,31 @@
 
 # Following should match error codes in https://github.com/flatironinstitute/finufft/blob/master/include/finufft_errors.h
 
-const WARN_EPS_TOO_SMALL         = 1
-const ERR_MAXNALLOC              = 2
-const ERR_SPREAD_BOX_SMALL       = 3
-const ERR_SPREAD_PTS_OUT_RANGE   = 4 # DEPRECATED
-const ERR_SPREAD_ALLOC           = 5
-const ERR_SPREAD_DIR             = 6
-const ERR_UPSAMPFAC_TOO_SMALL    = 7
-const ERR_HORNER_WRONG_BETA      = 8
-const ERR_NTRANS_NOTVALID        = 9
-const ERR_TYPE_NOTVALID          = 10
-const ERR_ALLOC                  = 11
-const ERR_DIM_NOTVALID           = 12
-const ERR_SPREAD_THREAD_NOTVALID = 13
-const ERR_NDATA_NOTVALID         = 14
-const ERR_CUDA_FAILURE           = 15
-const ERR_PLAN_NOTVALID          = 16
-const ERR_METHOD_NOTVALID        = 17
-const ERR_BINSIZE_NOTVALID       = 18
-const ERR_INSUFFICIENT_SHMEM     = 19
-const ERR_NUM_NU_PTS_INVALID     = 20
-const ERR_INVALID_ARGUMENT       = 21
-const ERR_LOCK_FUNS_INVALID      = 22
-const ERR_NTHREADS_NOTVALID      = 23
+const WARN_EPS_TOO_SMALL              = 1
+const ERR_MAXNALLOC                   = 2
+const ERR_SPREAD_BOX_SMALL            = 3
+const ERR_SPREAD_PTS_OUT_RANGE        = 4 # DEPRECATED
+const ERR_SPREAD_ALLOC                = 5 # unused
+const ERR_SPREAD_DIR                  = 6
+const ERR_UPSAMPFAC_TOO_SMALL         = 7
+const ERR_HORNER_WRONG_BETA           = 8
+const ERR_NTRANS_NOTVALID             = 9
+const ERR_TYPE_NOTVALID               = 10
+const ERR_ALLOC                       = 11
+const ERR_DIM_NOTVALID                = 12
+const ERR_SPREAD_THREAD_NOTVALID      = 13
+const ERR_NDATA_NOTVALID              = 14
+const ERR_CUDA_FAILURE                = 15
+const ERR_PLAN_NOTVALID               = 16
+const ERR_METHOD_NOTVALID             = 17
+const ERR_BINSIZE_NOTVALID            = 18
+const ERR_INSUFFICIENT_SHMEM          = 19
+const ERR_NUM_NU_PTS_INVALID          = 20
+const ERR_INVALID_ARGUMENT            = 21
+const ERR_LOCK_FUNS_INVALID           = 22
+const ERR_NTHREADS_NOTVALID           = 23
+const ERR_KERFORMULA_NOTVALID         = 24,
+const ERR_UNKNOWN_EXCEPTION           = 25,
 
 struct FINUFFTError <: Exception
     errno::Cint
@@ -83,9 +85,13 @@ function check_ret(ret)
     elseif ret==ERR_NUM_NU_PTS_INVALID
         msg = "invalid number of nonuniform points: nj or nk negative, or too big (see defs.h)"
     elseif ret==ERR_INVALID_ARGUMENT
-        msg == "invalid argument"
+        msg = "invalid input argument not covered by other errors"
+    elseif ret==ERR_LOCK_FUNS_INVALID
+        msg = "invalid FFTW lock function"
     elseif ret==ERR_NTHREADS_NOTVALID
-        msg = "nthreads not valid"
+        msg = "nthreads invalid"
+    elseif ret==ERR_KERFORMULA_NOTVALID
+        msg = "spread kernel formula type invalid"
     else
         msg = "error of type unknown to Julia interface! Check FINUFFT documentation"
     end

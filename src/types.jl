@@ -62,10 +62,10 @@ plan flags to FFTW (FFTW_ESTIMATE=64, FFTW_MEASURE=0,...)
 spreader: 0 don't sort, 1 do, or 2 heuristic choice
 
     spread_kerevalmeth :: Cint
-spreader: 0 exp(sqrt()), 1 Horner piecewise poly (faster)
+deprecated, retained for ABI; Horner is always used
 
     spread_kerpad :: Cint
-(exp(sqrt()) only): 0 don't pad kernel to 4n, 1 do
+deprecated, retained for ABI; padding has no effect
 
     upsampfac :: Cdouble
 upsampling ratio sigma: 2.0 std, 1.25 small FFT, 0.0 auto
@@ -85,9 +85,8 @@ if >=0, threads above which spreader OMP critical goes atomic
     spread_max_sp_size :: Cint
 if >0, overrides spreader (dir=1) max subproblem size
 
-    int spread_kerformula :: Cint
+    spread_kerformula  :: Cint
 kernel function formula: 0 default, [>0 devs/debug only]
-Non-zero values are unsupported and behavior can change
 
     fftw_lock_fun      :: Ptr{Cvoid}
 Function ptr that locks the FFTW planner \\
