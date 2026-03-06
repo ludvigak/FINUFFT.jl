@@ -25,8 +25,8 @@ const ERR_NUM_NU_PTS_INVALID          = 20
 const ERR_INVALID_ARGUMENT            = 21
 const ERR_LOCK_FUNS_INVALID           = 22
 const ERR_NTHREADS_NOTVALID           = 23
-const ERR_KERFORMULA_NOTVALID         = 24,
-const ERR_UNKNOWN_EXCEPTION           = 25,
+const ERR_KERFORMULA_NOTVALID         = 24
+const ERR_UNKNOWN_EXCEPTION           = 25
 
 struct FINUFFTError <: Exception
     errno::Cint

@@ -104,7 +104,7 @@ julia> p = finufft_makeplan(2,10,+1,1,1e-6);
 creates a plan for a 1D type 2 Float64 transform with 10 Fourier modes
 and tolerance 1e-6.
 ```julia-repl
-julia> p = finufft_makeplan(1,[10 20],+1,1,1e-6);
+julia> p = finufft_makeplan(1,[10, 20],+1,1,1e-6);
 ```
 creates a plan for a 2D type 1 Float64 transform with 10*20 Fourier modes.
 ```julia-repl
