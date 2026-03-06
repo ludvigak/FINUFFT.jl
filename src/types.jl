@@ -22,6 +22,7 @@ const finufftReal = Union{Float64,Float32}
         maxbatchsize       :: Cint
         spread_nthr_atomic :: Cint
         spread_max_sp_size :: Cint
+        spread_kerformula  :: Cint
         fftw_lock_fun      :: Ptr{Cvoid}
         fftw_unlock_fun    :: Ptr{Cvoid}
         fftw_lock_data     :: Ptr{Cvoid}
@@ -84,6 +85,10 @@ if >=0, threads above which spreader OMP critical goes atomic
     spread_max_sp_size :: Cint
 if >0, overrides spreader (dir=1) max subproblem size
 
+    int spread_kerformula :: Cint
+kernel function formula: 0 default, [>0 devs/debug only]
+Non-zero values are unsupported and behavior can change
+
     fftw_lock_fun      :: Ptr{Cvoid}
 Function ptr that locks the FFTW planner \\
 C signature: `void (*fftw_lock_fun)(void *)`
@@ -112,6 +117,7 @@ mutable struct nufft_opts{T}
     maxbatchsize       :: Cint
     spread_nthr_atomic :: Cint
     spread_max_sp_size :: Cint
+    spread_kerformula  :: Cint
     fftw_lock_fun      :: Ptr{Cvoid}
     fftw_unlock_fun    :: Ptr{Cvoid}
     fftw_lock_data     :: Ptr{Cvoid}
