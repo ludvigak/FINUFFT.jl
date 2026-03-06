@@ -1,5 +1,6 @@
 # threading tester for FINUFFT.jl
 
+using FFTW
 using FINUFFT
 
 using Test
@@ -38,11 +39,17 @@ function test_nufft_in_threads(tol::Real, dtype::DataType)
 
             iters = 100
             flag = falses(iters)
-            
-            Threads.@threads for i = 1:iters
-                out = nufft1d1(x, c, 1, tol, ms, nthreads=1)
-                relerr_1d1 = norm(vec(out) .- vec(ref), Inf) / norm(vec(ref), Inf)
-                flag[i] = relerr_1d1 < errfac * tol
+
+            # Run twice - just to be safe
+            for j = 1:2
+                Threads.@threads for i = 1:iters
+                    out = nufft1d1(x, c, 1, tol, ms, nthreads=1)
+                    relerr_1d1 = norm(vec(out) .- vec(ref), Inf) / norm(vec(ref), Inf)
+                    flag[i] = relerr_1d1 < errfac * tol
+
+                    # make sure, we can run safely along fft calls
+                    fft(c)
+                end
             end
 
             @test all(flag)
