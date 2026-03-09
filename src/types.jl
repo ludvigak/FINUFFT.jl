@@ -4,6 +4,15 @@ const BIGINT = Int64        # must match that in FINUFFT include/finufft.h
 # our allowed real array types...
 const finufftReal = Union{Float64,Float32}
 
+
+## The types of arrays that we can deal with
+const InputArray{T} = Union{Array{T}, SubArray{T}} where T
+
+# How we make sure that they are contiguous
+iscontiguous(A::SubArray) = Base.iscontiguous(A)
+iscontiguous(A::DenseArray) = true
+
+
 ## FINUFFT opts struct, must bytewise match that in include/finufft_opts.h
 """
     mutable struct nufft_opts
