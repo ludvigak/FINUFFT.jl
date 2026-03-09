@@ -26,7 +26,7 @@ function test_nufft_in_threads(tol::Real, dtype::DataType)
 
     errfac = 100       # allowed multiple of tol for errors rel to direct calc
 
-    @testset "Test FINUFFT thread-safety ($T)" begin
+    @testset "Thread-safety: FINUFFT + FFTW ($T)" begin
         ## 1D
         @testset "For now only 1D Type 1" begin
 
@@ -40,7 +40,7 @@ function test_nufft_in_threads(tol::Real, dtype::DataType)
             iters = 100
             flag = falses(iters)
 
-            # Run twice - just to be safe
+            # Run twice as pre finufft_jll 2.5.0+1 segmentation faults on MacOS sometimes occured only on the second run (libfinufft was built with Clang)
             for j = 1:2
                 Threads.@threads for i = 1:iters
                     out = nufft1d1(x, c, 1, tol, ms, nthreads=1)
