@@ -22,6 +22,7 @@ const finufftReal = Union{Float64,Float32}
         maxbatchsize       :: Cint
         spread_nthr_atomic :: Cint
         spread_max_sp_size :: Cint
+        spread_kerformula  :: Cint
         fftw_lock_fun      :: Ptr{Cvoid}
         fftw_unlock_fun    :: Ptr{Cvoid}
         fftw_lock_data     :: Ptr{Cvoid}
@@ -61,10 +62,10 @@ plan flags to FFTW (FFTW_ESTIMATE=64, FFTW_MEASURE=0,...)
 spreader: 0 don't sort, 1 do, or 2 heuristic choice
 
     spread_kerevalmeth :: Cint
-spreader: 0 exp(sqrt()), 1 Horner piecewise poly (faster)
+deprecated, retained for ABI; Horner is always used
 
     spread_kerpad :: Cint
-(exp(sqrt()) only): 0 don't pad kernel to 4n, 1 do
+deprecated, retained for ABI; padding has no effect
 
     upsampfac :: Cdouble
 upsampling ratio sigma: 2.0 std, 1.25 small FFT, 0.0 auto
@@ -83,6 +84,9 @@ if >=0, threads above which spreader OMP critical goes atomic
 
     spread_max_sp_size :: Cint
 if >0, overrides spreader (dir=1) max subproblem size
+
+    spread_kerformula  :: Cint
+kernel function formula: 0 default, [>0 devs/debug only]
 
     fftw_lock_fun      :: Ptr{Cvoid}
 Function ptr that locks the FFTW planner \\
@@ -112,6 +116,7 @@ mutable struct nufft_opts{T}
     maxbatchsize       :: Cint
     spread_nthr_atomic :: Cint
     spread_max_sp_size :: Cint
+    spread_kerformula  :: Cint
     fftw_lock_fun      :: Ptr{Cvoid}
     fftw_unlock_fun    :: Ptr{Cvoid}
     fftw_lock_data     :: Ptr{Cvoid}
@@ -132,9 +137,9 @@ const nufft_c_opts = nufft_opts        # for backward compatibility - remove?
     mutable struct cufinufft_opts
         upsampfac            :: Cdouble # upsampling ratio sigma, only 2.0 (standard) is implemented
         # following options are for gpu #
-        gpu_method           :: Cint # 1: nonuniform-pts driven, 2: shared mem (SM)
+        gpu_method           :: Cint # 1: nonuniform-pts driven, 2: shared mem (SM), 3: output driven (OD)
         gpu_sort             :: Cint # when NU-pts driven: 0: no sort (GM), 1: sort (GM-sort)
-        gpu_binsizex         :: Cint # used for 2D, 3D subproblem method
+        gpu_binsizex         :: Cint # used for 2D, 3D subproblem method and Output Driven
         gpu_binsizey         :: Cint
         gpu_binsizez         :: Cint
         gpu_obinsizex        :: Cint # used for 3D spread block gather method
@@ -149,6 +154,7 @@ const nufft_c_opts = nufft_opts        # for backward compatibility - remove?
         gpu_stream           :: Ptr{Cvoid}
         modeord              :: Cint # (type 1,2 only): 0 CMCL-style increasing mode order
                                      #                  1 FFT-style mode order
+        gpu_np               :: Cint # min batch_size for Output Driven
         debug                :: Cint # 0: no debug, 1: debug
     end
 
@@ -158,10 +164,10 @@ mutable struct cufinufft_opts
     upsampfac            :: Cdouble # upsampling ratio sigma, only 2.0 (standard) is implemented
 
     # following options are for gpu #
-    gpu_method           :: Cint # 1: nonuniform-pts driven, 2: shared mem (SM)
+    gpu_method           :: Cint # 1: nonuniform-pts driven, 2: shared mem (SM), 3: output driven (OD)
     gpu_sort             :: Cint # when NU-pts driven: 0: no sort (GM), 1: sort (GM-sort)
 
-    gpu_binsizex         :: Cint # used for 2D, 3D subproblem method
+    gpu_binsizex         :: Cint # used for 2D, 3D subproblem method and Output Driven
     gpu_binsizey         :: Cint
     gpu_binsizez         :: Cint
 
@@ -182,7 +188,9 @@ mutable struct cufinufft_opts
     gpu_stream           :: Ptr{Cvoid}
 
     modeord              :: Cint # (type 1,2 only): 0 CMCL-style increasing mode order
-    #                  1 FFT-style mode order
+                                 #                  1 FFT-style mode order
+
+    gpu_np               :: Cint # min batch_size for Output Driven
 
     debug                :: Cint # 0: no debug, 1: debug
     cufinufft_opts() = new()
