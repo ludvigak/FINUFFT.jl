@@ -36,13 +36,21 @@ using Test
         @test e.errno == FINUFFT.ERR_UPSAMPFAC_TOO_SMALL
     end
 
-    # Wrong beta (ie upsampfac not known for Horner poly eval rule)
-    upsampfac = 1.5
-    try
-        nufft1d1(xj, cj, iflag, tol, ms, upsampfac=upsampfac)
-    catch e
-        @test e.errno == FINUFFT.ERR_HORNER_WRONG_BETA
-    end
+    # Bad spread kernel formula
+    err =
+        try
+            nufft1d1(xj, cj, iflag, tol, ms, spread_kerformula=1234)
+        catch e; e; end
+    @test err isa FINUFFT.FINUFFTError
+    @test err.errno==FINUFFT.ERR_KERFORMULA_NOTVALID
+
+    # Bad lock fun
+    err =
+        try
+            nufft1d1(xj, cj, iflag, tol, ms, fftw_lock_fun=Ptr{Nothing}(0))
+        catch e; e; end
+    @test err isa FINUFFT.FINUFFTError
+    @test err.errno==FINUFFT.ERR_LOCK_FUNS_INVALID
 
     # Test immediate destroy and double-destroy, and their status codes...
     p = finufft_makeplan(2,10,+1,1,1e-6);

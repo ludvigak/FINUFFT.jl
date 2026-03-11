@@ -18,6 +18,7 @@ This computes, to relative precision eps, via a fast algorithm:
     f(k1) =  SUM c[j] exp(+/-i k1 x(j))  for -ms/2 <= k1 <= (ms-1)/2
              j=1
  # Inputs
+  All array arguments accept `Array` or contiguous array views (`SubArray`).
   - `xj`      locations of nonuniform sources on interval [-3pi,3pi), length nj
   - `cj`      length-nj complex vector of source strengths. If length(cj)>nj,
             expects a stack of vectors (eg, a nj*ntrans matrix) each of which is
@@ -32,8 +33,8 @@ This computes, to relative precision eps, via a fast algorithm:
             `ntrans>1`, matrix of size `(ms,ntrans)`.
 
 """
-function nufft1d1(xj::Array{T},
-                  cj::Array{Complex{T}},
+function nufft1d1(xj::InputArray{T},
+                  cj::InputArray{Complex{T}},
                   iflag::Integer,
                   eps::Real,
                   ms::Integer;
@@ -66,6 +67,7 @@ This computes, to relative precision eps, via a fast algorithm:
     for -ms/2 <= k1 <= (ms-1)/2,  -mt/2 <= k2 <= (mt-1)/2.
 
  # Inputs
+  All array arguments accept `Array` or contiguous array views (`SubArray`).
   -  `xj`,`yj`   coordinates of nonuniform sources on the square [-3pi,3pi)^2,
             each a length-nj vector
   -  `cj`      length-nj complex vector of source strengths. If length(cj)>nj,
@@ -81,9 +83,9 @@ This computes, to relative precision eps, via a fast algorithm:
             (ordering given by opts.modeord in each dimension; `ms` fast, `mt` slow),
             or, if `ntrans>1`, a array of size `(ms,mt,ntrans)`.
 """
-function nufft2d1(xj      :: Array{T},
-                  yj      :: Array{T},
-                  cj      :: Array{Complex{T}},
+function nufft2d1(xj      :: InputArray{T},
+                  yj      :: InputArray{T},
+                  cj      :: InputArray{Complex{T}},
                   iflag   :: Integer, 
                   eps     :: Real,
                   ms      :: Integer,
@@ -120,6 +122,7 @@ This computes, to relative precision eps, via a fast algorithm:
         -mu/2 <= k3 <= (mu-1)/2.
 
  # Inputs
+  All array arguments accept `Array` or contiguous array views (`SubArray`).
  -   `xj`,`yj`,`zj` coordinates of nonuniform sources on the cube [-3pi,3pi)^3,
              each a length-nj vector
  -   `cj`       length-nj complex vector of source strengths. If length(cj)>nj,
@@ -136,10 +139,10 @@ This computes, to relative precision eps, via a fast algorithm:
             (ordering given by opts.modeord in each dimension; `ms` fastest, `mu`
             slowest), or, if `ntrans>1`, a 4D array of size `(ms,mt,mu,ntrans)`.
 """
-function nufft3d1(xj      :: Array{T},
-                  yj      :: Array{T},
-                  zj      :: Array{T},
-                  cj      :: Array{Complex{T}},
+function nufft3d1(xj      :: InputArray{T},
+                  yj      :: InputArray{T},
+                  zj      :: InputArray{T},
+                  cj      :: InputArray{Complex{T}},
                   iflag   :: Integer, 
                   eps     :: Real,
                   ms      :: Integer,
@@ -172,6 +175,7 @@ This computes, to relative precision eps, via a fast algorithm:
      where sum is over -ms/2 <= k1 <= (ms-1)/2.
 
  # Input
+  All array arguments accept `Array` or contiguous array views (`SubArray`).
   -  `xj`      location of nonuniform targets on interval [-3pi,3pi), length nj
    - `fk`      complex Fourier coefficients. If a vector, length sets `ms`
             (with mode ordering given by opts.modeord). If a matrix, each
@@ -183,10 +187,10 @@ This computes, to relative precision eps, via a fast algorithm:
   - complex `(nj,)` vector c of answers at targets, or,
            if `ntrans>1`, matrix of size `(nj,ntrans)`.
 """
-function nufft1d2(xj      :: Array{T},
+function nufft1d2(xj      :: InputArray{T},
                   iflag   :: Integer,
                   eps     :: Real,
-                  fk      :: Array{Complex{T}};
+                  fk      :: InputArray{Complex{T}};
                   kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(2,1,xj)
     (ms, ntrans) = get_nmodes_from_fk(1,fk)
@@ -213,6 +217,7 @@ This computes, to relative precision eps, via a fast algorithm:
      where sum is over -ms/2 <= k1 <= (ms-1)/2, -mt/2 <= k2 <= (mt-1)/2,
 
  # Inputs
+  All array arguments accept `Array` or contiguous array views (`SubArray`).
    -  `xj`,`yj`   coordinates of nonuniform targets on the square [-3pi,3pi)^2,
             each a vector of length nj
   -  `fk`      complex Fourier coefficient matrix, whose size determines (ms,mt).
@@ -227,11 +232,11 @@ This computes, to relative precision eps, via a fast algorithm:
             if `ntrans>1`, matrix of size `(nj,ntrans)`.
 
 """
-function nufft2d2(xj      :: Array{T},
-                  yj      :: Array{T},
+function nufft2d2(xj      :: InputArray{T},
+                  yj      :: InputArray{T},
                   iflag   :: Integer,
                   eps     :: Real,
-                  fk      :: Array{Complex{T}};
+                  fk      :: InputArray{Complex{T}};
                   kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(2,2,xj,yj)
     (ms, mt, ntrans) = get_nmodes_from_fk(2,fk)
@@ -261,6 +266,7 @@ This computes, to relative precision eps, via a fast algorithm:
                       -mu/2 <= k3 <= (mu-1)/2.
 
  # Inputs
+  All array arguments accept `Array` or contiguous array views (`SubArray`).
   -  `xj`,`yj`,`zj` coordinates of nonuniform targets on the cube [-3pi,3pi)^3,
              each a vector of length nj
   -  `fk`       complex Fourier coefficient array, whose size sets `(ms,mt,mu)`.
@@ -274,12 +280,12 @@ This computes, to relative precision eps, via a fast algorithm:
    - complex vector c of size `(nj,)` giving answers at targets, or,
              if `ntrans>1`, matrix of size `(nj,ntrans)`.
 """
-function nufft3d2(xj      :: Array{T},
-                  yj      :: Array{T},
-                  zj      :: Array{T},
+function nufft3d2(xj      :: InputArray{T},
+                  yj      :: InputArray{T},
+                  zj      :: InputArray{T},
                   iflag   :: Integer, 
                   eps     :: Real,
-                  fk      :: Array{Complex{T}};
+                  fk      :: InputArray{Complex{T}};
                   kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(2,3,xj,yj,zj)
     (ms, mt, mu, ntrans) = get_nmodes_from_fk(3,fk)
@@ -309,6 +315,7 @@ This computes, to relative precision eps, via a fast algorithm:
              j=1
 
  # Inputs
+  All array arguments accept `Array` or contiguous array views (`SubArray`).
  -   `xj`       locations of nonuniform sources on R (real line), length-nj vector.
  -   `cj`       length-nj complex vector of source strengths. If length(cj)>nj,
              expects a size `(nj,ntrans)` matrix each column of which is
@@ -321,11 +328,11 @@ This computes, to relative precision eps, via a fast algorithm:
   - complex vector f size '(nk,)` of values at targets, or, if `ntrans>1`,
              a matrix of size `(nk,ntrans)`
 """
-function nufft1d3(xj      :: Array{T},
-                  cj      :: Array{Complex{T}},
+function nufft1d3(xj      :: InputArray{T},
+                  cj      :: InputArray{Complex{T}},
                   iflag   :: Integer, 
                   eps     :: Real,
-                  sk      :: Array{T};
+                  sk      :: InputArray{T};
                   kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(3,1,xj,T[],T[],sk)
     ntrans = valid_ntr(xj,cj)
@@ -354,6 +361,7 @@ This computes, to relative precision eps, via a fast algorithm:
              j=1
 
  # Inputs
+  All array arguments accept `Array` or contiguous array views (`SubArray`).
   -  `xj`,`yj`    coordinates of nonuniform sources in R^2, each a length-nj vector.
    - `cj`    complex vector `(nj,)` of source strengths. If length(cj)>nj,
              expects a `(nj,ntrans)` matrix, each column of which is
@@ -367,13 +375,13 @@ This computes, to relative precision eps, via a fast algorithm:
   - complex vector size `(nk,)` of values at targets, or, if `ntrans>1`,
              a matrix of size `(nk,ntrans)`
 """
-function nufft2d3(xj      :: Array{T},
-                  yj      :: Array{T}, 
-                  cj      :: Array{Complex{T}}, 
+function nufft2d3(xj      :: InputArray{T},
+                  yj      :: InputArray{T}, 
+                  cj      :: InputArray{Complex{T}}, 
                   iflag   :: Integer, 
                   eps     :: Real,
-                  sk      :: Array{T},
-                  tk      :: Array{T};
+                  sk      :: InputArray{T},
+                  tk      :: InputArray{T};
                   kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(3,2,xj,yj,T[],sk,tk)
     ntrans = valid_ntr(xj,cj)
@@ -405,6 +413,7 @@ This computes, to relative precision eps, via a fast algorithm:
                              for k = 1, ..., nk
 
  # Inputs
+  All array arguments accept `Array` or contiguous array views (`SubArray`).
   -  `xj`,`yj`,`zj` coordinates of nonuniform sources in R^3, each a length-nj vector.
  -   `cj`     complex `(nj,)` vector of source strengths. If length(cj)>nj,
              expects a '(nj,ntrans)' matrix, each column of which is
@@ -418,15 +427,15 @@ This computes, to relative precision eps, via a fast algorithm:
   - size `(nk,)` complex vector f values at targets, or, if `ntrans>1`,
              a matrix of size `(nk,ntrans)`
 """
-function nufft3d3(xj      :: Array{T},
-                  yj      :: Array{T},
-                  zj      :: Array{T},                   
-                  cj      :: Array{Complex{T}}, 
+function nufft3d3(xj      :: InputArray{T},
+                  yj      :: InputArray{T},
+                  zj      :: InputArray{T},                   
+                  cj      :: InputArray{Complex{T}}, 
                   iflag   :: Integer, 
                   eps     :: Real,
-                  sk      :: Array{T},
-                  tk      :: Array{T},
-                  uk      :: Array{T};
+                  sk      :: InputArray{T},
+                  tk      :: InputArray{T},
+                  uk      :: InputArray{T};
                   kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(3,3,xj,yj,zj,sk,tk,uk)
     ntrans = valid_ntr(xj,cj)
@@ -452,11 +461,11 @@ end
 
 Compute type-1 1D complex nonuniform FFT. Output written to `fk`. See `nufft1d1`.
 """
-function nufft1d1!(xj      :: Array{T},
-                   cj      :: Array{Complex{T}},
+function nufft1d1!(xj      :: InputArray{T},
+                   cj      :: InputArray{Complex{T}},
                    iflag   :: Integer, 
                    eps     :: Real,
-                   fk      :: Array{Complex{T}};
+                   fk      :: InputArray{Complex{T}};
                    kwargs...) where T <: finufftReal
     valid_setpts(1,1,xj)
     ntrans = valid_ntr(xj,cj)
@@ -482,11 +491,11 @@ end
 
 Compute type-2 1D complex nonuniform FFT. Output written to `cj`. See `nufft1d2`.
 """
-function nufft1d2!(xj      :: Array{T},
-                   cj      :: Array{Complex{T}},
+function nufft1d2!(xj      :: InputArray{T},
+                   cj      :: InputArray{Complex{T}},
                    iflag   :: Integer, 
                    eps     :: Real,
-                   fk      :: Array{Complex{T}};
+                   fk      :: InputArray{Complex{T}};
                    kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(2,1,xj)
     (ms, ntrans) = get_nmodes_from_fk(1,fk)
@@ -512,12 +521,12 @@ end
 
 Compute type-3 1D complex nonuniform FFT. Output written to `fk`. See `nufft1d3`.
 """
-function nufft1d3!(xj      :: Array{T},
-                   cj      :: Array{Complex{T}},
+function nufft1d3!(xj      :: InputArray{T},
+                   cj      :: InputArray{Complex{T}},
                    iflag   :: Integer, 
                    eps     :: Real,
-                   sk      :: Array{T},
-                   fk      :: Array{Complex{T}};
+                   sk      :: InputArray{T},
+                   fk      :: InputArray{Complex{T}};
                    kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(3,1,xj,T[],T[],sk)
     ntrans = valid_ntr(xj,cj)
@@ -545,12 +554,12 @@ end
 
 Compute type-1 2D complex nonuniform FFT. Output written to `fk`. See `nufft2d1`.
 """
-function nufft2d1!(xj      :: Array{T}, 
-                   yj      :: Array{T}, 
-                   cj      :: Array{Complex{T}}, 
+function nufft2d1!(xj      :: InputArray{T}, 
+                   yj      :: InputArray{T}, 
+                   cj      :: InputArray{Complex{T}}, 
                    iflag   :: Integer, 
                    eps     :: Real,
-                   fk      :: Array{Complex{T}};
+                   fk      :: InputArray{Complex{T}};
                    kwargs...) where T <: finufftReal
     valid_setpts(1,2,xj,yj)
     ntrans = valid_ntr(xj,cj)
@@ -578,12 +587,12 @@ end
 
 Compute type-2 2D complex nonuniform FFT. Output written to `cj`. See `nufft2d2`.
 """
-function nufft2d2!(xj      :: Array{T}, 
-                   yj      :: Array{T}, 
-                   cj      :: Array{Complex{T}}, 
+function nufft2d2!(xj      :: InputArray{T}, 
+                   yj      :: InputArray{T}, 
+                   cj      :: InputArray{Complex{T}}, 
                    iflag   :: Integer, 
                    eps     :: Real,
-                   fk      :: Array{Complex{T}};
+                   fk      :: InputArray{Complex{T}};
                    kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(1,2,xj,yj)
     (ms, mt, ntrans) = get_nmodes_from_fk(2,fk)
@@ -610,14 +619,14 @@ end
 
 Compute type-3 2D complex nonuniform FFT. Output written to 'fk'. See `nufft2d3`.
 """
-function nufft2d3!(xj      :: Array{T}, 
-                   yj      :: Array{T},
-                   cj      :: Array{Complex{T}}, 
+function nufft2d3!(xj      :: InputArray{T}, 
+                   yj      :: InputArray{T},
+                   cj      :: InputArray{Complex{T}}, 
                    iflag   :: Integer, 
                    eps     :: Real,
-                   sk      :: Array{T},
-                   tk      :: Array{T},
-                   fk      :: Array{Complex{T}};
+                   sk      :: InputArray{T},
+                   tk      :: InputArray{T},
+                   fk      :: InputArray{Complex{T}};
                    kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(3,2,xj,yj,T[],sk,tk)
     ntrans = valid_ntr(xj,cj)
@@ -645,13 +654,13 @@ end
 
 Compute type-1 3D complex nonuniform FFT. Output written to `fk`. See `nufft3d1`.
 """
-function nufft3d1!(xj      :: Array{T}, 
-                   yj      :: Array{T}, 
-                   zj      :: Array{T}, 
-                   cj      :: Array{Complex{T}}, 
+function nufft3d1!(xj      :: InputArray{T}, 
+                   yj      :: InputArray{T}, 
+                   zj      :: InputArray{T}, 
+                   cj      :: InputArray{Complex{T}}, 
                    iflag   :: Integer, 
                    eps     :: Real,
-                   fk      :: Array{Complex{T}};
+                   fk      :: InputArray{Complex{T}};
                    kwargs...) where T <: finufftReal
     valid_setpts(1,3,xj,yj,zj)
     ntrans = valid_ntr(xj,cj)
@@ -679,13 +688,13 @@ end
 
 Compute type-2 3D complex nonuniform FFT. Output written to `cj`. See `nufft3d2`.
 """
-function nufft3d2!(xj      :: Array{T}, 
-                   yj      :: Array{T},
-                   zj      :: Array{T},                    
-                   cj      :: Array{Complex{T}}, 
+function nufft3d2!(xj      :: InputArray{T}, 
+                   yj      :: InputArray{T},
+                   zj      :: InputArray{T},                    
+                   cj      :: InputArray{Complex{T}}, 
                    iflag   :: Integer, 
                    eps     :: Real,
-                   fk      :: Array{Complex{T}};
+                   fk      :: InputArray{Complex{T}};
                    kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(2,3,xj,yj,zj)
     (ms, mt, mu, ntrans) = get_nmodes_from_fk(3,fk)
@@ -714,16 +723,16 @@ end
 
 Compute type-3 3D complex nonuniform FFT. Output written to `fk`. See `nufft3d3`.
 """
-function nufft3d3!(xj      :: Array{T}, 
-                   yj      :: Array{T},
-                   zj      :: Array{T},                   
-                   cj      :: Array{Complex{T}}, 
+function nufft3d3!(xj      :: InputArray{T}, 
+                   yj      :: InputArray{T},
+                   zj      :: InputArray{T},                   
+                   cj      :: InputArray{Complex{T}}, 
                    iflag   :: Integer, 
                    eps     :: Real,
-                   sk      :: Array{T},
-                   tk      :: Array{T},
-                   uk      :: Array{T},
-                   fk      :: Array{Complex{T}};
+                   sk      :: InputArray{T},
+                   tk      :: InputArray{T},
+                   uk      :: InputArray{T},
+                   fk      :: InputArray{Complex{T}};
                    kwargs...) where T <: finufftReal
     (nj, nk) = valid_setpts(3,3,xj,yj,zj,sk,tk,uk)
     ntrans = valid_ntr(xj,cj)
