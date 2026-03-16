@@ -1,8 +1,6 @@
 __precompile__()
 module FINUFFT
 
-using Requires
-
 ## Export
 export nufft1d1, nufft1d2, nufft1d3
 export nufft2d1, nufft2d2, nufft2d3
@@ -42,20 +40,12 @@ include("helpers.jl")
 include("guru.jl")
 include("simple.jl")
 
+# We need these definitions to be defined here
+include("cufinufft_definitions.jl")
+
 # Module-level lock used to protect the FFTW planner across threads.
 # By default a plain ReentrantLock; replaced by FFTW.fftwlock when the
 # FFTWLock extension is loaded.
 const finufftlock = Ref{Any}(ReentrantLock())
-
-# Only load cuFINUFFT interface if CUDA is present (via `using CUDA`) and functional
-function __init__()
-
-    @require CUDA="052768ef-5323-5732-b1bb-66c8b64840ba" begin
-        using .CUDA
-        include("cufinufft.jl")
-        include("cufinufft_simple.jl")
-        determine_cuda_status()
-    end
-end
 
 end # module
