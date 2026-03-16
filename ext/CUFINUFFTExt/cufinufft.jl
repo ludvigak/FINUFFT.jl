@@ -48,7 +48,7 @@ end
 
 # Define the default constructor here so that CUDA is already loaded
 function FINUFFT.cufinufft_plan{T}(type, ntrans, dim, ms, mt, mu, nj, nk, plan_ptr) where T <: finufftReal
-    V = typeof(CuVector(T[]))
+    V = CuVector{T}
     FINUFFT.cufinufft_plan{T,V}(type, ntrans, dim, ms, mt, mu, nj, nk, plan_ptr, 
                       CuVector(T[]), CuVector(T[]), CuVector(T[]), CuVector(T[]), CuVector(T[]), CuVector(T[]))
 end
