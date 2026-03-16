@@ -18,7 +18,7 @@ This installs the stable registered version and its dependencies, including our 
 
 * [finufft_jll.jl](https://github.com/JuliaBinaryWrappers/finufft_jll.jl), which contains the CPU routines and has microarchitecture-specific builds (including `avx512`) for better performance.
 
-* [cufinufft_jll.jl](https://github.com/JuliaBinaryWrappers/cufinufft_jll.jl), which contains the GPU routines (cuFINUFFT). This is only available for x86 GNU Linux, and is built for CUDA versions up to 12.6.
+* [cufinufft_jll.jl](https://github.com/JuliaBinaryWrappers/cufinufft_jll.jl), which contains the GPU routines (cuFINUFFT). This is only available for x86 GNU Linux.
 
 To access the GPU interface, CUDA.jl must be installed through `add CUDA`
 
