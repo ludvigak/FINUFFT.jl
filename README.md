@@ -129,7 +129,7 @@ following the simple instructions to set
 ```julia
 const libfinufft = "YOURFINUFFT/lib/libfinufft.so"
 ```
-Similarly, in `~/.julia/dev/FINUFFT/src/cufinufft_jll.jl` after the line `using cufinufft_jll` add
+Similarly, in `~/.julia/dev/FINUFFT/ext/CUFINUFFTExt/cufinufft.jl` after the line `using cufinufft_jll` add
 ```julia
 cufinufft_jll.libcufinufft = "YOURFINUFFT/lib/libcufinufft.so"
 
