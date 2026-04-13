@@ -1,7 +1,7 @@
 name = "FINUFFT"
 uuid = "d8beea63-0952-562e-9c6a-8e8ef7364055"
 author = "Ludvig af Klinteberg <ludvig.af.klinteberg@mdu.se>"
-version = "3.5.1"
+version = "3.5.2"
 
 [deps]
 cufinufft_jll = "d94e68af-94a2-5465-a03a-ccb69bb7181e"
@@ -17,8 +17,8 @@ CUFINUFFTExt = "CUDA"
 
 [compat]
 CUDA = "5"
-cufinufft_jll = "=2.5.0"
-finufft_jll = "=2.5.0"
+cufinufft_jll = "~2.5"
+finufft_jll = "~2.5"
 julia = "1.9"
 
 [extras]
