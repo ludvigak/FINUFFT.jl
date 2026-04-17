@@ -17,8 +17,8 @@ CUFINUFFTExt = "CUDA"
 
 [compat]
 CUDA = "5"
-cufinufft_jll = "~2.5"
-finufft_jll = "~2.5"
+cufinufft_jll = "=2.5.1"
+finufft_jll = "=2.5.1"
 julia = "1.9"
 
 [extras]
