@@ -16,7 +16,7 @@ FFTWLock = "FFTW"
 CUFINUFFTExt = "CUDA"
 
 [compat]
-CUDA = "5"
+CUDA = "5, 6"
 cufinufft_jll = "=2.5.1"
 finufft_jll = "=2.5.1"
 julia = "1.9"
