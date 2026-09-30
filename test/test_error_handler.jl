@@ -49,6 +49,22 @@ using Test
     @test err isa FINUFFT.FINUFFTError
     @test err.errno==FINUFFT.ERR_KERFORMULA_NOTVALID
 
+    # Invalid transform type
+    err =
+        try
+            finufft_makeplan(4, ms, iflag, 1, tol)
+        catch e; e; end
+    @test err isa FINUFFT.FINUFFTError
+    @test err.errno == FINUFFT.ERR_TYPE_NOTVALID
+
+    # Invalid number of transforms
+    err =
+        try
+            finufft_makeplan(1, ms, iflag, 0, tol)
+        catch e; e; end
+    @test err isa FINUFFT.FINUFFTError
+    @test err.errno == FINUFFT.ERR_NTRANS_NOTVALID
+
     # Bad lock fun
     err =
         try
