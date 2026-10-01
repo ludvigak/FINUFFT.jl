@@ -7,34 +7,39 @@ using Test
     xj = zeros(10)
     cj = complex(zeros(10))
     iflag = 1
-    tol = 1e-15
+    tol = 1e-14
     ms = 10
 
     @test_logs nufft1d1(xj, cj, iflag, tol, ms) # Should not warn
 
     @info("Testing error handling")
 
-    # Tolerance too small (should only warn)
-    @test_logs (:warn, "requested tolerance epsilon too small to achieve (warning only)") nufft1d1(xj, cj, iflag, 1e-100, ms)
-
+    # Tolerance too small
+    err =
+        try
+            nufft1d1(xj, cj, iflag, 1e-100, ms)
+        catch e; e; end
+    @test err isa FINUFFT.FINUFFTError
+    @test err.errno==FINUFFT.ERR_EPS_TOO_SMALL
+    
     # Allocate too much
     opts = finufft_default_opts()
-    spread_kerevalmeth = 0
     upsampfac = maxintfloat(typeof(opts.upsampfac))   # hack to alloc a lot
-    try
-        nufft1d1(xj, cj, iflag, tol, ms, spread_kerevalmeth=spread_kerevalmeth, upsampfac=upsampfac)
-    catch e
-        @test e.errno == FINUFFT.ERR_MAXNALLOC
-    end
+    err = 
+        try
+            nufft1d1(xj, cj, iflag, tol, ms, upsampfac=upsampfac)
+        catch e; e; end
+    @test err isa FINUFFT.FINUFFTError
+    @test err.errno == FINUFFT.ERR_MAXNALLOC
 
     # Too small upsampfac
-    spread_kerevalmeth = 0
     upsampfac = 0.9                     # note 0 is auto-choice
-    try
-        nufft1d1(xj, cj, iflag, tol, ms, spread_kerevalmeth=spread_kerevalmeth, upsampfac=upsampfac)
-    catch e
-        @test e.errno == FINUFFT.ERR_UPSAMPFAC_TOO_SMALL
-    end
+    err = 
+        try
+            nufft1d1(xj, cj, iflag, tol, ms, upsampfac=upsampfac)
+        catch e; e; end
+    @test err isa FINUFFT.FINUFFTError
+    @test err.errno == FINUFFT.ERR_UPSAMPFAC_TOO_SMALL
 
     # Bad spread kernel formula
     err =
@@ -43,6 +48,22 @@ using Test
         catch e; e; end
     @test err isa FINUFFT.FINUFFTError
     @test err.errno==FINUFFT.ERR_KERFORMULA_NOTVALID
+
+    # Invalid transform type
+    err =
+        try
+            finufft_makeplan(4, ms, iflag, 1, tol)
+        catch e; e; end
+    @test err isa FINUFFT.FINUFFTError
+    @test err.errno == FINUFFT.ERR_TYPE_NOTVALID
+
+    # Invalid number of transforms
+    err =
+        try
+            finufft_makeplan(1, ms, iflag, 0, tol)
+        catch e; e; end
+    @test err isa FINUFFT.FINUFFTError
+    @test err.errno == FINUFFT.ERR_NTRANS_NOTVALID
 
     # Bad lock fun
     err =
