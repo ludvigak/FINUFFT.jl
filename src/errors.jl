@@ -2,7 +2,7 @@
 
 # Following should match error codes in https://github.com/flatironinstitute/finufft/blob/master/include/finufft_errors.h
 
-const WARN_EPS_TOO_SMALL              = 1
+const WARN_EPS_TOO_SMALL              = 1 # DEPRECATED
 const ERR_MAXNALLOC                   = 2
 const ERR_SPREAD_BOX_SMALL            = 3
 const ERR_SPREAD_PTS_OUT_RANGE        = 4 # DEPRECATED
@@ -14,7 +14,7 @@ const ERR_NTRANS_NOTVALID             = 9
 const ERR_TYPE_NOTVALID               = 10
 const ERR_ALLOC                       = 11
 const ERR_DIM_NOTVALID                = 12
-const ERR_SPREAD_THREAD_NOTVALID      = 13
+const ERR_SPREAD_THREAD_NOTVALID      = 13 # DEPRECATED
 const ERR_NDATA_NOTVALID              = 14
 const ERR_CUDA_FAILURE                = 15
 const ERR_PLAN_NOTVALID               = 16
@@ -27,6 +27,8 @@ const ERR_LOCK_FUNS_INVALID           = 22
 const ERR_NTHREADS_NOTVALID           = 23
 const ERR_KERFORMULA_NOTVALID         = 24
 const ERR_UNKNOWN_EXCEPTION           = 25
+const ERR_EPS_TOO_SMALL       = 26
+const ERR_PSWF_SETUP          = 27
 
 struct FINUFFTError <: Exception
     errno::Cint
@@ -47,7 +49,7 @@ function check_ret(ret)
         @warn msg
         return
     elseif ret==ERR_MAXNALLOC
-        msg = "stopped due to needing internal array size >MAX_NF (defined in defs.h)"
+        msg = "stopped due to needing internal array size >MAX_NF (defined in plan.hpp)"
     elseif ret==ERR_SPREAD_BOX_SMALL
         msg = "spreader: fine grid too small compared to spread (kernel) width"
     elseif ret==ERR_SPREAD_PTS_OUT_RANGE
@@ -83,7 +85,7 @@ function check_ret(ret)
     elseif ret==ERR_INSUFFICIENT_SHMEM
         msg = "GPU shmem too small for subprob/blockgather parameters"
     elseif ret==ERR_NUM_NU_PTS_INVALID
-        msg = "invalid number of nonuniform points: nj or nk negative, or too big (see defs.h)"
+        msg = "invalid number of nonuniform points: nj or nk negative, or too big (see plan.hpp)"
     elseif ret==ERR_INVALID_ARGUMENT
         msg = "invalid input argument not covered by other errors"
     elseif ret==ERR_LOCK_FUNS_INVALID
@@ -92,6 +94,12 @@ function check_ret(ret)
         msg = "nthreads invalid"
     elseif ret==ERR_KERFORMULA_NOTVALID
         msg = "spread kernel formula type invalid"
+    elseif ret==ERR_UNKNOWN_EXCEPTION
+        msg = "unknown exception caught"
+    elseif ret==ERR_EPS_TOO_SMALL
+        msg = "requested tolerance epsilon too small to achieve (hard error; tolerance must be >= machine epsilon)"
+    elseif ret==ERR_PSWF_SETUP
+        msg == "iteration inside the setup code for the PSWF function evaluator failed to converge"
     else
         msg = "error of type unknown to Julia interface! Check FINUFFT documentation"
     end

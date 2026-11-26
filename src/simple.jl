@@ -19,7 +19,8 @@ This computes, to relative precision eps, via a fast algorithm:
              j=1
  # Inputs
   All array arguments accept `Array` or contiguous array views (`SubArray`).
-  - `xj`      locations of nonuniform sources on interval [-3pi,3pi), length nj
+  - `xj`      locations of nonuniform sources, length nj; any real values,
+            folded periodically into [-π,π)
   - `cj`      length-nj complex vector of source strengths. If length(cj)>nj,
             expects a stack of vectors (eg, a nj*ntrans matrix) each of which is
             transformed with the same source locations.
@@ -68,8 +69,8 @@ This computes, to relative precision eps, via a fast algorithm:
 
  # Inputs
   All array arguments accept `Array` or contiguous array views (`SubArray`).
-  -  `xj`,`yj`   coordinates of nonuniform sources on the square [-3pi,3pi)^2,
-            each a length-nj vector
+  -  `xj`,`yj`   coordinates of nonuniform sources, each of length nj;
+            any real values, each coordinate folded periodically into [-π,π)
   -  `cj`      length-nj complex vector of source strengths. If length(cj)>nj,
             expects a stack of vectors (eg, a nj*ntrans matrix) each of which is
             transformed with the same source locations.
@@ -123,8 +124,8 @@ This computes, to relative precision eps, via a fast algorithm:
 
  # Inputs
   All array arguments accept `Array` or contiguous array views (`SubArray`).
- -   `xj`,`yj`,`zj` coordinates of nonuniform sources on the cube [-3pi,3pi)^3,
-             each a length-nj vector
+ -   `xj`,`yj`,`zj` coordinates of nonuniform sources, each of length nj;
+             any real values, each coordinate folded periodically into [-π,π)
  -   `cj`       length-nj complex vector of source strengths. If length(cj)>nj,
              expects a stack of vectors (eg, a nj*ntrans matrix) each of which is
              transformed with the same source locations.
@@ -176,7 +177,8 @@ This computes, to relative precision eps, via a fast algorithm:
 
  # Input
   All array arguments accept `Array` or contiguous array views (`SubArray`).
-  -  `xj`      location of nonuniform targets on interval [-3pi,3pi), length nj
+  -  `xj`      locations of nonuniform targets, length nj; any real values,
+            folded periodically into [-π,π)
    - `fk`      complex Fourier coefficients. If a vector, length sets `ms`
             (with mode ordering given by opts.modeord). If a matrix, each
             column is transformed with the same nonuniform targets.
@@ -218,8 +220,8 @@ This computes, to relative precision eps, via a fast algorithm:
 
  # Inputs
   All array arguments accept `Array` or contiguous array views (`SubArray`).
-   -  `xj`,`yj`   coordinates of nonuniform targets on the square [-3pi,3pi)^2,
-            each a vector of length nj
+   -  `xj`,`yj`   coordinates of nonuniform targets, each of length nj;
+            any real values, each coordinate folded periodically into [-π,π)
   -  `fk`      complex Fourier coefficient matrix, whose size determines (ms,mt).
             (Mode ordering given by opts.modeord, in each dimension.)
             If a 3D array, 3rd dimension sets `ntrans`, and each of `ntrans`
@@ -267,8 +269,8 @@ This computes, to relative precision eps, via a fast algorithm:
 
  # Inputs
   All array arguments accept `Array` or contiguous array views (`SubArray`).
-  -  `xj`,`yj`,`zj` coordinates of nonuniform targets on the cube [-3pi,3pi)^3,
-             each a vector of length nj
+  -  `xj`,`yj`,`zj` coordinates of nonuniform targets, each of length nj;
+             any real values, each coordinate folded periodically into [-π,π)
   -  `fk`       complex Fourier coefficient array, whose size sets `(ms,mt,mu)`.
              (Mode ordering given by opts.modeord, in each dimension.)
              If a 4D array, 4th dimension sets `ntrans`, and each of `ntrans`
@@ -473,9 +475,13 @@ function nufft1d1!(xj      :: InputArray{T},
 
     checkkwdtype(T; kwargs...)
     plan = _finufft_makeplan(T,1,[ms;],iflag,ntrans,eps;kwargs...)
-    finufft_setpts!(plan,xj)
-    finufft_exec!(plan,cj,fk)
-    ret = finufft_destroy!(plan)
+    ret = 0
+    try
+        finufft_setpts!(plan,xj)
+        finufft_exec!(plan,cj,fk)
+    finally
+        ret = finufft_destroy!(plan)
+    end
     check_ret(ret)
 end
 
@@ -502,9 +508,13 @@ function nufft1d2!(xj      :: InputArray{T},
 
     checkkwdtype(T; kwargs...)
     plan = _finufft_makeplan(T,2,[ms;],iflag,ntrans,eps;kwargs...)
-    finufft_setpts!(plan,xj)
-    finufft_exec!(plan,fk,cj)
-    ret = finufft_destroy!(plan)
+    ret = 0
+    try
+        finufft_setpts!(plan,xj)
+        finufft_exec!(plan,fk,cj)
+    finally
+        ret = finufft_destroy!(plan)
+    end
     check_ret(ret)    
 end
 
@@ -533,9 +543,13 @@ function nufft1d3!(xj      :: InputArray{T},
 
     checkkwdtype(T; kwargs...)
     plan = _finufft_makeplan(T,3,1,iflag,ntrans,eps;kwargs...)
-    finufft_setpts!(plan,xj,T[],T[],sk)
-    finufft_exec!(plan,cj,fk)
-    ret = finufft_destroy!(plan)
+    ret = 0
+    try
+        finufft_setpts!(plan,xj,T[],T[],sk)
+        finufft_exec!(plan,cj,fk)
+    finally
+        ret = finufft_destroy!(plan)
+    end
     check_ret(ret)
 end
 
@@ -568,9 +582,13 @@ function nufft2d1!(xj      :: InputArray{T},
 
     checkkwdtype(T; kwargs...)
     plan = _finufft_makeplan(T,1,[ms;mt],iflag,ntrans,eps;kwargs...)
-    finufft_setpts!(plan,xj,yj)
-    finufft_exec!(plan,cj,fk)
-    ret = finufft_destroy!(plan)
+    ret = 0
+    try
+        finufft_setpts!(plan,xj,yj)
+        finufft_exec!(plan,cj,fk)
+    finally
+        ret = finufft_destroy!(plan)
+    end
     check_ret(ret)
 end
 
@@ -599,9 +617,13 @@ function nufft2d2!(xj      :: InputArray{T},
 
     checkkwdtype(T; kwargs...)
     plan = _finufft_makeplan(T,2,[ms;mt],iflag,ntrans,eps;kwargs...)
-    finufft_setpts!(plan,xj,yj)
-    finufft_exec!(plan,fk,cj)
-    ret = finufft_destroy!(plan)
+    ret = 0
+    try
+        finufft_setpts!(plan,xj,yj)
+        finufft_exec!(plan,fk,cj)
+    finally
+        ret = finufft_destroy!(plan)
+    end
     check_ret(ret)
 end
 
@@ -633,9 +655,13 @@ function nufft2d3!(xj      :: InputArray{T},
 
     checkkwdtype(T; kwargs...)
     plan = _finufft_makeplan(T,3,2,iflag,ntrans,eps;kwargs...)
-    finufft_setpts!(plan,xj,yj,T[],sk,tk)
-    finufft_exec!(plan,cj,fk)
-    ret = finufft_destroy!(plan)
+    ret = 0
+    try
+        finufft_setpts!(plan,xj,yj,T[],sk,tk)
+        finufft_exec!(plan,cj,fk)
+    finally
+        ret = finufft_destroy!(plan)
+    end
     check_ret(ret)
 end
 
@@ -669,9 +695,13 @@ function nufft3d1!(xj      :: InputArray{T},
 
     checkkwdtype(T; kwargs...)
     plan = _finufft_makeplan(T,1,[ms;mt;mu],iflag,ntrans,eps;kwargs...)
-    finufft_setpts!(plan,xj,yj,zj)
-    finufft_exec!(plan,cj,fk)
-    ret = finufft_destroy!(plan)
+    ret = 0
+    try
+        finufft_setpts!(plan,xj,yj,zj)
+        finufft_exec!(plan,cj,fk)
+    finally
+        ret = finufft_destroy!(plan)
+    end
     check_ret(ret)
 end
 
@@ -701,9 +731,13 @@ function nufft3d2!(xj      :: InputArray{T},
 
     checkkwdtype(T; kwargs...)
     plan = _finufft_makeplan(T,2,[ms;mt;mu],iflag,ntrans,eps;kwargs...)
-    finufft_setpts!(plan,xj,yj,zj)
-    finufft_exec!(plan,fk,cj)
-    ret = finufft_destroy!(plan)
+    ret = 0
+    try
+        finufft_setpts!(plan,xj,yj,zj)
+        finufft_exec!(plan,fk,cj)
+    finally
+        ret = finufft_destroy!(plan)
+    end
     check_ret(ret)
 end
 
@@ -739,8 +773,12 @@ function nufft3d3!(xj      :: InputArray{T},
 
     checkkwdtype(T; kwargs...)
     plan = _finufft_makeplan(T,3,3,iflag,ntrans,eps;kwargs...)
-    finufft_setpts!(plan,xj,yj,zj,sk,tk,uk)
-    finufft_exec!(plan,cj,fk)
-    ret = finufft_destroy!(plan)
+    ret = 0
+    try
+        finufft_setpts!(plan,xj,yj,zj,sk,tk,uk)
+        finufft_exec!(plan,cj,fk)
+    finally
+        ret = finufft_destroy!(plan)
+    end
     check_ret(ret)
 end

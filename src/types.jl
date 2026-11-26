@@ -32,6 +32,7 @@ iscontiguous(A::DenseArray) = true
         spread_nthr_atomic :: Cint
         spread_max_sp_size :: Cint
         spread_kerformula  :: Cint
+        allow_eps_too_small:: Cint
         fftw_lock_fun      :: Ptr{Cvoid}
         fftw_unlock_fun    :: Ptr{Cvoid}
         fftw_lock_data     :: Ptr{Cvoid}
@@ -71,19 +72,16 @@ plan flags to FFTW (FFTW_ESTIMATE=64, FFTW_MEASURE=0,...)
 spreader: 0 don't sort, 1 do, or 2 heuristic choice
 
     spread_kerevalmeth :: Cint
-deprecated, retained for ABI; Horner is always used
+deprecated; no effect (Horner is always used)
 
     spread_kerpad :: Cint
-deprecated, retained for ABI; padding has no effect
+deprecated; no effect (padding is handled internally)
 
     upsampfac :: Cdouble
 upsampling ratio sigma: 2.0 std, 1.25 small FFT, 0.0 auto
 
     spread_thread :: Cint
-(vectorized ntr>1 only)\\
-0: auto\\
-1: seq multithreaded\\
-2: parallel single-thread spread
+deprecated; no effect (all threads spread the whole batch)
 
     maxbatchsize :: Cint
 (vectorized ntr>1 only): max transform batch, 0 auto
@@ -96,6 +94,10 @@ if >0, overrides spreader (dir=1) max subproblem size
 
     spread_kerformula  :: Cint
 kernel function formula: 0 default, [>0 devs/debug only]
+Non-zero values are unsupported and behavior can change
+
+    allow_eps_too_small :: Cint
+CPU only: 0 hard error if tol<eps_mach, 1 clamp and proceed
 
     fftw_lock_fun      :: Ptr{Cvoid}
 Function ptr that locks the FFTW planner \\
@@ -126,6 +128,7 @@ mutable struct nufft_opts{T}
     spread_nthr_atomic :: Cint
     spread_max_sp_size :: Cint
     spread_kerformula  :: Cint
+    allow_eps_too_small:: Cint
     fftw_lock_fun      :: Ptr{Cvoid}
     fftw_unlock_fun    :: Ptr{Cvoid}
     fftw_lock_data     :: Ptr{Cvoid}
@@ -144,7 +147,7 @@ const nufft_c_opts = nufft_opts        # for backward compatibility - remove?
 # finufft/include/cufinufft_opts.h
 """
     mutable struct cufinufft_opts
-        upsampfac            :: Cdouble # upsampling ratio sigma, only 2.0 (standard) is implemented
+        upsampfac            :: Cdouble # upsampling ratio sigma
         # following options are for gpu #
         gpu_method           :: Cint # 1: nonuniform-pts driven, 2: shared mem (SM), 3: output driven (OD)
         gpu_sort             :: Cint # when NU-pts driven: 0: no sort (GM), 1: sort (GM-sort)
@@ -170,7 +173,7 @@ const nufft_c_opts = nufft_opts        # for backward compatibility - remove?
 Options struct passed to cuFINUFFT, see C documentation.
 """
 mutable struct cufinufft_opts
-    upsampfac            :: Cdouble # upsampling ratio sigma, only 2.0 (standard) is implemented
+    upsampfac            :: Cdouble # upsampling ratio sigma
 
     # following options are for gpu #
     gpu_method           :: Cint # 1: nonuniform-pts driven, 2: shared mem (SM), 3: output driven (OD)
